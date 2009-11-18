@@ -281,8 +281,12 @@ class midcom_core_services_dispatcher_manual implements midcom_core_services_dis
                     {
                         throw new midcom_exception_notfound("Action {$selected_route_configuration['action']} not found");
                     }
+                    $controller->$action_method($this->route_id, $data, $this->action_arguments);
                 }
-                $controller->$action_method($this->route_id, $data, $this->action_arguments);
+                else
+                {
+                    $controller->$action_method($this->action_arguments);
+                }
             }
             else
             {
