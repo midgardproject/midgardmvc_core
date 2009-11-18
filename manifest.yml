@@ -1,0 +1,28 @@
+component: midcom_core
+version: 9.09.0devel
+authors:
+    bergie:
+        name: Henri Bergius
+        email: henri.bergius@iki.fi
+        url: http://bergie.iki.fi/
+    rambo:
+        name: Eero af Heurlin
+        email: eero.afheurlin@iki.fi
+        url: http://rambo.jaiku.com/
+    w_i:
+        name: Jerry Jalava
+        email: jerry.jalava@gmail.com
+        url: http://protoblogr.net/
+    indeyets:
+        name: Alexey Zakhlestine
+        email: indy@Nirvana.lan
+        url: http://blog.milkfarmsoft.com/
+    adrenalin:
+        name: Arttu Manninen
+        email: arttu@kaktus.cc
+        url: http://www.kaktus.cc/
+action_types:
+        - midgard_page
+action_categories:
+        - create
+        - system

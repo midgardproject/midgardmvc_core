@@ -1,0 +1,80 @@
+<h1 tal:content="midcom_core/class">midgard_person</h1>
+
+<p class="extends" tal:condition="exists: midcom_core/class_documentation/extends">
+    Extends <a class="class" tal:attributes="href midcom_core/class_documentation/extends_url" tal:content="midcom_core/class_documentation/extends">midgard_object</a>
+</p>
+
+<p class="docblock" tal:content="structure midcom_core/class_documentation/docblock">
+Documentation about the class
+</p>
+
+<div class="properties" tal:condition="midcom_core/properties">
+    <h2>Properties</h2>
+    
+    <dl>
+        <dt tal:repeat="property midcom_core/properties">
+            <div class="property_signature" tal:attributes="id property/name">
+                <a class="type" tal:condition="property/type_url" tal:attributes="href property/type_url" tal:content="property/type">midgard_metadata</a>
+                <span class="type" tal:condition="not: property/type_url" tal:content="property/type">string</span> 
+                <span class="property" tal:content="property/name">title</span>
+            </div>
+            <dd>
+                <div class="link" tal:condition="property/link_url">
+                    Linked to <a tal:attributes="href property/link_url" tal:content="property/link">midgard_topic::id</a>
+                </div>
+                <div class="docblock" tal:content="structure property/documentation">Documentation</div>
+            </dd>
+        </dt>
+    </dl>
+</div>
+
+<div class="methods" tal:condition="midcom_core/abstract_methods">
+    <h2>Abstract methods</h2>
+    
+    <p>
+        These methods have to be overloaded in the subclass.
+    </p>
+    
+    <dl>
+        <dt tal:repeat="method midcom_core/abstract_methods">
+            <div class="signature" id="" tal:content="method/signature" tal:attributes="id method/name">void mgd_get_social_life()</div>
+            <dd tal:content="structure method/documentation">
+                Documentation
+            </dd>
+        </dt>
+    </dl>
+</div>
+
+<div class="methods" tal:condition="midcom_core/methods">
+    <h2>Methods</h2>
+    
+    <dl>
+        <dt tal:repeat="method midcom_core/methods">
+            <div class="signature" id="" tal:content="method/signature" tal:attributes="id method/name">void mgd_get_social_life()</div>
+            <dd tal:content="structure method/documentation">
+                Documentation
+            </dd>
+        </dt>
+    </dl>
+</div>
+
+<div class="methods" tal:condition="midcom_core/static_methods">
+    <h2>Static methods</h2>
+    
+    <dl>
+        <dt tal:repeat="method midcom_core/static_methods">
+            <div class="signature" id="" tal:content="method/signature" tal:attributes="id method/name">void mgd_get_social_life()</div>
+            <dd tal:content="structure method/documentation">
+                Documentation
+            </dd>
+        </dt>
+    </dl>
+</div>
+
+<div class="signals" tal:condition="midcom_core/signals">
+    <h2>Signals</h2>
+    
+    <ul>
+        <li tal:repeat="signal midcom_core/signals" tal:content="signal">signal-name</li>
+    </ul>
+</div>

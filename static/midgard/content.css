@@ -1,0 +1,68 @@
+#container,
+footer
+{
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 0.85em;
+  line-height: 1.4em;
+}
+
+#content
+{
+  display: block;
+  color: #444444;
+}
+
+#content h1
+{
+  font-size: 180%;
+  margin: 1em 0 0.4em;
+  color: #6B4F2E;
+}
+
+#content h2
+{
+  font-size: 150%;
+  margin: 1em 0 0.4em;
+  color: #6B4F2E;
+}
+
+#content h3
+{
+  font-size: 120%;
+  margin: 1em 0 0.4em;
+  color: #6B4F2E;
+}
+
+#content h4
+{
+  font-size: 110%;
+  margin: 1em 0 0.4em;
+}
+
+#content p
+{
+  margin: 0.2em 0 0.8em;
+}
+
+#content ul
+{
+  margin: 0.2em 0 0.8em;
+  padding-left: 2em;
+}
+
+#content a img
+{
+  border: none;
+}
+
+#content aside
+{
+    float: right;
+    width: 30%;
+    margin-left: 10px;
+}
+
+#content aside h2
+{
+    margin-top: 0px;
+}

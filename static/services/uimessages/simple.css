@@ -1,0 +1,42 @@
+ul.midcom_services_uimessages
+{
+    list-style: none;
+    padding: 0px !important;
+}
+ul.midcom_services_uimessages li.midcom_services_uimessages_message
+{
+    background-color: #eeeeec;
+    padding: 4px;
+    padding-left: 6px;
+    font-size: smaller;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 0px;
+    width: 60%;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+ul.midcom_services_uimessages li.msu_ok
+{
+    background-color: #4e9a06;
+    color: #ffffff;
+}
+
+ul.midcom_services_uimessages li.msu_warning
+{
+    background-color: #ce5c00;
+    color: #ffffff;
+}
+
+ul.midcom_services_uimessages li.msu_error
+{
+    background-color: #a40000;
+    color: #ffffff;
+}
+
+ul.midcom_services_uimessages li.midcom_services_uimessages_message .midcom_services_uimessages_message_title
+{
+    font-weight: bold;
+}

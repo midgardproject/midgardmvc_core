@@ -1,0 +1,15 @@
+<h1>Your Midgard database</h1>
+
+<mgd:include xmlns:mgd="http://www.midgard-project.org/midgard2/9.03">midcom-show-vendor</mgd:include>
+
+<h2>Installed types</h2>
+
+<ul>
+    <li tal:repeat="classname midcom_core/installed_types">
+        <span class="classname" tal:content="classname">midgard_article</span>
+    </li>
+</ul>
+
+<form method="post">
+    <input type="submit" name="update" value="Update database structures" />
+</form>

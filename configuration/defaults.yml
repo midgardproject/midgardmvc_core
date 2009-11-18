@@ -1,0 +1,188 @@
+services_authentication: midcom_core_services_authentication_sessionauth
+services_authentication_cookie_cookiepath: /
+services_authentication_authtype: Plaintext
+services_authorization: midcom_core_services_authorization_simple
+services_templating: midcom_core_services_templating_midgard
+services_templating_components:
+    - midcom_core
+services_templating_database_enabled: true
+services_configuration_database_enabled: true
+services_sessioning: midcom_core_services_sessioning_midgard
+services_uimessages: midcom_core_services_uimessages_simple
+services_i18n: midcom_core_services_i18n_gettext
+services_cache: midcom_core_services_cache_midgard
+services_cache_configuration:
+    expiry: 86400
+    strategy: private
+    enabled: false
+    module_template:
+        directory: __MIDGARDCACHE__/midgard
+log_file: __MIDGARDLOG__/__SERVERNAME__.__LOGNAME__.log
+log_level: warn
+enable_exception_trace: false
+enable_webdav: true
+enable_benchmark: false
+enable_included_list: false
+enable_jquery_framework: true
+jquery_load_from_google: true
+enable_js_midcom: false
+enable_uimessages: false
+enable_xsendfile: false
+enable_attachment_cache: false
+js_midcom_config: 'enable_watchers: true, debug: false'
+date_formats:
+    short: '%d/%m/%Y'
+    long: '%x %X'
+metadata_lock_timeout: 30
+schemadb: file:/midcom_core/configuration/schema.yml
+default_timezone: UTC
+default_language: en_US
+uimessages_configuration:
+    js:
+        enable_comet: 'false'
+output_filters:
+#    - net_protoblogr_filters: tidy
+routes:
+    page_read:
+        controller: midcom_core_controllers_page
+        action: read
+        route: /
+        allowed_methods:
+            - OPTIONS
+            - GET
+            - POST
+            - PROPFIND
+    page_variants:
+        controller: midcom_core_controllers_page
+        action: read
+        route: '/{$token:variant}'
+        allowed_methods:
+            - OPTIONS
+            - GET
+            - PUT
+            - PROPFIND
+    page_update:
+        controller: midcom_core_controllers_page
+        action: update
+        route: /mgd:update
+        content_entry_point: midcom-edit-page
+    page_create:
+        controller: midcom_core_controllers_page
+        action: create
+        route: /mgd:create
+        content_entry_point: midcom-edit-page
+    page_delete:
+        controller: midcom_core_controllers_page
+        action: delete
+        route: /mgd:delete
+        content_entry_point: midcom-delete-page
+#    page_configure:
+#        controller: midcom_core_controllers_configuration
+#        action: configure
+#        route: /mgd:configure
+#        content_entry_point: midcom-configure-page
+#    component_configure:
+#        controller: midcom_core_controllers_configuration
+#        action: configure
+#        route: '/mgd:configure/{$component}/'
+#        content_entry_point: midcom-configure-component
+    cache_invalidate:
+        controller: midcom_core_controllers_cache
+        action: invalidate
+        route: /mgd:cache/invalidate
+        root_only: true
+        content_entry_point: midcom-invalidate-cache
+    midcom_about:
+        controller: midcom_core_controllers_about
+        action: about
+        route: /mgd:about/
+        root_only: true
+        content_entry_point: midcom-show-about
+    midcom_about_database:
+        controller: midcom_core_controllers_about
+        action: database
+        route: /mgd:about/database
+        root_only: true
+        content_entry_point: midcom-show-database
+    midcom_documentation_show:
+        controller: midcom_core_controllers_documentation
+        action: show
+        route: '/mgd:documentation@'
+        root_only: true
+        content_entry_point: midcom-show-documentation_file
+    midcom_documentation_index:
+        controller: midcom_core_controllers_documentation
+        action: index
+        route: '/mgd:documentation/{$component}'
+        root_only: true
+        content_entry_point: midcom-show-documentation_index
+    midcom_documentation_routes:
+        controller: midcom_core_controllers_documentation
+        action: routes
+        route: '/mgd:documentation/{$component}/routes'
+        root_only: true
+        content_entry_point: midcom-show-documentation_routes
+    midcom_documentation_class:
+        controller: midcom_core_controllers_documentation
+        action: class
+        route: '/mgd:documentation/class/{$class}'
+        root_only: true
+        content_entry_point: midcom-show-documentation_class
+    midcom_object_actions_json:
+        controller: midcom_core_controllers_actions
+        action: object
+        route: '/mgd:actions/{$guid}.json'
+        root_only: true
+        template_entry_point: midcom-show-json
+        mimetype: application/json
+        allowed_methods:
+            - GET
+    midcom_category_actions_json:
+        controller: midcom_core_controllers_actions
+        action: category
+        route: '/mgd:actions/{$guid}/{$category}.json'
+        root_only: true
+        template_entry_point: midcom-show-json
+        mimetype: application/json
+        allowed_methods:
+            - GET
+    midcom_action_categories_json:
+        controller: midcom_core_controllers_actions
+        action: categories
+        route: '/mgd:actions/categories.json'
+        root_only: true
+        template_entry_point: midcom-show-json
+        mimetype: application/json
+        allowed_methods:
+            - GET
+    comet_messages:
+        controller: midcom_core_controllers_comet
+        action: messages
+        route: /mgd:comet/messages
+        content_entry_point: midcom-comet-messages
+    serveattachment:
+        controller: midcom_core_controllers_attachment
+        action: serve
+        route: '/mgd:serveattachment/{$guid}/'
+        root_only: true
+    fckeditor_connector:
+        controller: midcom_helper_datamanager_controllers_fckeditor
+        action: connector
+        route: /mgd:fckeditor/
+        allowed_methods:
+            - GET
+            - POST
+        root_only: true
+        template_entry_point: midcom-fckeditor
+        mimetype: text/xml
+    login:
+        controller: midcom_core_controllers_authentication
+        action: login
+        route: /mgd:login
+        root_only: true
+        template_entry_point: midcom-login-form
+    logout:
+        controller: midcom_core_controllers_authentication
+        action: logout
+        route: /mgd:logout
+        root_only: true

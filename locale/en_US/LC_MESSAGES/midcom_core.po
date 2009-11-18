@@ -1,0 +1,39 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "username"
+msgstr "Username"
+
+msgid "password"
+msgstr "Password"
+
+msgid "login"
+msgstr "Login"
+
+msgid "logout"
+msgstr "Log out"
+
+msgid "remember login"
+msgstr "Remember me"
+
+msgid "please enter your username and password"
+msgstr "Please enter your username and password"
+
+msgid "create"
+msgstr "Create"
+
+msgid "create folder"
+msgstr "Create folder"
+
+msgid "read"
+msgstr "Read"
+
+msgid "update"
+msgstr "Update"
+
+msgid "delete"
+msgstr "Delete"
+
+

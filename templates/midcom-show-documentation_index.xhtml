@@ -1,0 +1,15 @@
+<h1 tal:content="midcom_core/component">Component</h1>
+
+<ul metal:define-macro="midcom-show-documentation_index">
+    <li tal:repeat="file files/files">
+        <a href="#" tal:attributes="href file/path" tal:content="file/label">Filename</a>
+    </li>
+    <tal:block tal:repeat="folder files/folders">
+        <li tal:condition="folder/files">
+            <tal:block tal:content="folder/label">Foldername</tal:block>
+            <tal:block tal:define="files folder" metal:use-macro="midcom-show-documentation_index" />
+        </li>
+    </tal:block>
+</ul>
+
+<tal:block metal:use-macro="midcom-show-documentation_index" tal:define="files midcom_core/files" />

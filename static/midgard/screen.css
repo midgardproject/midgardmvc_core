@@ -1,0 +1,95 @@
+html,
+body
+{
+  margin: 0;
+  height: 100%;
+}
+
+body
+{
+  background-image: url('content-background.gif');
+  background-repeat: repeat-x;
+  background-position: top left;
+  padding: 0;
+}
+
+#container
+{
+  min-height: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+* html #container
+{
+  height: 100%;
+}
+
+header
+{
+  display: block;
+  height: 146px;
+  background-image: url('arc.gif');
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  overflow: visible;
+}
+
+header a img
+{
+  border-style: none;
+}
+
+#content
+{
+  max-width: 70em;
+  padding: 0 1em 0 41px;
+}
+
+#content-text
+{
+  padding-bottom: 70px;
+}
+
+body.org_routamc_gallery #content-text
+{
+  margin-right: 0;
+}
+
+footer
+{
+  display: block;
+  background-color: #6b4f2e;
+  height: 1.5em;
+  margin: -1.5em 0 0;
+  text-align: left;
+  clear: both;
+  padding-left: 41px;
+}
+
+#container a
+{
+  text-decoration: none;
+  color: #000088;
+}
+
+footer a
+{
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#container a:hover,
+#container a:visited:hover,
+footer a:hover,
+footer a:visited:hover
+{
+  text-decoration: underline;
+}
+
+footer,
+footer a
+{
+  color: #ffffff;
+}
+

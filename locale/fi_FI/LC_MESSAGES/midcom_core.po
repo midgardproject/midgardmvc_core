@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Henri Bergius <henri.bergius@iki.fi>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+
+msgid "username"
+msgstr "Käyttäjätunnus"
+
+msgid "password"
+msgstr "Salasana"
+
+msgid "login"
+msgstr "Kirjaudu"
+
+msgid "logout"
+msgstr "Kirjaudu ulos"
+
+msgid "remember login"
+msgstr "Muista minut"
+
+msgid "please enter your username and password"
+msgstr "Anna käyttäjätunnuksesi ja salasanasi"
+
+msgid "create"
+msgstr "Luo"
+
+msgid "create folder"
+msgstr "Luo kansio"
+
+msgid "read"
+msgstr "Lue"
+
+msgid "update"
+msgstr "Päivitä"
+
+msgid "delete"
+msgstr "Poista"
+

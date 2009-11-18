@@ -1,0 +1,25 @@
+default:
+    description: page
+    fields:
+        name:
+            title: url name
+            type: text
+            widget: text
+            write_privilege:
+                privilege: "midcom:urlname"
+        title:
+            type: text
+            widget: text
+            required: true
+        content:
+            title: content
+            type: text
+            type_config:
+                output_mode: html
+            widget: fckeditor
+        component:
+            title: component
+            type: component
+            widget: component
+            widget_config:
+                height: 1

@@ -1,0 +1,12 @@
+<?php
+if (isset($_MIDCOM->dispatcher->get['callback']))
+{
+    header('Content-type: text/javascript');
+    echo "{$_MIDCOM->dispatcher->get['callback']}(";
+}
+echo json_encode($_MIDCOM->context->get_item($_MIDCOM->context->component));
+if (isset($_MIDCOM->dispatcher->get['callback']))
+{
+    echo ");";
+}
+?>
