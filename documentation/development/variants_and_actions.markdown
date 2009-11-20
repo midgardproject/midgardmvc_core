@@ -51,7 +51,7 @@ Example of a `get_object_actions` method for a component interface class:
             'url' => $_MIDCOM->dispatcher->generate_url('page_edit', array('name' => $object->name), $object),
             'method' => 'GET',
             'label' => $_MIDCOM->i18n->get('key: edit', 'midcom_core'),
-            'icon' => 'midcom_core/stock_icons/16x16/edit.png',
+            'icon' => 'midcom_core/stock-icons/16x16/edit.png',
         );
 
         return $actions;
@@ -82,13 +82,13 @@ A JSON introspection file showing actions for a given GUID can be fetched from `
                 "url": "\/news\/8ececd75e921702fa33460ab794cca94\/mgd:update",
                 "method": "GET",
                 "label": "key: edit",
-                "icon": "midcom_core\/stock_icons\/16x16\/edit.png"
+                "icon": "midcom_core\/stock-icons\/16x16\/edit.png"
             },
             "delete": {
                 "url": "\/news\/8ececd75e921702fa33460ab794cca94\/mgd:delete",
                 "method": "GET",
                 "label": "key: edit",
-                "icon": "midcom_core\/stock_icons\/16x16\/trash.png"
+                "icon": "midcom_core\/stock-icons\/16x16\/trash.png"
             }
         }
     }

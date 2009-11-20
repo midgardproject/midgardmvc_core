@@ -28,35 +28,35 @@ class midcom_core extends midcom_core_component_baseclass
             'url' => $_MIDCOM->dispatcher->generate_url('page_update', array(), $object),
             'method' => 'GET',
             'label' => $_MIDCOM->i18n->get('update', 'midcom_core'),
-            'icon' => 'midcom_core/stock_icons/16x16/update.png',
+            'icon' => 'midcom_core/stock-icons/16x16/update.png',
         );
         $actions['delete'] = array
         (
             'url' => $_MIDCOM->dispatcher->generate_url('page_delete', array(), $object),
             'method' => 'GET',
             'label' => $_MIDCOM->i18n->get('delete', 'midcom_core'),
-            'icon' => 'midcom_core/stock_icons/16x16/delete.png',
+            'icon' => 'midcom_core/stock-icons/16x16/delete.png',
         );
         
         return $actions;
     }
 
-    public function get_system_actions(midgard_page $folder)
+    public function get_administer_actions(midgard_page $folder)
     {
         $actions = array();
         
-        static $root_page = null;
+        /*static $root_page = null;
         if (is_null($root_page))
         {
             $root_page = new midgard_page($_MIDCOM->context->root);
-        }
+        }*/
         
         $actions['logout'] = array
         (
-            'url' => $_MIDCOM->dispatcher->generate_url('logout', array(), $root_page),
+            'url' => $_MIDCOM->dispatcher->generate_url('logout', array()),
             'method' => 'GET',
             'label' => $_MIDCOM->i18n->get('logout', 'midcom_core'),
-            'icon' => 'midcom_core/stock_icons/16x16/exit.png',
+            'icon' => 'midcom_core/stock-icons/16x16/exit.png',
         );
         
         return $actions;
@@ -77,7 +77,7 @@ class midcom_core extends midcom_core_component_baseclass
             'url' => $_MIDCOM->dispatcher->generate_url('page_create', array()),
             'method' => 'GET',
             'label' => $_MIDCOM->i18n->get('create folder', 'midcom_core'),
-            'icon' => 'midcom_core/stock_icons/16x16/folder.png',
+            'icon' => 'midcom_core/stock-icons/16x16/folder.png',
         );
         
         return $actions;
