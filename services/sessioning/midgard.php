@@ -68,10 +68,12 @@ class midcom_core_services_sessioning_midgard
         }
         
         $started = true;
-        
         try
         {
-            session_start();
+            if (!headers_sent())
+            {
+                session_start();
+            }
         }
         catch (Exception $e)
         {

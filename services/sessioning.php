@@ -97,6 +97,11 @@ class midcom_core_services_sessioning
         
         // Load the preferred sessioning implementation
         $this->sessioning =& $_MIDCOM->sessioning;
+        
+        if (!$this->sessioning)
+        {
+            throw new Exception("Sessioning disabled");
+        }
     }
     
     /**
