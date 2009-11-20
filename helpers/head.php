@@ -319,7 +319,12 @@ class midcom_core_helpers_head
                 echo $js_call;
             }
         }
-        
+
+        foreach ($this->script_head as $js_call)
+        {
+            echo $js_call;
+        }
+
         foreach ($this->js_head as $js_call)
         {
             echo $js_call;

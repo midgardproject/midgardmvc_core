@@ -86,7 +86,7 @@ class midcom_core_midcom
         {
             throw new Exception("No implementation defined for service {$service}");
         }
-        
+
         $this->$service = new $service_implementation();
     }
     
