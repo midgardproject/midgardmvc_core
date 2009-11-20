@@ -749,12 +749,8 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
                 break;
             }
         }
-        if ($_core->configuration->get('root_page_id'))
-        {
-            // FIXME: Move to context
-            $root_id = $_core->configuration->get('root_page_id');
-        }
-        
+
+        $root_id = $_core->context->root->id;
         if ($context->page->id == $root_id)
         {
             // We're requesting prefix for the root page
