@@ -105,7 +105,15 @@ class midcom_core_midcom
             static $logger = null;
             if (!$logger)
             {
-                $logger = new midcom_core_helpers_log();
+                try
+                {
+                    $logger = new midcom_core_helpers_log();
+                }
+                catch (Exception $e)
+                {
+                    // Unable to instantiate logger
+                    return;
+                }
             }
             static $log_levels = array
             (

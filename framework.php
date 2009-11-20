@@ -39,7 +39,8 @@ if (   isset($_SERVER['REQUEST_URI'])
     exit(0);
 }
 
-if (isset($_SERVER['REQUEST_URI']))
+if (   isset($_SERVER['REQUEST_URI']) 
+    && function_exists('mgd_version'))
 {
     // Advertise the fact that this is a Midgard server
     header('X-Powered-By: Midgard/' . mgd_version());
