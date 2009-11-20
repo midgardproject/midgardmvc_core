@@ -53,7 +53,13 @@ class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispa
             }
         }
 
-        $current_page = $this->_root_page = new midgard_page($this->_page_guid);
+        $this->_root_page = new midgard_page($this->_page_guid);
+        if (!$this->_root_page->guid)
+        {
+            $this->_root_page = new midgard_page();
+            $this->_root_page->get_by_path('/midcom_root');
+        }
+        $current_page = $this->_root_page;
         $this->_pages[] = $this->_root_page;
         $no_more_pages = false;
 
