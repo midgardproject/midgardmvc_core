@@ -331,6 +331,17 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
             throw $e;
         }
 
+        if ($_core->firephp)
+        {
+            $_core->firephp->group("Route " . get_class($controller) . "::{$action_method}");
+
+            //FIXME: enable when #1489 is fixed
+            // $_core->firephp->dump('Returned', $data);
+            $_core->firephp->log($selected_route_configuration, 'With configuration');
+            $_core->firephp->log(array_keys($data), 'Returned keys');
+            $_core->firephp->groupEnd();
+        }
+
         $this->data_to_context($selected_route_configuration, $data);
     }
     

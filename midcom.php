@@ -33,6 +33,13 @@ class midcom_core_midcom
      */
     public $context;
     
+    /**
+     * Access to installed FirePHP logger
+     *
+     * @var FirePHP
+     */
+    public $firephp = null;
+    
     private $track_autoloaded_files = false;
     private $autoloaded_files = array();
     
@@ -61,6 +68,17 @@ class midcom_core_midcom
 
         // Load the head helper
         $this->head = new midcom_core_helpers_head($this->configuration);
+        
+        if ($this->configuration->development_mode)
+        {
+            // Load FirePHP logger
+            // TODO: separate setting
+            include('FirePHPCore/FirePHP.class.php');
+            if (class_exists('FirePHP'))
+            {
+                $this->firephp = FirePHP::getInstance(true);
+            }
+        }
     }
     
     /**
@@ -132,11 +150,30 @@ class midcom_core_midcom
             return;
         }
 
-        if ($loglevel === 'warn')
+        $firephp_loglevel = $loglevel;
+        // Handle mismatching loglevels
+        switch ($loglevel)
         {
-            $loglevel = 'warning';
+            case 'debug':
+            case 'message':
+                $firephp_loglevel = 'log';
+                break;
+            case 'warn':
+            case 'warning':
+                $loglevel = 'warning';  
+                $firephp_loglevel = 'warn';
+                break;
+            case 'error':
+            case 'critical':
+                $firephp_loglevel = 'error';
+                break;
         }
-        
+
+        if ($this->firephp)
+        {
+            $this->firephp->$firephp_loglevel("{$prefix}: {$message}");
+        }
+
         midgard_error::$loglevel("{$prefix}: {$message}");
     }
     

@@ -39,6 +39,10 @@ class midcom_core_exceptionhandler
             $message .= " ({$midcom->context->uri})";
         }
         $midcom->log($message_type, $message, 'warn');
+        if ($midcom->firephp)
+        {
+            $midcom->firephp->error($exception);
+        }
 
         if (headers_sent())
         {

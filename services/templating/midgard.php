@@ -232,8 +232,13 @@ class midcom_core_services_templating_midgard implements midcom_core_services_te
             if (   $element_content
                 && !in_array($element, $this->elements_shown))
             {
+                if ($this->midcom->firephp)
+                {
+                    $this->midcom->firephp->log("Included template '{$element}' from {$type} {$identifier}");
+                }
+
                 $this->elements_shown[] = $element;
-                
+
                 $this->stack_elements[$stack][$element] = $element_content;
                 
                 // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
@@ -404,7 +409,8 @@ class midcom_core_services_templating_midgard implements midcom_core_services_te
         }
 
         // Check if we have the element in cache already
-        if ($this->midcom->cache->template->check($this->get_cache_identifier()))
+        if (   !$this->midcom->configuration->development_mode
+            && $this->midcom->cache->template->check($this->get_cache_identifier()))
         {
             return;
         }
