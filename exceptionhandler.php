@@ -33,11 +33,6 @@ class midcom_core_exceptionhandler
         $message = str_replace("\n", ' ', $message);
 
         $midcom = midcom_core_midcom::get_instance();
-        if (isset($midcom->context->uri))
-        {
-            $uri = "{$midcom->dispatcher->request_method} {$midcom->context->uri}";
-            $message .= " ({$midcom->context->uri})";
-        }
         $midcom->log($message_type, $message, 'warn');
         if ($midcom->firephp)
         {
