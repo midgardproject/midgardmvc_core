@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-include MIDCOM_ROOT . "/midcom_core/services/cache.php";
+include MIDGARDMVC_ROOT . "/midcom_core/services/cache.php";
 
 /**
  * memcached cache backend.

@@ -321,7 +321,7 @@ class midcom_core_services_templating_midgard implements midcom_core_services_te
         {
             foreach ($this->midcom->configuration->services_templating_components as $templating_component)
             {
-                $this->midcom->templating->append_directory(MIDCOM_ROOT . "/{$templating_component}/templates");
+                $this->midcom->templating->append_directory(MIDGARDMVC_ROOT . "/{$templating_component}/templates");
             }
         }
 

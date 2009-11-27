@@ -154,7 +154,7 @@ abstract class midcom_core_services_cache_base
             return;
         }
         
-        $module_file = MIDCOM_ROOT . "/midcom_core/services/cache/module/{$module}.php";
+        $module_file = MIDGARDMVC_ROOT . "/midcom_core/services/cache/module/{$module}.php";
         if (!file_exists($module_file))
         {
             throw new Exception("Cache module {$module} not installed");

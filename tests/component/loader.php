@@ -56,7 +56,7 @@ class midcom_core_tests_component_loader extends midcom_tests_testcase
     
     public function test_component_to_filepath()
     {
-        $filepath_correct = MIDCOM_ROOT . '/' . 'midcom_core';
+        $filepath_correct = MIDGARDMVC_ROOT . '/' . 'midcom_core';
         $filepath_loader = $this->loader->component_to_filepath('midcom_core');
         $this->assertEquals($filepath_loader, $filepath_correct);
     }

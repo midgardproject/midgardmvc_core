@@ -27,7 +27,7 @@ class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
     public function __construct()
     {
         // Adding MidCOM core messages to the translation domains
-        bindtextdomain('midcom_core', MIDCOM_ROOT . '/midcom_core/locale/');
+        bindtextdomain('midcom_core', MIDGARDMVC_ROOT . '/midcom_core/locale/');
         
         try 
         {
@@ -40,7 +40,7 @@ class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
             echo $e;
         }
         
-        $path = MIDCOM_ROOT . "/midcom_core/locale/";
+        $path = MIDGARDMVC_ROOT . "/midcom_core/locale/";
         $this->tr['midcom_core'] = new PHPTAL_GetTextTranslator();
         $this->tr['midcom_core']->addDomain('midcom_core', $path);
     }
@@ -84,7 +84,7 @@ class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
             echo ($e);
         }
         // register gettext domain to use
-        $path = MIDCOM_ROOT . "/{$component_name}/locale/";
+        $path = MIDGARDMVC_ROOT . "/{$component_name}/locale/";
         $this->tr[$component_name]->addDomain($component_name, $path);
 
         // specify current domain

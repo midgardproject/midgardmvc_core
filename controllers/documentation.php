@@ -84,7 +84,7 @@ class midcom_core_controllers_documentation
         $_MIDCOM->authorization->require_user();
         $this->prepare_component($args['component'], $this->data);
 
-        $this->data['files'] = $this->list_directory(MIDCOM_ROOT . "/{$this->data['component']}/documentation");
+        $this->data['files'] = $this->list_directory(MIDGARDMVC_ROOT . "/{$this->data['component']}/documentation");
 
         $configuration = new midcom_core_services_configuration_yaml($this->data['component']);
         $this->data['routes'] = $configuration->get('routes');
@@ -102,7 +102,7 @@ class midcom_core_controllers_documentation
     {
         $_MIDCOM->authorization->require_user();
         $this->prepare_component($args['variable_arguments'][0], $this->data);
-        $path = MIDCOM_ROOT . "/{$this->data['component']}/documentation";
+        $path = MIDGARDMVC_ROOT . "/{$this->data['component']}/documentation";
         foreach ($args['variable_arguments'] as $key => $argument)
         {
             if ($key == 0)

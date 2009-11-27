@@ -164,7 +164,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
         $this->globals = array();
         foreach ($this->components as $component)
         {
-            $filename = MIDCOM_ROOT . "/{$component}/configuration/defaults.yml";
+            $filename = MIDGARDMVC_ROOT . "/{$component}/configuration/defaults.yml";
             $components = $this->load_file($filename);
             if (empty($this->globals))
             {

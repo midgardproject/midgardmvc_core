@@ -128,7 +128,7 @@ class midcom_core_component_loader
         {
             throw new OutOfRangeException("Component {$component} not installed.");
         }
-        return MIDCOM_ROOT . '/' . $component;// . strtr($component, '_', '/');
+        return MIDGARDMVC_ROOT . '/' . $component;// . strtr($component, '_', '/');
     }
 
     /**
@@ -265,8 +265,8 @@ class midcom_core_component_loader
         {
             // Load manifests and cache them
             $manifest_files = array();
-            $midcom_root = dir(MIDCOM_ROOT);
-            while (false !== ($component = $midcom_root->read())) 
+            $MIDGARDMVC_ROOT = dir(MIDGARDMVC_ROOT);
+            while (false !== ($component = $MIDGARDMVC_ROOT->read())) 
             {
                 if (   substr($component, 0, 1) == '.'
                     || $component == 'scaffold'
@@ -276,7 +276,7 @@ class midcom_core_component_loader
                 {
                     continue;
                 }
-                $component_path = MIDCOM_ROOT . "/{$component}";
+                $component_path = MIDGARDMVC_ROOT . "/{$component}";
                 if (!file_exists("{$component_path}/manifest.yml"))
                 {
                     continue;
@@ -284,10 +284,10 @@ class midcom_core_component_loader
                 
                 $this->load_manifest_file("{$component_path}/manifest.yml");
             }
-            $midcom_root->close();
+            $MIDGARDMVC_ROOT->close();
             
             /*
-            exec('find ' . escapeshellarg(MIDCOM_ROOT) . ' -follow -type f -name ' . escapeshellarg('manifest.yml'), $manifest_files);
+            exec('find ' . escapeshellarg(MIDGARDMVC_ROOT) . ' -follow -type f -name ' . escapeshellarg('manifest.yml'), $manifest_files);
             foreach ($manifest_files as $manifest)
             {
                 if (strpos($manifest, 'scaffold') !== false)

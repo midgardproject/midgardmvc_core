@@ -44,7 +44,7 @@ class midcom_core_helpers_snippet
      * or in the database and returns its content or code-field, respectively.
      *
      * Prefix the snippet Path with 'file:' for retrieval of a file relative to
-     * MIDCOM_ROOT; omit it to get the code field of a Snippet.
+     * MIDGARDMVC_ROOT; omit it to get the code field of a Snippet.
      *
      * Any error (files not found) will raise a OutOfBoundsException. If you want a more
      * graceful behavior, look for get_content_graceful
@@ -56,7 +56,7 @@ class midcom_core_helpers_snippet
     {        
         if (substr($path, 0, 5) == 'file:')
         {
-            $filename = MIDCOM_ROOT . substr($path, 5);
+            $filename = MIDGARDMVC_ROOT . substr($path, 5);
 
             if (! file_exists($filename))
             {
@@ -87,7 +87,7 @@ class midcom_core_helpers_snippet
      * or in the database and returns its content or code-field, respectively.
      *
      * Prefix the snippet Path with 'file:' for retrieval of a file relative to
-     * MIDCOM_ROOT; omit it to get the code field of a Snippet.
+     * MIDGARDMVC_ROOT; omit it to get the code field of a Snippet.
      *
      * @param string $path    The URL to the snippet.
      * @return string        The content of the snippet/file.
@@ -96,7 +96,7 @@ class midcom_core_helpers_snippet
     {
         if (substr($path, 0, 5) == 'file:')
         {
-            $filename = MIDCOM_ROOT . substr($path, 5);
+            $filename = MIDGARDMVC_ROOT . substr($path, 5);
             if (! file_exists($filename))
             {
                 return '';

@@ -93,7 +93,7 @@ class midcom_core_midcom
             return;
         }
         
-        $interface_file = MIDCOM_ROOT . "/midcom_core/services/{$service}.php";
+        $interface_file = MIDGARDMVC_ROOT . "/midcom_core/services/{$service}.php";
         if (!file_exists($interface_file))
         {
             throw new InvalidArgumentException("Service {$service} not installed");
@@ -216,7 +216,7 @@ class midcom_core_midcom
             }
  
             $path_under_component = str_replace('_', '/', substr($class_name, $component_length));
-            $path = MIDCOM_ROOT . "/{$component}{$path_under_component}.php";
+            $path = MIDGARDMVC_ROOT . "/{$component}{$path_under_component}.php";
             if (!file_exists($path))
             {
                 return;
@@ -304,7 +304,7 @@ class midcom_core_midcom
         {
             foreach ($this->configuration->services_templating_components as $templating_component)
             {
-                self::$instance->templating->append_directory(MIDCOM_ROOT . "/{$templating_component}/templates");
+                self::$instance->templating->append_directory(MIDGARDMVC_ROOT . "/{$templating_component}/templates");
             }
         }
 

@@ -7,9 +7,9 @@
  */
 error_reporting(E_ALL);
 
-if (!defined('MIDCOM_ROOT'))
+if (!defined('MIDGARDMVC_ROOT'))
 {
-    define('MIDCOM_ROOT', realpath(dirname(__FILE__) . '/../'));
+    define('MIDGARDMVC_ROOT', realpath(dirname(__FILE__) . '/../'));
 }
 
 if (!defined('MIDCOM_STATIC_URL'))
@@ -47,8 +47,8 @@ if (   isset($_SERVER['REQUEST_URI'])
 }
 
 // Load the exception handler
-require(MIDCOM_ROOT . '/midcom_core/exceptionhandler.php');
+require(MIDGARDMVC_ROOT . '/midcom_core/exceptionhandler.php');
 
 // Start up MidCOM
-require(MIDCOM_ROOT . '/midcom_core/midcom.php');
+require(MIDGARDMVC_ROOT . '/midcom_core/midcom.php');
 ?>
