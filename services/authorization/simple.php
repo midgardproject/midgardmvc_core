@@ -123,8 +123,7 @@ class midcom_core_services_authorization_simple implements midcom_core_services_
     {
         $this->require_user();
         
-        if (   !$_MIDGARD['admin']
-            && !$_MIDGARD['root'])
+        if (!$this->_core->authentication->get_user()->is_admin())
         {
             throw new midcom_exception_unauthorized("Administrative privileges required");   
         }
