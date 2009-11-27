@@ -382,7 +382,7 @@ class midcom_core_helpers_head
         {
             $url = $_SERVER['REQUEST_URI'];
         }
-        $_MIDCOM->uimessages->store();
+        midcom_core_midcom::get_instance()->uimessages->store();
         header("Location: $url");
         exit(0);
     }
