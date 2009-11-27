@@ -96,7 +96,7 @@ class midcom_core_services_cache_module_template
         // Associate the tags with the template ID
         foreach ($tags as $tag)
         {
-            $identifiers = $_MIDCOM->cache->get('template', $tag);
+            $identifiers = midcom_core_midcom::get_instance()->cache->get('template', $tag);
             if (!is_array($identifiers))
             {
                 $identifiers = array();
@@ -107,7 +107,7 @@ class midcom_core_services_cache_module_template
             }
             $identifiers[] = $identifier;
 
-            $_MIDCOM->cache->put('template', $tag, $identifiers);
+            midcom_core_midcom::get_instance()->cache->put('template', $tag, $identifiers);
         }
     }
 
@@ -119,7 +119,7 @@ class midcom_core_services_cache_module_template
         $invalidate = array();
         foreach ($tags as $tag)
         {
-            $identifiers = $_MIDCOM->cache->get('template', $tag);
+            $identifiers = midcom_core_midcom::get_instance()->cache->get('template', $tag);
             if ($identifiers)
             {
                 foreach ($identifiers as $identifier)
@@ -169,7 +169,7 @@ class midcom_core_services_cache_module_template
         $directory->close();
         
         // Delete all tag/template mappings
-        $_MIDCOM->cache->delete_all('template');
+        midcom_core_midcom::get_instance()->cache->delete_all('template');
     }
 }
 ?>

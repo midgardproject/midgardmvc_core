@@ -30,7 +30,7 @@ class midcom_core_services_templating_midgard implements midcom_core_services_te
         $this->midcom = midcom_core_midcom::get_instance();
     }
 
-    private function get_cache_identifier()
+    public function get_cache_identifier()
     {
         if (!isset($this->midcom->context->host))
         {

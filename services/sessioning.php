@@ -60,6 +60,8 @@ class midcom_core_services_sessioning
      * @access private
      */
     private $domain;
+    
+    private $core;
 
     /**
      * Constructs a session object.
@@ -81,14 +83,15 @@ class midcom_core_services_sessioning
      */
     public function __construct($context = null)
     {
+        $this->core = midcom_core_midcom::get_instance();
         if (is_null($context))
         {
-            $this->domain = $_MIDCOM->context->get_item('component');
+            $this->domain = $this->core->context->get_item('component');
         }            
         else if (   is_numeric($context)
                  || is_int($context))
         {
-            $this->domain = $_MIDCOM->context->get_item('component', $context);
+            $this->domain = $this->core->context->get_item('component', $context);
         }
         else
         {
@@ -96,7 +99,7 @@ class midcom_core_services_sessioning
         }
         
         // Load the preferred sessioning implementation
-        $this->sessioning =& $_MIDCOM->sessioning;
+        $this->sessioning =& $this->core->sessioning;
         
         if (!$this->sessioning)
         {
