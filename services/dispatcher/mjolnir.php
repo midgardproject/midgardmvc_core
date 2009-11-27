@@ -17,7 +17,7 @@ class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispa
 {
     private $_page_guid = '4a2f5298c09611de9dcf75343667cef6cef6'; // FIXME: set from config
     private $_root_page = null;
-    private $_prefix = '';
+    private $_prefix = '/';
     private $_pages = array();
 
     /**
@@ -83,7 +83,7 @@ class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispa
                 }
 
                 $this->_pages[] = $_child;
-                $this->_prefix .= "/{$argument}";
+                //$this->_prefix .= "/{$argument}";
                 $current_page = $_child;
             }
             else
@@ -112,7 +112,8 @@ class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispa
      */
     public function populate_environment_data()
     {
-        $prefix = "{$this->_prefix}/";
+        $prefix = $this->_prefix;
+        $uri = "{$this->_prefix}/";
 
         $_core = midcom_core_midcom::get_instance();
 
@@ -133,9 +134,11 @@ class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispa
         }
 
         $_core->context->component = $current_page->component;
-        $_core->context->uri = '/' . implode('/', $this->argv);
+        $_core->context->uri = $prefix . implode('/', $this->argv) . '/';
+        $_core->context->self = $prefix;
         $_core->context->page = $current_page;
-        $_core->context->prefix = $prefix;
+        $_core->context->prefix = $this->_prefix;
+        $_core->context->argv = $this->argv;
         $_core->context->request_method = $this->request_method;
 
         $_core->context->webdav_request = false;
