@@ -1,12 +1,18 @@
 <?php
-if (isset($_MIDCOM->dispatcher->get['callback']))
+function midcom_core_templates_midcom_show_json()
 {
-    header('Content-type: text/javascript');
-    echo "{$_MIDCOM->dispatcher->get['callback']}(";
+    $core = midcom_core_midcom::get_instance();
+
+    if (isset($core->dispatcher->get['callback']))
+    {
+        header('Content-type: text/javascript');
+        echo "{$core->dispatcher->get['callback']}(";
+    }
+    echo json_encode($core->context->get_item($core->context->component));
+    if (isset($core->dispatcher->get['callback']))
+    {
+        echo ");";
+    }
 }
-echo json_encode($_MIDCOM->context->get_item($_MIDCOM->context->component));
-if (isset($_MIDCOM->dispatcher->get['callback']))
-{
-    echo ");";
-}
-?>
+
+midcom_core_templates_midcom_show_json();
