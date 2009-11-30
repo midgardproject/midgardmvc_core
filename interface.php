@@ -393,7 +393,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     public function get_object_actions(midgard_page &$object, $variant = null)
     {
         $actions = array();
-        if (!$_MIDCOM->authorization->can_do('midgard:update', $object))
+        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
         {
             // User is not allowed to edit so we have no actions available
             return $actions;
@@ -402,16 +402,16 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         // This is the general action available for a page: forms-based editing
         $actions['update'] = array
         (
-            'url' => $_MIDCOM->dispatcher->generate_url('page_update', array(), $object),
+            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_update', array(), $object),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('update', 'midgardmvc_core'),
+            'label' => midgardmvc_core::get_instance()->i18n->get('update', 'midgardmvc_core'),
             'icon' => 'midgardmvc_core/stock-icons/16x16/update.png',
         );
         $actions['delete'] = array
         (
-            'url' => $_MIDCOM->dispatcher->generate_url('page_delete', array(), $object),
+            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_delete', array(), $object),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('delete', 'midgardmvc_core'),
+            'label' => midgardmvc_core::get_instance()->i18n->get('delete', 'midgardmvc_core'),
             'icon' => 'midgardmvc_core/stock-icons/16x16/delete.png',
         );
         
@@ -425,14 +425,14 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         /*static $root_page = null;
         if (is_null($root_page))
         {
-            $root_page = new midgard_page($_MIDCOM->context->root);
+            $root_page = new midgard_page(midgardmvc_core::get_instance()->context->root);
         }*/
         
         $actions['logout'] = array
         (
-            'url' => $_MIDCOM->dispatcher->generate_url('logout', array()),
+            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('logout', array()),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('logout', 'midgardmvc_core'),
+            'label' => midgardmvc_core::get_instance()->i18n->get('logout', 'midgardmvc_core'),
             'icon' => 'midgardmvc_core/stock-icons/16x16/exit.png',
         );
         
@@ -443,7 +443,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         $actions = array();
 
-        if (!$_MIDCOM->authorization->can_do('midgard:create', $folder))
+        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:create', $folder))
         {
             // User is not allowed to create subfolders so we have no actions available
             return $actions;
@@ -451,9 +451,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         
         $actions['page_create'] = array
         (
-            'url' => $_MIDCOM->dispatcher->generate_url('page_create', array()),
+            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_create', array()),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('create folder', 'midgardmvc_core'),
+            'label' => midgardmvc_core::get_instance()->i18n->get('create folder', 'midgardmvc_core'),
             'icon' => 'midgardmvc_core/stock-icons/16x16/folder.png',
         );
         

@@ -53,11 +53,11 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
     {
         $this->set_configuration($configuration);
         
-        $_MIDCOM->head->enable_jsmidcom();
-        $_MIDCOM->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/services/uimessages/midgard.js");
-        $_MIDCOM->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery.dimensions-1.1.2.js");
+        midgardmvc_core::get_instance()->head->enable_jsmidcom();
+        midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/services/uimessages/midgard.js");
+        midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery.dimensions-1.1.2.js");
         
-        $_MIDCOM->head->add_link_head(
+        midgardmvc_core::get_instance()->head->add_link_head(
             array
             (
                 'rel'   => 'stylesheet',
@@ -66,7 +66,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
                 'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/services/uimessages/midgard.css',
             )
         );
-        $_MIDCOM->head->add_link_head(
+        midgardmvc_core::get_instance()->head->add_link_head(
             array
             (
                 'condition' => 'eq IE',

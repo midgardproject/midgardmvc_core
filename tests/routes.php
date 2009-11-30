@@ -24,13 +24,13 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
         }
         
         // Go through the installed components
-        foreach ($_MIDCOM->componentloader->manifests as $component_name => $manifest)
+        foreach (midgardmvc_core::get_instance()->componentloader->manifests as $component_name => $manifest)
         {
             // Enter new context
-            $_MIDCOM->context->create();
+            midgardmvc_core::get_instance()->context->create();
             try
             {
-                $_MIDCOM->dispatcher->initialize($component_name);
+                midgardmvc_core::get_instance()->dispatcher->initialize($component_name);
             }
             catch (Exception $e)
             {
@@ -38,28 +38,28 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
                 {
                     echo "Skipping {$component_name}: component failed to load\n";
                 }
-                $_MIDCOM->context->delete();
+                midgardmvc_core::get_instance()->context->delete();
                 continue;
             }
             
-            if (!$_MIDCOM->context->component_instance)
+            if (!midgardmvc_core::get_instance()->context->component_instance)
             {
                 if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "Skipping {$component_name}: component failed to load\n";
                 }
-                $_MIDCOM->context->delete();
+                midgardmvc_core::get_instance()->context->delete();
                 continue;
             }
 
-            if (!$_MIDCOM->context->component_instance->configuration->exists('routes'))
+            if (!midgardmvc_core::get_instance()->context->component_instance->configuration->exists('routes'))
             {
                 // No routes in this component, skip
                 if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "Skipping {$component_name}: no routes\n";
                 }
-                $_MIDCOM->context->delete();
+                midgardmvc_core::get_instance()->context->delete();
                 continue;
             }
 
@@ -68,7 +68,7 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
                 echo "Running {$component_name}...\n";
             }
 
-            $routes = $_MIDCOM->dispatcher->get_routes();
+            $routes = midgardmvc_core::get_instance()->dispatcher->get_routes();
             
             foreach ($routes as $route_id => $route_configuration)
             {
@@ -82,7 +82,7 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
                     $route_string = str_replace("{{$match}}", "[{$match}: {$args[$match]}]", $route_string);
                 }
 
-                $_MIDCOM->dispatcher->set_route($route_id, $args);
+                midgardmvc_core::get_instance()->dispatcher->set_route($route_id, $args);
                 if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "    {$route_id}: {$route_string}\n";
@@ -90,7 +90,7 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
 
                 try
                 {
-                    $_MIDCOM->dispatcher->dispatch();
+                    midgardmvc_core::get_instance()->dispatcher->dispatch();
                 }
                 catch (Exception $e)
                 {
@@ -105,7 +105,7 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
                 {
                     if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                     {
-                        echo "        returned keys: " . implode(', ', array_keys($_MIDCOM->context->$component_name)) . "\n";
+                        echo "        returned keys: " . implode(', ', array_keys(midgardmvc_core::get_instance()->context->$component_name)) . "\n";
                     }
                 }
                 catch (Exception $e)
@@ -117,7 +117,7 @@ class midgardmvc_core_tests_routes extends midcom_tests_testcase
                 }
             }
             // Delete the context
-            $_MIDCOM->context->delete();
+            midgardmvc_core::get_instance()->context->delete();
 
             if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
             {

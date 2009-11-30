@@ -220,7 +220,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
             $this->object->delete();
             // FIXME: We can remove this once signals work again
             midgardmvc_core::get_instance()->cache->invalidate($this->object->guid);
-            midgardmvc_core::get_instance()->head->relocate("{$_MIDCOM->context->prefix}/");
+            midgardmvc_core::get_instance()->head->relocate("{midgardmvc_core::get_instance()->context->prefix}/");
             // TODO: This needs a better redirect 
         }
     }

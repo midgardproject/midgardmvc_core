@@ -50,13 +50,13 @@ class midgardmvc_core_helpers_variants
             throw new midgardmvc_exception_notfound("Neutron Protocol introspection available only as XML");
         }
 
-        $_MIDCOM->context->mimetype = 'application/neutron+xml';
-        $_MIDCOM->context->template_entry_point = 'midcom-show-neutron_introspection';
-        header('Content-Type: ' . $_MIDCOM->context->mimetype);
+        midgardmvc_core::get_instance()->context->mimetype = 'application/neutron+xml';
+        midgardmvc_core::get_instance()->context->template_entry_point = 'midcom-show-neutron_introspection';
+        header('Content-Type: ' . midgardmvc_core::get_instance()->context->mimetype);
         
         $xml = simplexml_load_string('<introspection xmlns="http://www.wyona.org/neutron/1.0"></introspection>');
         
-        if ($_MIDCOM->authorization->can_do('midgard:update', $this->object))
+        if (midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->object))
         {
             $content_variant = array
             (
@@ -64,7 +64,7 @@ class midgardmvc_core_helpers_variants
                 'variant' => 'content',
                 'type' => 'html',
             );
-            $variant_url = $_MIDCOM->dispatcher->generate_url('page_variants', array('variant' => $content_variant));
+            $variant_url = midgardmvc_core::get_instance()->dispatcher->generate_url('page_variants', array('variant' => $content_variant));
             $edit = $xml->addChild('edit');
             $edit->addAttribute('mime-type', 'text/html');
             $open = $edit->addChild('open');
@@ -142,17 +142,17 @@ class midgardmvc_core_helpers_variants
         switch ($variant['type'])
         {
             case 'html':
-                $_MIDCOM->context->mimetype = 'text/html';
+                midgardmvc_core::get_instance()->context->mimetype = 'text/html';
                 break;
             case 'raw':
             case 'csv':
-                $_MIDCOM->context->mimetype = 'text/plain';
+                midgardmvc_core::get_instance()->context->mimetype = 'text/plain';
                 break;
             case 'xml':
-                $_MIDCOM->context->mimetype = 'text/xml';
+                midgardmvc_core::get_instance()->context->mimetype = 'text/xml';
                 break;
         }
-        header('Content-Type: ' . $_MIDCOM->context->mimetype);
+        header('Content-Type: ' . midgardmvc_core::get_instance()->context->mimetype);
 
         return $this->datamanager->types->$variant_field->$type_field;
     }

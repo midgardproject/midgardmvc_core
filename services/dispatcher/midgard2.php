@@ -86,30 +86,30 @@ class midgardmvc_core_services_dispatcher_midgard2 extends midgardmvc_core_servi
             $current_page = $page;
         }
 
-        $_MIDCOM->context->component = $current_page->component;
-        $_MIDCOM->context->uri = '/' . implode('/', $this->argv);
-        $_MIDCOM->context->page = $current_page;
-        $_MIDCOM->context->prefix = $prefix;
-        $_MIDCOM->context->host = $_host;
-        $_MIDCOM->context->root = $_host->root;
-        $_MIDCOM->context->request_method = $this->request_method;
+        midgardmvc_core::get_instance()->context->component = $current_page->component;
+        midgardmvc_core::get_instance()->context->uri = '/' . implode('/', $this->argv);
+        midgardmvc_core::get_instance()->context->page = $current_page;
+        midgardmvc_core::get_instance()->context->prefix = $prefix;
+        midgardmvc_core::get_instance()->context->host = $_host;
+        midgardmvc_core::get_instance()->context->root = $_host->root;
+        midgardmvc_core::get_instance()->context->request_method = $this->request_method;
 
-        $_MIDCOM->context->webdav_request = false;
-        if (   $_MIDCOM->configuration->get('enable_webdav')
+        midgardmvc_core::get_instance()->context->webdav_request = false;
+        if (   midgardmvc_core::get_instance()->configuration->get('enable_webdav')
             && (   $this->request_method != 'GET'
                 && $this->request_method != 'POST')
             )
         {
             // Serve this request with the full HTTP_WebDAV_Server
-            $_MIDCOM->context->webdav_request = true;
+            midgardmvc_core::get_instance()->context->webdav_request = true;
         }
         
         // Append styles from context
-        $_MIDCOM->context->style_id = 0;
+        midgardmvc_core::get_instance()->context->style_id = 0;
         $_style = $this->request_config->get_style();
         if ($_style)
         {
-            $_MIDCOM->context->style_id = $_style->id;
+            midgardmvc_core::get_instance()->context->style_id = $_style->id;
         }
     }
 

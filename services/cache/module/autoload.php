@@ -47,7 +47,7 @@ class midgardmvc_core_services_cache_module_autoload
      */
     public function invalidate_all()
     {
-        $_MIDCOM->cache->delete_all('autoload');
+        midgardmvc_core::get_instance()->cache->delete_all('autoload');
     }
 }
 ?>

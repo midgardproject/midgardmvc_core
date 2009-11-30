@@ -174,7 +174,7 @@ class midgardmvc_core_services_sessioning_midgard
         
         if (! $no_cache)
         {
-            // $_MIDCOM->cache->content->no_cache();
+            // midgardmvc_core::get_instance()->cache->content->no_cache();
             $no_cache = true;
         }
         
@@ -232,7 +232,7 @@ class midgardmvc_core_services_sessioning_midgard
         static $no_cache = false;
         if (! $no_cache)
         {
-            // $_MIDCOM->cache->content->no_cache();
+            // midgardmvc_core::get_instance()->cache->content->no_cache();
             $no_cache = true;
         }
         

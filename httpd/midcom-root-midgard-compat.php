@@ -16,7 +16,7 @@ else
 {
     // Note: your MidCOM base directory has to be in PHP include_path
     require('midgardmvc_core/framework.php');
-    $_MIDCOM = midgardmvc_core::get_instance('midgard');
+    $midgardmvc = midgardmvc_core::get_instance('midgard');
 }
 
 // code- elements used for things run before output
@@ -27,16 +27,16 @@ if (mgd_is_element_loaded('code-init'))
 {
     ?><(code-init)><?php
 }
-elseif (isset($_MIDCOM))
+elseif (isset($midgardmvc))
 {
     // Call the controller if available
-    $_MIDCOM->process();
+    midgardmvc_core::get_instance()->process();
 }
 
-if (isset($_MIDCOM))
+if (isset($midgardmvc))
 {
     // Serve the request
-    $_MIDCOM->serve();
+    midgardmvc_core::get_instance()->serve();
 }
 else
 {

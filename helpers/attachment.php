@@ -69,7 +69,7 @@ class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
     
     private function on_creating(midgard_attachment $attachment, $params)
     {
-        if ($_MIDCOM->authorization->can_do('midgard:read', $attachment, null))
+        if (midgardmvc_core::get_instance()->authorization->can_do('midgard:read', $attachment, null))
         {
             midgardmvc_core_helpers_attachment::add_to_cache($attachment);
         }
@@ -90,10 +90,10 @@ class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
     public static function get_url(midgard_attachment &$attachment)
     {
         // Cheking if cache is enabled and attachment is readable for anonymous users
-        if ($_MIDCOM->configuration->enable_attachment_cache
-            && $_MIDCOM->authorization->can_do('midgard:read', $attachment, null))
+        if (midgardmvc_core::get_instance()->configuration->enable_attachment_cache
+            && midgardmvc_core::get_instance()->authorization->can_do('midgard:read', $attachment, null))
         {
-            return $_MIDCOM->configuration->attachment_cache_url . $attachment->location;
+            return midgardmvc_core::get_instance()->configuration->attachment_cache_url . $attachment->location;
         }
         else // if cache is not enabled or anonymous read is not allowed serving attachment through MidCOM
         {
@@ -113,9 +113,9 @@ class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
         
         // FIXME: Attachment directory creating should be done more elegantly
         $attachment_dir = explode('/', $attachment->location);
-        $attachment_dir = $_MIDCOM->configuration->attachment_cache_directory . "{$attachment_dir[0]}/{$attachment_dir[1]}/";
+        $attachment_dir = midgardmvc_core::get_instance()->configuration->attachment_cache_directory . "{$attachment_dir[0]}/{$attachment_dir[1]}/";
         
-        if (is_file($_MIDCOM->configuration->attachment_cache_directory.$attachment->location)) // checking if the link already exists
+        if (is_file(midgardmvc_core::get_instance()->configuration->attachment_cache_directory.$attachment->location)) // checking if the link already exists
         {
             return false;
         }
@@ -125,7 +125,7 @@ class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
             mkdir($attachment_dir, 0700, true);
         }
  
-        return symlink ($blob->get_path(), $_MIDCOM->configuration->attachment_cache_directory.$attachment->location);
+        return symlink ($blob->get_path(), midgardmvc_core::get_instance()->configuration->attachment_cache_directory.$attachment->location);
     }
     
     /**
@@ -137,7 +137,7 @@ class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
       */
     public static function remove_from_cache(midgard_attachment &$attachment)
     {
-        $filepath = $_MIDCOM->configuration->attachment_cache_directory.$attachment->location;     
+        $filepath = midgardmvc_core::get_instance()->configuration->attachment_cache_directory.$attachment->location;     
         if (is_file ($filepath))
         {
             return unlink ($filepath);

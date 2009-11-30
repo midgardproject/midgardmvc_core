@@ -19,7 +19,7 @@ class midgardmvc_core_controllers_styles
     
     public function __construct($instance)
     {
-        $this->configuration = $_MIDCOM->configuration;
+        $this->configuration = midgardmvc_core::get_instance()->configuration;
     }
     
     private function get_style_children($style_id)
@@ -29,7 +29,7 @@ class midgardmvc_core_controllers_styles
         (
             array
             (
-                'uri'      => "{$_MIDCOM->context->prefix}mgd:styles{$this->object_path}/", // FIXME: dispatcher::generate_url
+                'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:styles{$this->object_path}/", // FIXME: dispatcher::generate_url
                 'title'    => $this->object_path,
                 'mimetype' => 'httpd/unix-directory',
                 'resource' => 'collection',
@@ -51,7 +51,7 @@ class midgardmvc_core_controllers_styles
                 }
                 $children[] = array
                 (
-                    'uri'      => "{$_MIDCOM->context->prefix}mgd:styles{$this->object_path}/{$name}/", // FIXME: dispatcher::generate_url
+                    'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:styles{$this->object_path}/{$name}/", // FIXME: dispatcher::generate_url
                     'title'    => $name,
                     'mimetype' => 'httpd/unix-directory',
                     'resource' => 'collection',
@@ -70,7 +70,7 @@ class midgardmvc_core_controllers_styles
             {
                 $children[] = array
                 (
-                    'uri'      => "{$_MIDCOM->context->prefix}mgd:styles{$this->object_path}/{$element->name}.php", // FIXME: dispatcher::generate_url
+                    'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:styles{$this->object_path}/{$element->name}.php", // FIXME: dispatcher::generate_url
                     'title'    => $element->name,
                     'mimetype' => 'text/plain',
                     'size'     => $element->metadata->size,
@@ -133,7 +133,7 @@ class midgardmvc_core_controllers_styles
             (
                 array
                 (
-                    'uri'      => "{$_MIDCOM->context->prefix}mgd:styles{$this->object_path}", // FIXME: dispatcher::generate_url
+                    'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:styles{$this->object_path}", // FIXME: dispatcher::generate_url
                     'title'    => $this->element->name,
                     'mimetype' => 'text/plain',
                     'size'     => $this->element->metadata->size,
@@ -161,7 +161,7 @@ class midgardmvc_core_controllers_styles
             {
                 throw new midgardmvc_exception_notfound("Style {$parent_path} not found");
             }
-            $_MIDCOM->authorization->require_do('midgard:create', $this->style);
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->style);
             
             $new_element = new midgard_element();
             $new_element->style = $this->style->id;
@@ -197,7 +197,7 @@ class midgardmvc_core_controllers_styles
         
         if ($parent_path != '/')
         {
-            $_MIDCOM->authorization->require_do('midgard:create', $this->style);
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->style);
             $new_style->up = $this->style->id;
         }
         

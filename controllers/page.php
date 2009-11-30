@@ -31,7 +31,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     public function prepare_new_object(array $args)
     {
         $this->object = new midgard_page();
-        $this->object->up = $_MIDCOM->context->page->id;
+        $this->object->up = midgardmvc_core::get_instance()->context->page->id;
         $this->object->info = 'active';
     }
     

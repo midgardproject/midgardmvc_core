@@ -29,7 +29,7 @@ class midgardmvc_core_controllers_attachment
     {
         $att = new midgard_attachment($args['guid']);
                 
-        if ($_MIDCOM->configuration->enable_attachment_cache)
+        if (midgardmvc_core::get_instance()->configuration->enable_attachment_cache)
         {
             header('Location: ' . midgardmvc_core_helpers_attachment::get_url($att));
             exit();
@@ -41,7 +41,7 @@ class midgardmvc_core_controllers_attachment
         /**
           * If X-Sendfile support is enabled just sending correct headers
           */
-        if ($_MIDCOM->configuration->enable_xsendfile)
+        if (midgardmvc_core::get_instance()->configuration->enable_xsendfile)
         {
             header('X-Sendfile: ' . $blob->get_path());
         }

@@ -85,11 +85,11 @@ class midgardmvc_core_services_cache_sqlite3 extends midgardmvc_core_services_ca
 
     private function get_cache_name()
     {
-        if (!isset($_MIDCOM->context->host))
+        if (!isset(midgardmvc_core::get_instance()->context->host))
         {
             return 'MidCOM';
         }
-        return $_MIDCOM->context->host->name;
+        return midgardmvc_core::get_instance()->context->host->name;
     }
 
     public function put($module, $identifier, $data)

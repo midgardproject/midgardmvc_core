@@ -50,12 +50,12 @@ class midgardmvc_core_services_uimessages_baseclass
         $this->load_configuration();
         
         $classname = null;
-        $this->implementation =& $_MIDCOM->uimessages;
+        $this->implementation =& midgardmvc_core::get_instance()->uimessages;
     }
     
     private function load_configuration()
     {
-        $this->configuration = $_MIDCOM->configuration->get('uimessages_configuration');
+        $this->configuration = midgardmvc_core::get_instance()->configuration->get('uimessages_configuration');
         if (! is_array($this->configuration))
         {
             $this->configuration = array();
@@ -91,7 +91,7 @@ class midgardmvc_core_services_uimessages_baseclass
 
     public function can_view($user=null)
     {
-        if ($_MIDCOM->context->mimetype === 'text/html')
+        if (midgardmvc_core::get_instance()->context->mimetype === 'text/html')
         {
             return true;            
         }

@@ -24,7 +24,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
      */
     public function __construct()
     {
-        $mgdschemas = $_MIDCOM->dispatcher->get_mgdschema_classes();
+        $mgdschemas = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
         foreach ($mgdschemas as $mgdschema)
         {
             $this->connect_to_signals($mgdschema);
@@ -57,7 +57,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
     
     public function on_loading($object, $params)
     {
-        if (! $_MIDCOM->authorization->can_do('midgard:read', $object))
+        if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:read', $object))
         {
             // Note: this is a *hook* so the object is still empty
             throw new midgardmvc_exception_unauthorized("Not authorized to read " . get_class($object));
@@ -66,7 +66,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
     
     public function on_creating($object, $params)
     {
-        if (! $_MIDCOM->authorization->can_do('midgard:create', $object))
+        if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:create', $object))
         {
             throw new midgardmvc_exception_unauthorized("Not authorized to create " . get_class($object) . " {$object->guid}");
         }
@@ -74,7 +74,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
     
     public function on_updating($object, $params)
     {
-        if (! $_MIDCOM->authorization->can_do('midgard:update', $object))
+        if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
         {
             throw new midgardmvc_exception_unauthorized("Not authorized to update " . get_class($object) . " {$object->guid}");
         }
@@ -82,7 +82,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
     
     public function on_deleting($object, $params)
     {
-        if (! $_MIDCOM->authorization->can_do('midgard:delete', $object))
+        if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:delete', $object))
         {
             throw new midgardmvc_exception_unauthorized("Not authorized to delete " . get_class($object) . " {$object->guid}");
         }
@@ -112,16 +112,16 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
                 return true;
             break;
             case 'midgard:create' :
-                if ($_MIDCOM->authentication->is_user())
+                if (midgardmvc_core::get_instance()->authentication->is_user())
                 {
                     return true;
                 }
                 break;
             case 'midgard:update':
             case 'midgard:delete':
-                if ($_MIDCOM->authentication->is_user())
+                if (midgardmvc_core::get_instance()->authentication->is_user())
                 {
-                    $person = $_MIDCOM->authentication->get_person();
+                    $person = midgardmvc_core::get_instance()->authentication->get_person();
                     if($person->guid == $object->metadata->creator)
                     {
                         return true;
@@ -147,7 +147,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
     
     public function require_user()
     {
-        if (! $_MIDCOM->authentication->is_user())
+        if (! midgardmvc_core::get_instance()->authentication->is_user())
         {
             throw new midgardmvc_exception_unauthorized("Authentication required");
         }

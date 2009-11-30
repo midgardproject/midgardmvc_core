@@ -30,13 +30,13 @@ class midgardmvc_core_services_cache_memcached extends midgardmvc_core_services_
         $this->memcache = new Memcache();
         $this->memcache_operational = @$this->memcache->pconnect('localhost', 11211);
         
-        if (!isset($_MIDCOM->context->host))
+        if (!isset(midgardmvc_core::get_instance()->context->host))
         {
             $this->name = 'MidCOM';
         }
         else
         {
-            $this->name = $_MIDCOM->context->host->name;
+            $this->name = midgardmvc_core::get_instance()->context->host->name;
         }
 
         parent::__construct();

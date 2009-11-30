@@ -125,7 +125,7 @@ class midgardmvc_core_helpers_head
         
         $script = "jQuery.midcom.init({\n";
         $script .= "    MIDGARDMVC_STATIC_URL: '" . MIDGARDMVC_STATIC_URL . "',\n";
-        $script .= "    MIDGARDMVC_PAGE_PREFIX: '/'\n"; //$_MIDCOM->get_page_prefix()
+        $script .= "    MIDGARDMVC_PAGE_PREFIX: '/'\n"; //midgardmvc_core::get_instance()->get_page_prefix()
         $script .= "});\n";
 
         if (! is_null($config))

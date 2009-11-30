@@ -29,44 +29,43 @@ $midgard->open($conffile);
 
 // Load MidCOM with the manual dispatcher
 require('midgardmvc_core/framework.php');
-$_MIDCOM = new midgardmvc_core('manual');
 
 echo "Loading all components and their routes\n\n";
 
 // Go through the installed components
-foreach ($_MIDCOM->componentloader->manifests as $component_name => $manifest)
+foreach (midgardmvc_core::get_instance()->componentloader->manifests as $component_name => $manifest)
 {
     // Enter new context
-    $_MIDCOM->context->create();
+    midgardmvc_core::get_instance()->context->create();
     try
     {
-        $_MIDCOM->dispatcher->initialize($component_name);
+        midgardmvc_core::get_instance()->dispatcher->initialize($component_name);
     }
     catch (Exception $e)
     {
         echo "Skipping {$component_name}: component failed to load\n\n";
-        $_MIDCOM->context->delete();
+        midgardmvc_core::get_instance()->context->delete();
         continue;
     }
     
-    if (!$_MIDCOM->context->component_instance)
+    if (!midgardmvc_core::get_instance()->context->component_instance)
     {
         echo "Skipping {$component_name}: component failed to load\n\n";
-        $_MIDCOM->context->delete();
+        midgardmvc_core::get_instance()->context->delete();
         continue;
     }
 
-    if (!$_MIDCOM->context->component_instance->configuration->exists('routes'))
+    if (!midgardmvc_core::get_instance()->context->component_instance->configuration->exists('routes'))
     {
         // No routes in this component, skip
         echo "Skipping {$component_name}: no routes\n\n";
-        $_MIDCOM->context->delete();
+        midgardmvc_core::get_instance()->context->delete();
         continue;
     }
     
     echo "Running {$component_name}...\n";
     
-    $routes = $_MIDCOM->dispatcher->get_routes();
+    $routes = midgardmvc_core::get_instance()->dispatcher->get_routes();
     foreach ($routes as $route_id => $route_configuration)
     {
         // Generate fake arguments
@@ -79,12 +78,12 @@ foreach ($_MIDCOM->componentloader->manifests as $component_name => $manifest)
             $route_string = str_replace("{{$match}}", "[{$match}: {$args[$match]}]", $route_string);
         }
         
-        $_MIDCOM->dispatcher->set_route($route_id, $args);
+        midgardmvc_core::get_instance()->dispatcher->set_route($route_id, $args);
         echo "    {$route_id}: {$route_string}\n";
         
         try
         {
-            $_MIDCOM->dispatcher->dispatch();
+            midgardmvc_core::get_instance()->dispatcher->dispatch();
         }
         catch (Exception $e)
         {
@@ -94,7 +93,7 @@ foreach ($_MIDCOM->componentloader->manifests as $component_name => $manifest)
         
         try
         {
-            echo "        returned keys: " . implode(', ', array_keys($_MIDCOM->context->$component_name)) . "\n";
+            echo "        returned keys: " . implode(', ', array_keys(midgardmvc_core::get_instance()->context->$component_name)) . "\n";
         }
         catch (Exception $e)
         {
@@ -102,7 +101,7 @@ foreach ($_MIDCOM->componentloader->manifests as $component_name => $manifest)
         }
     }
     // Delete the context
-    $_MIDCOM->context->delete();
+    midgardmvc_core::get_instance()->context->delete();
     echo "\n";
 }
 ?>

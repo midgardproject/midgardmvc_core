@@ -26,14 +26,14 @@ class midgardmvc_core_helpers_metadata
     
     public static function approve(&$object)
     {
-        $_MIDCOM->authorization->require_do('midcom:approve', $object);
+        midgardmvc_core::get_instance()->authorization->require_do('midcom:approve', $object);
 
         $object->approve();
     }
     
     public static function unapprove(&$object)
     {
-        $_MIDCOM->authorization->require_do('midcom:approve', $object);
+        midgardmvc_core::get_instance()->authorization->require_do('midcom:approve', $object);
 
         $object->unapprove();
     }
@@ -55,7 +55,7 @@ class midgardmvc_core_helpers_metadata
             // Midgard2 DateTime
             $lock_time = $object->metadata->locked->format('U');
         }
-        $lock_timeout = $lock_time + ($_MIDCOM->configuration->get('metadata_lock_timeout') * 60);
+        $lock_timeout = $lock_time + (midgardmvc_core::get_instance()->configuration->get('metadata_lock_timeout') * 60);
         
         if (time() > $lock_timeout)
         {
@@ -71,9 +71,9 @@ class midgardmvc_core_helpers_metadata
             return false;
         }
         
-        if ($_MIDCOM->authentication->is_user())
+        if (midgardmvc_core::get_instance()->authentication->is_user())
         {
-            $person = $_MIDCOM->authentication->get_person();
+            $person = midgardmvc_core::get_instance()->authentication->get_person();
             
             if (    $check_locker
                 &&  (   $object->metadata->locker == $person->guid
@@ -90,7 +90,7 @@ class midgardmvc_core_helpers_metadata
     
     public static function lock(&$object, $shared = false, $token = null)
     {
-        $_MIDCOM->authorization->require_do('midgard:update', $object);
+        midgardmvc_core::get_instance()->authorization->require_do('midgard:update', $object);
         
         if ($object->is_locked())
         {
@@ -102,7 +102,7 @@ class midgardmvc_core_helpers_metadata
     
     public static function unlock(&$object)
     {
-        $_MIDCOM->authorization->require_do('midgard:update', $object);
+        midgardmvc_core::get_instance()->authorization->require_do('midgard:update', $object);
 
         if (!$object->is_locked())
         {

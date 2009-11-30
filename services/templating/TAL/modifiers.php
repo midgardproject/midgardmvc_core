@@ -16,7 +16,7 @@
 function phptal_tales_midcomDateShort($src, $nothrow)
 {
     $src = trim($src);
-    return 'strftime("' . $_MIDCOM->configuration->get('date_formats', 'short') . '", strtotime(' . PHPTAL_TalesInternal::path($src, $nothrow) . '))';
+    return 'strftime("' . midgardmvc_core::get_instance()->configuration->get('date_formats', 'short') . '", strtotime(' . PHPTAL_TalesInternal::path($src, $nothrow) . '))';
 }
 
 /**
@@ -29,7 +29,7 @@ function phptal_tales_midcomDateShort($src, $nothrow)
 function phptal_tales_midcomDateLong($src, $nothrow)
 {
     $src = trim($src);
-    return 'strftime("' . $_MIDCOM->configuration->get('date_formats', 'long') . '", strtotime(' . PHPTAL_TalesInternal::path($src, $nothrow) . '))';
+    return 'strftime("' . midgardmvc_core::get_instance()->configuration->get('date_formats', 'long') . '", strtotime(' . PHPTAL_TalesInternal::path($src, $nothrow) . '))';
 }
 
 /**

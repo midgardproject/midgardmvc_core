@@ -19,7 +19,7 @@ class midgardmvc_core_controllers_snippets
     
     public function __construct($instance)
     {
-        $this->configuration = $_MIDCOM->configuration;
+        $this->configuration = midgardmvc_core::get_instance()->configuration;
     }
     
     private function get_snippetdir_children($snippetdir_id)
@@ -29,7 +29,7 @@ class midgardmvc_core_controllers_snippets
         (
             array
             (
-                'uri'      => "{$_MIDCOM->context->prefix}mgd:snippets{$this->object_path}/", // FIXME: dispatcher::generate_url
+                'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:snippets{$this->object_path}/", // FIXME: dispatcher::generate_url
                 'title'    => $this->object_path,
                 'mimetype' => 'httpd/unix-directory',
                 'resource' => 'collection',
@@ -52,7 +52,7 @@ class midgardmvc_core_controllers_snippets
                 }
                 $children[] = array
                 (
-                    'uri'      => "{$_MIDCOM->context->prefix}mgd:snippets{$this->object_path}/{$name}/", // FIXME: dispatcher::generate_url
+                    'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:snippets{$this->object_path}/{$name}/", // FIXME: dispatcher::generate_url
                     'title'    => $name,
                     'mimetype' => 'httpd/unix-directory',
                     'resource' => 'collection',
@@ -71,7 +71,7 @@ class midgardmvc_core_controllers_snippets
             {
                 $children[] = array
                 (
-                    'uri'      => "{$_MIDCOM->context->prefix}mgd:snippets{$this->object_path}/{$snippet->name}.php", // FIXME: dispatcher::generate_url
+                    'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:snippets{$this->object_path}/{$snippet->name}.php", // FIXME: dispatcher::generate_url
                     'title'    => $snippet->name,
                     'mimetype' => 'text/plain',
                     'size'     => $snippet->metadata->size,
@@ -134,7 +134,7 @@ class midgardmvc_core_controllers_snippets
             (
                 array
                 (
-                    'uri'      => "{$_MIDCOM->context->prefix}mgd:snippets{$this->object_path}", // FIXME: dispatcher::generate_url
+                    'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:snippets{$this->object_path}", // FIXME: dispatcher::generate_url
                     'title'    => $this->snippet->name,
                     'mimetype' => 'text/plain',
                     'size'     => $this->snippet->metadata->size,
@@ -162,7 +162,7 @@ class midgardmvc_core_controllers_snippets
             {
                 throw new midgardmvc_exception_notfound("Snippetdir {$parent_path} not found");
             }
-            $_MIDCOM->authorization->require_do('midgard:create', $this->snippetdir);
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->snippetdir);
             
             $new_snippet = new midgard_snippet();
             $new_snippet->up = $this->snippetdir->id;
@@ -198,7 +198,7 @@ class midgardmvc_core_controllers_snippets
         
         if ($parent_path != '/')
         {
-            $_MIDCOM->authorization->require_do('midgard:create', $this->snippetdir);
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->snippetdir);
             $new_snippetdir->up = $this->snippetdir->id;
         }
         

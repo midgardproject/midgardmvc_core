@@ -10,8 +10,8 @@
 require 'HTTP/WebDAV/Server.php';
 
 // The PATH_INFO needs to be provided so that creates will work
-$_SERVER['PATH_INFO'] = $_MIDCOM->context->uri;
-$_SERVER['SCRIPT_NAME'] = $_MIDCOM->context->prefix;
+$_SERVER['PATH_INFO'] = midgardmvc_core::get_instance()->context->uri;
+$_SERVER['SCRIPT_NAME'] = midgardmvc_core::get_instance()->context->prefix;
 
 /**
  * WebDAV server for MidCOM 3
@@ -26,7 +26,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
     
     public function __construct()
     {
-        $this->data = $_MIDCOM->context->get();
+        $this->data = midgardmvc_core::get_instance()->context->get();
         parent::HTTP_WebDAV_Server();
     }
 
@@ -49,14 +49,14 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             }
         }
 
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "\n\n=================================================");
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Serving {$_SERVER['REQUEST_METHOD']} request for {$_SERVER['REQUEST_URI']}");
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "\n\n=================================================");
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Serving {$_SERVER['REQUEST_METHOD']} request for {$_SERVER['REQUEST_URI']}");
         
         header("X-Dav-Method: {$_SERVER['REQUEST_METHOD']}");
         
         // let the base class do all the work
         parent::ServeRequest();
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Path was: {$this->path}");
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Path was: {$this->path}");
         die();
     }
 
@@ -97,12 +97,12 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
     {
         $this->filename_check();
 
-        $_MIDCOM->authorization->require_user();
+        midgardmvc_core::get_instance()->authorization->require_user();
         
         if (!isset($this->data['children']))
         {
             // Controller did not return children
-            $this->data['children'] = $this->get_node_children($_MIDCOM->context->page);
+            $this->data['children'] = $this->get_node_children(midgardmvc_core::get_instance()->context->page);
         }
         
         if (empty($this->data['children']))
@@ -166,26 +166,26 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             }
             $children[] = array
             (
-                'uri'      => "{$_MIDCOM->context->prefix}{$name}/", // FIXME: dispatcher::generate_url
+                'uri'      => "{midgardmvc_core::get_instance()->context->prefix}{$name}/", // FIXME: dispatcher::generate_url
                 'title'    => $mc->get_subkey($name, 'title'),
                 'mimetype' => 'httpd/unix-directory',
                 'resource' => 'collection',
             );
         }
         
-        if ($_MIDCOM->context->page->id == $_MIDCOM->context->root)
+        if (midgardmvc_core::get_instance()->context->page->id == midgardmvc_core::get_instance()->context->root)
         {
             // Additional "special" URLs
             $children[] = array
             (
-                'uri'      => "{$_MIDCOM->context->prefix}mgd:snippets/", // FIXME: dispatcher::generate_url
+                'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:snippets/", // FIXME: dispatcher::generate_url
                 'title'    => 'Code Snippets',
                 'mimetype' => 'httpd/unix-directory',
                 'resource' => 'collection',
             );
             $children[] = array
             (
-                'uri'      => "{$_MIDCOM->context->prefix}mgd:styles/", // FIXME: dispatcher::generate_url
+                'uri'      => "{midgardmvc_core::get_instance()->context->prefix}mgd:styles/", // FIXME: dispatcher::generate_url
                 'title'    => 'Style Templates',
                 'mimetype' => 'httpd/unix-directory',
                 'resource' => 'collection',
@@ -203,7 +203,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         if (   $filename == '.DS_Store'
             || substr($filename, 0, 2) == '._')
         {
-            $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Raising 404 for {$filename} because of filename sanity rules");
+            midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Raising 404 for {$filename} because of filename sanity rules");
             throw new midgardmvc_exception_notfound("OS X DotFiles not allowed");
         }
     }
@@ -218,7 +218,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
     {
         $this->filename_check();
 
-        $_MIDCOM->authorization->require_user();
+        midgardmvc_core::get_instance()->authorization->require_user();
         
         return true;
     }
@@ -233,7 +233,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
     {
         $this->filename_check();
 
-        $_MIDCOM->authorization->require_user();
+        midgardmvc_core::get_instance()->authorization->require_user();
         
         return true;
     }
@@ -291,7 +291,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
      */
     function LOCK(&$options) 
     {
-        $options['timeout'] = time() + $_MIDCOM->configuration->get('metadata_lock_timeout');
+        $options['timeout'] = time() + midgardmvc_core::get_instance()->configuration->get('metadata_lock_timeout');
 
         if (   !isset($this->data['object'])
             || !is_object($this->data['object'])
@@ -313,7 +313,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         
         if (midgardmvc_core_helpers_metadata::is_locked($this->data['object']))
         {
-            $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Object is locked by another user {$this->data['object']->metadata->locker}");
+            midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Object is locked by another user {$this->data['object']->metadata->locker}");
             return "423 Locked";
         }
 
@@ -339,11 +339,11 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         
         if (midgardmvc_core_helpers_metadata::is_locked($this->data['object']))
         {
-            $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Object is locked by another user {$this->data['object']->metadata->locker}");
+            midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Object is locked by another user {$this->data['object']->metadata->locker}");
             return "423 Locked";
         }
 
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Unlocking");
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Unlocking");
         midgardmvc_core_helpers_metadata::unlock($this->data['object']);
 
         return "200 OK";
@@ -357,7 +357,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
      */
     function checkLock($path) 
     {
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "CHECKLOCK: {$path}");
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "CHECKLOCK: {$path}");
         if (isset($this->locks[$path]))
         {
             return $this->locks[$path];
@@ -374,17 +374,17 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             return $this->locks[$path];
         }
 
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Resolving {$path} for locks using manual dispatcher");
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Resolving {$path} for locks using manual dispatcher");
         if (is_null($this->dispatcher))
         {
             $this->dispatcher = new midgardmvc_core_services_dispatcher_manual();
         }
         
-        $_MIDCOM->context->create();
+        midgardmvc_core::get_instance()->context->create();
         $page = $this->dispatcher->resolve_page($path);
         if (!$page)
         {
-            $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Path {$path} not found");
+            midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Path {$path} not found");
             $this->locks[$path] = false;
             return $this->locks[$path];
 
@@ -394,13 +394,13 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         $this->dispatcher->initialize($component_name);
         // FIXME: Before this we need to figure out the correct route
         $this->dispatcher->dispatch();
-        $_MIDCOM->context->delete();
+        midgardmvc_core::get_instance()->context->delete();
 
         if (   !isset($this->data['object'])
             || !is_object($this->data['object'])
             || !$this->data['object']->guid)
         {
-            $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Controller for {$path} did not return lockable objects");
+            midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Controller for {$path} did not return lockable objects");
             $this->locks[$path] = false;
             return $this->locks[$path];
         }
@@ -408,7 +408,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
 
         if (!midgardmvc_core_helpers_metadata::is_locked($this->data['object'], false))
         {
-            $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Not locked, locked = {$this->data['object']->metadata->locked}, locker = {$this->data['object']->metadata->locker}");
+            midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Not locked, locked = {$this->data['object']->metadata->locked}, locker = {$this->data['object']->metadata->locker}");
             $this->locks[$path] = false;
             return $this->locks[$path];
         }
@@ -422,7 +422,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             'owner' => $this->data['object']->metadata->locker,
             'created' => strtotime($this->data['object']->metadata->locked  . ' GMT'),
             'modified' => strtotime($this->data['object']->metadata->locked . ' GMT'),
-            'expires' => strtotime($this->data['object']->metadata->locked . ' GMT') + $_MIDCOM->configuration->get('metadata_lock_timeout') * 60,
+            'expires' => strtotime($this->data['object']->metadata->locked . ' GMT') + midgardmvc_core::get_instance()->configuration->get('metadata_lock_timeout') * 60,
         );
         
         if ($this->data['object']->metadata->locker)
@@ -436,7 +436,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             $lock['token'] = $lock_token;
         }
         
-        $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, serialize($lock));
+        midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, serialize($lock));
 
         $this->locks[$path] = $lock;
         return $this->locks[$path];
@@ -453,9 +453,9 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
      */
     function checkAuth($type, $username, $password)
     {
-        if (!$_MIDCOM->authentication->is_user())
+        if (!midgardmvc_core::get_instance()->authentication->is_user())
         {
-            if (!$_MIDCOM->authentication->login($username, $password))
+            if (!midgardmvc_core::get_instance()->authentication->login($username, $password))
             {
                 return false;
             }

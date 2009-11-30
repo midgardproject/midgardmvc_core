@@ -15,13 +15,13 @@ class midgardmvc_core_controllers_comet
 {
     public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->configuration = $_MIDCOM->configuration;
+        $this->configuration = midgardmvc_core::get_instance()->configuration;
     }
     
     public function action_messages($route_id, &$data, $args)
     {
-        if (   !$_MIDCOM->uimessages->supports('comet')
-            || !$_MIDCOM->uimessages->can_view())
+        if (   !midgardmvc_core::get_instance()->uimessages->supports('comet')
+            || !midgardmvc_core::get_instance()->uimessages->can_view())
         {
             return;
         }
@@ -29,14 +29,14 @@ class midgardmvc_core_controllers_comet
         $type = null;
         $name = null;
 
-        if (isset($_MIDCOM->dispatcher->get["cometType"]))
+        if (isset(midgardmvc_core::get_instance()->dispatcher->get["cometType"]))
         {
-            $type = $_MIDCOM->dispatcher->get["cometType"];
+            $type = midgardmvc_core::get_instance()->dispatcher->get["cometType"];
         }
 
-        if (isset($_MIDCOM->dispatcher->get["cometName"]))
+        if (isset(midgardmvc_core::get_instance()->dispatcher->get["cometName"]))
         {
-            $name = $_MIDCOM->dispatcher->get["cometName"];
+            $name = midgardmvc_core::get_instance()->dispatcher->get["cometName"];
         }
 
         if (   $type == null
@@ -53,13 +53,13 @@ class midgardmvc_core_controllers_comet
         while (true)
         {
             $messages = '';    
-            if ($_MIDCOM->uimessages->has_messages())
+            if (midgardmvc_core::get_instance()->uimessages->has_messages())
             {
-                $messages = $_MIDCOM->uimessages->render_as('comet');
+                $messages = midgardmvc_core::get_instance()->uimessages->render_as('comet');
             }
             else
             {
-                $_MIDCOM->uimessages->add(array(
+                midgardmvc_core::get_instance()->uimessages->add(array(
                     'title' => 'Otsikko from comet',
                     'message' => 'viesti from comet...'
                 ));

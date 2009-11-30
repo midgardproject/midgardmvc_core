@@ -39,7 +39,7 @@ Example of a `get_object_actions` method for a component interface class:
     public function get_object_actions(&$object, $variant = null)
     {
         $actions = array();
-        if (!$_MIDCOM->authorization->can_do('midgard:update', $object))
+        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
         {
             // User is not allowed to edit so we have no actions available
             return $actions;
@@ -48,9 +48,9 @@ Example of a `get_object_actions` method for a component interface class:
         // This is the general action available for a page: forms-based editing
         $actions['edit'] = array
         (
-            'url' => $_MIDCOM->dispatcher->generate_url('page_edit', array('name' => $object->name), $object),
+            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_edit', array('name' => $object->name), $object),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('key: edit', 'midgardmvc_core'),
+            'label' => midgardmvc_core::get_instance()->i18n->get('key: edit', 'midgardmvc_core'),
             'icon' => 'midgardmvc_core/stock-icons/16x16/edit.png',
         );
 

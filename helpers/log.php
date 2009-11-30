@@ -24,7 +24,7 @@ class midgardmvc_core_helpers_log
             throw new Exception('The logging helper is to be used only with Midgard 1.x.');
         }
 
-        $this->log_file = str_replace('__MIDGARDLOG__', $this->get_log_directory(), $_MIDCOM->configuration->get('log_file'));
+        $this->log_file = str_replace('__MIDGARDLOG__', $this->get_log_directory(), midgardmvc_core::get_instance()->configuration->get('log_file'));
         
         if (isset($_SERVER['SERVER_NAME']))
         {
