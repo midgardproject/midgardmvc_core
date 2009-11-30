@@ -11,7 +11,7 @@ require_once(dirname(__FILE__) . '/../../../tests/testcase.php');
 /**
  * Test to see if contexts are working
  */
-class midgardmvc_core_tests_services_configuration extends midcom_tests_testcase
+class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_testcase
 {
     public function setUp()
     {        

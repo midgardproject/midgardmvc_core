@@ -7,7 +7,7 @@
 
 (function($){
     
-    $.midcom = {
+    $.midgardmvc = {
         _inited: false,
         config: {
             MIDGARDMVC_STATIC_URL: '/midcom-static',
@@ -17,55 +17,55 @@
         },
         registered_components: {}
     };
-    $.extend($.midcom, {
+    $.extend($.midgardmvc, {
         init: function(config) {
-            $.midcom.config = $.extend({}, $.midcom.config, config || {});
-            $.midcom.registered_components = {};
+            $.midgardmvc.config = $.extend({}, $.midgardmvc.config, config || {});
+            $.midgardmvc.registered_components = {};
             
-            $.midcom.logger.init($.midcom.config.force_static_logger || true);
+            $.midgardmvc.logger.init($.midgardmvc.config.force_static_logger || true);
             
-            if ($.midcom.config.enable_watchers) {
-                $.midcom.watcher.init();
+            if ($.midgardmvc.config.enable_watchers) {
+                $.midgardmvc.watcher.init();
             }
             
-            $.midcom._inited = true;
+            $.midgardmvc._inited = true;
 
-            $.midcom.logger.log('jsmidcom inited with config ' + $.midcom.helpers.pretty_print($.midcom.config));
+            $.midgardmvc.logger.log('jsmidgardmvc inited with config ' + $.midgardmvc.helpers.pretty_print($.midgardmvc.config));
             
             // setTimeout("jQuery.midcom.logger.debug('this is debug message')", 1000);
             // setTimeout("jQuery.midcom.logger.warning('this is warning message')", 2000);
             // setTimeout("jQuery.midcom.logger.error('this is error message')", 3000);
             
-            $.midcom.events.signals.trigger('midcom::init-ready');
+            $.midgardmvc.events.signals.trigger('midcom::init-ready');
         },
         update_config: function(config) {            
-            $.midcom.config = $.extend({}, $.midcom.config, config || {});
-            $.midcom.logger.log('midcom config updated to ' + $.midcom.helpers.pretty_print($.midcom.config));
+            $.midgardmvc.config = $.extend({}, $.midgardmvc.config, config || {});
+            $.midgardmvc.logger.log('midcom config updated to ' + $.midgardmvc.helpers.pretty_print($.midgardmvc.config));
         },
         register_component: function(name, handler) {
-            if (typeof $.midcom.registered_components[name] == 'undefined') {
-                if (! $.midcom._inited) {
-                    $.midcom.events.signals.listen('midcom::init-ready', $.midcom._register_component, [name, handler], false);
+            if (typeof $.midgardmvc.registered_components[name] == 'undefined') {
+                if (! $.midgardmvc._inited) {
+                    $.midgardmvc.events.signals.listen('midcom::init-ready', $.midgardmvc._register_component, [name, handler], false);
                 } else {
-                    $.midcom._register_component(name, handler);
+                    $.midgardmvc._register_component(name, handler);
                 }
             }
         },
         _register_component: function(name, handler) {
-            $.midcom.logger.log('registering component: '+name);
+            $.midgardmvc.logger.log('registering component: '+name);
             
-            $.midcom.registered_components[name] = handler;
+            $.midgardmvc.registered_components[name] = handler;
         }
     });
     
-    $.midcom.events = {};
-    $.midcom.events.signals = {
+    $.midgardmvc.events = {};
+    $.midgardmvc.events.signals = {
         _listeners: null,
         trigger: function(signal, data) {
-            $.midcom.logger.debug('midcom.events.signals::trigger "'+signal+'" data: ' + $.midcom.helpers.pretty_print(data));
+            $.midgardmvc.logger.debug('midcom.events.signals::trigger "'+signal+'" data: ' + $.midgardmvc.helpers.pretty_print(data));
             
-            if (   $.midcom.events.signals._listeners === null
-                || typeof $.midcom.events.signals._listeners[signal] == 'undefined')
+            if (   $.midgardmvc.events.signals._listeners === null
+                || typeof $.midgardmvc.events.signals._listeners[signal] == 'undefined')
             {
                 return;
             }
@@ -76,7 +76,7 @@
                 var data = [];
             }
             
-            $.each($.midcom.events.signals._listeners[signal], function(i,listener){
+            $.each($.midgardmvc.events.signals._listeners[signal], function(i,listener){
                 if (typeof listener != 'object') {
                     return;
                 }
@@ -94,17 +94,17 @@
                     listener.func.apply(listener.func, args);
                     
                     if (! listener.keep) {
-                        $.midcom.events.signals._listeners[signal][i] = null;
+                        $.midgardmvc.events.signals._listeners[signal][i] = null;
                     }
                 }
             });
         },
         listen: function(signal, listener, data, keep) {
-            if ($.midcom.events.signals._listeners === null) {
-                $.midcom.events.signals._listeners = {};
+            if ($.midgardmvc.events.signals._listeners === null) {
+                $.midgardmvc.events.signals._listeners = {};
             }
-            if (typeof $.midcom.events.signals._listeners[signal] == 'undefined') {
-                $.midcom.events.signals._listeners[signal] = [];
+            if (typeof $.midgardmvc.events.signals._listeners[signal] == 'undefined') {
+                $.midgardmvc.events.signals._listeners[signal] = [];
             }
             
             if (typeof keep == 'undefined') {
@@ -117,11 +117,11 @@
                 keep: keep
             };
             
-            $.midcom.events.signals._listeners[signal].push(lstnr);
+            $.midgardmvc.events.signals._listeners[signal].push(lstnr);
         }
     };
     
-    $.midcom.logger = {
+    $.midgardmvc.logger = {
         row_num: 1,
         force_static: false,
         _static_holder: null,        
@@ -131,24 +131,24 @@
             }
             
             if (   typeof window['console'] == 'undefined'
-                || $.midcom.logger.force_static)
+                || $.midgardmvc.logger.force_static)
             {
                 if (typeof msg != 'string') {
-                    msg = $.midcom.helpers.pretty_print(msg);
+                    msg = $.midgardmvc.helpers.pretty_print(msg);
                 }
 
-                msg = $.midcom.logger.row_num + ": " + msg;
-                $.midcom.logger.row_num += 1;
+                msg = $.midgardmvc.logger.row_num + ": " + msg;
+                $.midgardmvc.logger.row_num += 1;
                 
-                $.midcom.logger._static(msg, type);
+                $.midgardmvc.logger._static(msg, type);
             }
             else
             {
-                $.midcom.logger._console(msg, type);
+                $.midgardmvc.logger._console(msg, type);
             }
         },
         _console: function(msg, type) {
-            if (! $.midcom.config.debug) {
+            if (! $.midgardmvc.config.debug) {
                 return;
             }
             
@@ -159,22 +159,22 @@
             }
         },
         _static: function(msg, type) {
-            if ($.midcom.logger._static_holder == null) {
-                $.midcom.logger._generate_static();
+            if ($.midgardmvc.logger._static_holder == null) {
+                $.midgardmvc.logger._generate_static();
             }
             
-            $.midcom.logger._static_holder.trigger('add_message', [msg, type]);
+            $.midgardmvc.logger._static_holder.trigger('add_message', [msg, type]);
         },
         _generate_static: function() {            
-            $.midcom.logger._static_holder = $('<div id="jsmidcom_logger" />').hide();
-            $.midcom.logger._static_holder.appendTo('body');
+            $.midgardmvc.logger._static_holder = $('<div id="jsmidgardmvc_logger" />').hide();
+            $.midgardmvc.logger._static_holder.appendTo('body');
             
-            if ($.midcom.config.debug) {
-                $.midcom.logger._static_holder.show();
+            if ($.midgardmvc.config.debug) {
+                $.midgardmvc.logger._static_holder.show();
             }
             
-            var header = $('<div class="jsmidcom_logger_header" />').html('Logger');
-            header.appendTo($.midcom.logger._static_holder);
+            var header = $('<div class="jsmidgardmvc_logger_header" />').html('Logger');
+            header.appendTo($.midgardmvc.logger._static_holder);
             
             var messages_visible = true;
             header.bind('click', function(e){
@@ -187,14 +187,14 @@
                 }
             });
 
-            var messages = $('<div class="jsmidcom_logger_messages" />');
-            messages.appendTo($.midcom.logger._static_holder);
+            var messages = $('<div class="jsmidgardmvc_logger_messages" />');
+            messages.appendTo($.midgardmvc.logger._static_holder);
             
-            $.midcom.logger._static_holder.bind('add_message', function(evt, msg, type){
-                var message = $('<div class="jsmidcom_logger_message" />')
+            $.midgardmvc.logger._static_holder.bind('add_message', function(evt, msg, type){
+                var message = $('<div class="jsmidgardmvc_logger_message" />')
                 .hide()
                 .addClass(
-                    'jsmidcom_logger_message_' + type
+                    'jsmidgardmvc_logger_message_' + type
                 ).html(
                     msg
                 );
@@ -204,42 +204,42 @@
             });
         }
     };
-    $.extend($.midcom.logger, {
+    $.extend($.midgardmvc.logger, {
         init: function(force_static) {
             if (   typeof force_static
                 && force_static)
             {
-                $.midcom.logger.force_static = true;
+                $.midgardmvc.logger.force_static = true;
             }
         },
         log: function(msg) {
-            $.midcom.logger._out(msg, 'log');
+            $.midgardmvc.logger._out(msg, 'log');
         },
         debug: function(msg) {
-            $.midcom.logger._out(msg, 'debug');
+            $.midgardmvc.logger._out(msg, 'debug');
         },
         warning: function(msg) {
-            $.midcom.logger._out(msg, 'warning');
+            $.midgardmvc.logger._out(msg, 'warning');
         },
         error: function(msg) {
-            $.midcom.logger._out(msg, 'error');
+            $.midgardmvc.logger._out(msg, 'error');
         }
     });
     
-    $.midcom.watcher = {
+    $.midgardmvc.watcher = {
         targets: []
     };
-    $.extend($.midcom.watcher, {
+    $.extend($.midgardmvc.watcher, {
         init: function() {
-            $.midcom.watcher.targets = [];
+            $.midgardmvc.watcher.targets = [];
         },
         register: function(url, callback) {
             
         }
     });
     
-    $.midcom.dispatcher = {};    
-    $.extend($.midcom.dispatcher, {
+    $.midgardmvc.dispatcher = {};    
+    $.extend($.midgardmvc.dispatcher, {
         get: function(url, on_success, on_error) {
             var return_data = null;
             if (typeof on_success == 'undefined') {
@@ -247,7 +247,7 @@
                 return;
             }
             if (typeof on_error == 'undefined') {
-                var on_error = $.midcom.dispatcher._on_error;
+                var on_error = $.midgardmvc.dispatcher._on_error;
             }
             
             $.ajax({
@@ -276,9 +276,9 @@
         }
     });
     
-    $.midcom.utils = {};
+    $.midgardmvc.utils = {};
 
-    $.midcom.utils.load_script = function(url, callback, callback_args) {
+    $.midgardmvc.utils.load_script = function(url, callback, callback_args) {
         $('head').append('<script type="text/javascript" charset="utf-8" src="'+url+'"></script>');
         if (typeof callback == 'string') {
             if (   typeof callback_args == 'undefined'
@@ -291,9 +291,9 @@
         }
     };
     
-    $.midcom.helpers = {};
+    $.midgardmvc.helpers = {};
     
-    $.midcom.helpers.generate_id = function(prefix) {
+    $.midgardmvc.helpers.generate_id = function(prefix) {
         if (typeof prefix == 'undefined') {
             var prefix = '';
         }
@@ -305,7 +305,7 @@
         return prefix + (Math.floor(((date.getTime()/1000)+random_key2) + (10016486 + (random_key * 22423)) * random_key / random_key2).toString()).toString().substr(0,8);
     };
     
-    $.midcom.helpers.clone = function(obj) {
+    $.midgardmvc.helpers.clone = function(obj) {
         if (   obj == null
             || typeof(obj) != 'object')
         {
@@ -321,7 +321,7 @@
         var temp = {};
         for (var key in obj) {
             if (typeof obj[key] == 'object') {
-                temp[key] = $.midcom.helpers.clone(obj[key]);
+                temp[key] = $.midgardmvc.helpers.clone(obj[key]);
             } else {
                 temp[key] = obj[key];
             }            
@@ -330,7 +330,7 @@
         return temp;        
     };
     
-    $.midcom.helpers.is_a = function(source, constructor) {
+    $.midgardmvc.helpers.is_a = function(source, constructor) {
         while (source != null) {
             if (source == constructor.prototype) {
                 return true;
@@ -340,7 +340,7 @@
         return false;
     };
     
-    $.midcom.helpers.is_null = function(item) {        
+    $.midgardmvc.helpers.is_null = function(item) {        
         if (   typeof item != 'undefined'
             && item == null)
         {
@@ -353,10 +353,10 @@
     /**
      * uses xmlObjectifier from http://www.terracoder.com/
      */
-    $.midcom.helpers.xml = {
+    $.midgardmvc.helpers.xml = {
         utils_loaded: false,
         is_utils_loaded: function() {
-            if (   $.midcom.helpers.xml.utils_loaded
+            if (   $.midgardmvc.helpers.xml.utils_loaded
                 && typeof $.xmlToJSON != 'undefined')
             {
                 return true;
@@ -365,22 +365,22 @@
             return false;
         },
         load_xml_utils: function(callback, callback_args) {
-            if ($.midcom.helpers.xml.is_utils_loaded()) {
+            if ($.midgardmvc.helpers.xml.is_utils_loaded()) {
                 return;
             }
             
-            var url = $.midcom.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/jQuery/jqXMLUtils.js';
-            $.midcom.utils.load_script(url, callback, callback_args);
+            var url = $.midgardmvc.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/jQuery/jqXMLUtils.js';
+            $.midgardmvc.utils.load_script(url, callback, callback_args);
             
-            $.midcom.helpers.xml.utils_loaded = true;
+            $.midgardmvc.helpers.xml.utils_loaded = true;
         }
     };
-    $.extend($.midcom.helpers.xml, {
+    $.extend($.midgardmvc.helpers.xml, {
         to_JSON: function(data) {
-            if (! $.midcom.helpers.xml.is_utils_loaded()) {
+            if (! $.midgardmvc.helpers.xml.is_utils_loaded()) {
                 var callback = "jQuery.midcom.helpers.xml.to_JSON";
                 
-                $.midcom.helpers.xml.load_xml_utils(callback, [data]);
+                $.midgardmvc.helpers.xml.load_xml_utils(callback, [data]);
                 
                 return;
             }
@@ -388,10 +388,10 @@
             return $.xmlToJSON(data);
         },
         from_text: function(text) {
-            if (! $.midcom.helpers.xml.is_utils_loaded()) {
+            if (! $.midgardmvc.helpers.xml.is_utils_loaded()) {
                 var callback = "jQuery.midcom.helpers.xml.from_text";
                 
-                $.midcom.helpers.xml.load_xml_utils(callback, [text]);
+                $.midgardmvc.helpers.xml.load_xml_utils(callback, [text]);
                 
                 return;
             }
@@ -400,8 +400,8 @@
         }
     });
     
-    $.midcom.helpers.json = {};
-    $.extend($.midcom.helpers.json, {
+    $.midgardmvc.helpers.json = {};
+    $.extend($.midgardmvc.helpers.json, {
         /**
          * Parses and evaluates JSON string to Javascript
          * @param {String} json_str JSON String
@@ -500,7 +500,7 @@
             conv = function (x) {
                 switch(typeof x) {
                     case "object":
-                        if ($.midcom.helpers.is_a(x, Array)) {
+                        if ($.midgardmvc.helpers.is_a(x, Array)) {
                             return s.arr(x);
                         } else {
                             return s.obj(x);
@@ -524,7 +524,7 @@
             var itemtype = item_type || typeof item;
             switch (itemtype) {
                 case "object":
-                    if ($.midcom.helpers.is_a(item, Array)) {
+                    if ($.midgardmvc.helpers.is_a(item, Array)) {
                         return s.arr(item);
                     } else {
                         return s.obj(item);
@@ -543,7 +543,7 @@
                     return s.bool(item);
                 break;
                 default:
-                    throw ("Unknown type for $.midcom.helpers.json.convert");
+                    throw ("Unknown type for $.midgardmvc.helpers.json.convert");
             }            
         }
     });
@@ -559,7 +559,7 @@
      * @returns Pretty printed value
      * @type String
      */
-    $.midcom.helpers.pretty_print = function(val, indent, indent_char, linesep, depth) {
+    $.midgardmvc.helpers.pretty_print = function(val, indent, indent_char, linesep, depth) {
         var indent = typeof indent != 'undefined' ? indent : 6;
         var indent_char = typeof indent_char != 'undefined' ? indent_char : '&nbsp;';
         var linesep = typeof linesep != 'undefined' ? linesep : "<br/>";
@@ -578,13 +578,13 @@
             case "boolean":
             case "number":
             case "string":
-                return $.midcom.helpers.json.convert(val);
+                return $.midgardmvc.helpers.json.convert(val);
             case "object":
                 if (val === null) {
                     return "null";
                 }
                 if (val.constructor == Date) {
-                    return $.midcom.helpers.json.convert(val);
+                    return $.midgardmvc.helpers.json.convert(val);
                 }
 
                 var buf = [];
@@ -593,7 +593,7 @@
                     for (var index = 0; index < val.length; index++) {
                         buf.push(index > 0 ? propsep : linesep);
                         buf.push(
-                            tab, $.midcom.helpers.pretty_print(val[index], indent, indent_char, linesep, depth + 1)
+                            tab, $.midgardmvc.helpers.pretty_print(val[index], indent, indent_char, linesep, depth + 1)
                         );
                     }
                     
@@ -612,8 +612,8 @@
                         
                         buf.push(index > 0 ? propsep : linesep);
                         buf.push(
-                            tab, $.midcom.helpers.json.convert(key), ": ",
-                            $.midcom.helpers.pretty_print(val[key], indent, indent_char, linesep, depth + 1)
+                            tab, $.midgardmvc.helpers.json.convert(key), ": ",
+                            $.midgardmvc.helpers.pretty_print(val[key], indent, indent_char, linesep, depth + 1)
                         );
                         index++;
                     }
@@ -630,27 +630,27 @@
         }
     };
 
-    $.midcom.helpers.comet = {
+    $.midgardmvc.helpers.comet = {
         backend: 'midcom',
         backends: {},
         _backend_loaded: false,
         _callbacks: {},
         _cb_set: false,
         is_backend_loaded: function() {
-            if ($.midcom.helpers.comet._backend_loaded) {
+            if ($.midgardmvc.helpers.comet._backend_loaded) {
                 return true;
             }
             
-            if (typeof $.midcom.helpers.comet.backends[$.midcom.helpers.comet.backend] == 'undefined') {
+            if (typeof $.midgardmvc.helpers.comet.backends[$.midgardmvc.helpers.comet.backend] == 'undefined') {
                 return false;
             }
             
-            return $.midcom.helpers.comet.backends[$.midcom.helpers.comet.backend].available();
+            return $.midgardmvc.helpers.comet.backends[$.midgardmvc.helpers.comet.backend].available();
             
             return false;
         },
         load_backend: function(callback, callback_args) {            
-            if ($.midcom.helpers.comet.is_backend_loaded()) {
+            if ($.midgardmvc.helpers.comet.is_backend_loaded()) {
                 if (typeof callback == 'string') {
                     if (   typeof callback_args == 'undefined'
                         || typeof callback_args != 'object')
@@ -662,10 +662,10 @@
                 }
             }
             
-            $.midcom.helpers.comet._backend_loaded = $.midcom.helpers.comet.backends[$.midcom.helpers.comet.backend]._load(callback, callback_args);
+            $.midgardmvc.helpers.comet._backend_loaded = $.midgardmvc.helpers.comet.backends[$.midgardmvc.helpers.comet.backend]._load(callback, callback_args);
         }
     };
-    $.extend($.midcom.helpers.comet.backends, {
+    $.extend($.midgardmvc.helpers.comet.backends, {
         pi: {
             available: function() {
                 if (typeof pi != 'undefined') {
@@ -694,10 +694,10 @@
             	    default:
             	        req = new pi.comet();
                     	req.environment.setUrl(url);
-                    	if (! $.midcom.helpers.comet._cb_set)
+                    	if (! $.midgardmvc.helpers.comet._cb_set)
                     	{
                         	req.event.push = callback(resp);
-                        	$.midcom.helpers.comet._cb_set = true;
+                        	$.midgardmvc.helpers.comet._cb_set = true;
                     	}
                     	req.send();
 
@@ -706,26 +706,26 @@
             	}
             },
             _load: function(callback, callback_args) {
-                var url = $.midcom.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/pi.js';
-                $.midcom.utils.load_script(url, callback, callback_args);
+                var url = $.midgardmvc.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/pi.js';
+                $.midgardmvc.utils.load_script(url, callback, callback_args);
                 
                 return true;
             }
         },
         midcom: {
             available: function() {
-                if (typeof $.midcom.helpers.cometclass != 'undefined') {
+                if (typeof $.midgardmvc.helpers.cometclass != 'undefined') {
                     return true;
                 }
                 return false;
             },
             launch: function(type, url, callback, send_type, data) {
                 
-                if (typeof $.midcom.helpers.cometclass[type] == 'undefined') {
+                if (typeof $.midgardmvc.helpers.cometclass[type] == 'undefined') {
                     return false;
                 }
                 
-                var tunnel = new $.midcom.helpers.cometclass[type]();
+                var tunnel = new $.midgardmvc.helpers.cometclass[type]();
                 tunnel.env.setUrl(url);
                 
                 switch (type) {
@@ -749,14 +749,14 @@
     			return tunnel;
             },
             _load: function(callback, callback_args) {
-                var url = $.midcom.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/helpers/comet.js';
-                $.midcom.utils.load_script(url, callback, callback_args);
+                var url = $.midgardmvc.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/helpers/comet.js';
+                $.midgardmvc.utils.load_script(url, callback, callback_args);
             }
         }
     });
-    $.extend($.midcom.helpers.comet, {
+    $.extend($.midgardmvc.helpers.comet, {
         start: function() {            
-            if (typeof $.midcom.helpers.comet.backends[$.midcom.helpers.comet.backend] == 'undefined') {
+            if (typeof $.midgardmvc.helpers.comet.backends[$.midgardmvc.helpers.comet.backend] == 'undefined') {
                 return false;
             }
             
@@ -783,39 +783,39 @@
             
             var callback_id = false;
             if (cb) {
-                callback_id = $.midcom.helpers.comet._register_callback(cb);
+                callback_id = $.midgardmvc.helpers.comet._register_callback(cb);
             }
             
-            if (! $.midcom.helpers.comet.is_backend_loaded()) {
+            if (! $.midgardmvc.helpers.comet.is_backend_loaded()) {
                 var callback = "jQuery.midcom.helpers.comet._launch_comet";
                 var args = [type, url, callback_id, send_type, data];
-                $.midcom.helpers.comet.load_backend(callback, args);
+                $.midgardmvc.helpers.comet.load_backend(callback, args);
             } else {
-                return $.midcom.helpers.comet._launch_comet(type, url, callback_id, send_type, data);
+                return $.midgardmvc.helpers.comet._launch_comet(type, url, callback_id, send_type, data);
             }
         },
         _register_callback: function(callback) {            
-            var id = $.midcom.helpers.generate_id();
+            var id = $.midgardmvc.helpers.generate_id();
             
-            $.midcom.helpers.comet._callbacks[id] = callback;
+            $.midgardmvc.helpers.comet._callbacks[id] = callback;
             
             return id;
         },
         _launch_comet: function(type, url, callback_id, send_type, data) {
             var callback = function(r){};
-            if (typeof $.midcom.helpers.comet._callbacks[callback_id] != 'undefined') {
-                callback = $.midcom.helpers.comet._callbacks[callback_id];
+            if (typeof $.midgardmvc.helpers.comet._callbacks[callback_id] != 'undefined') {
+                callback = $.midgardmvc.helpers.comet._callbacks[callback_id];
             }
             
-            $.midcom.helpers.comet.backends[$.midcom.helpers.comet.backend].launch(type, url, callback, send_type, data);
+            $.midgardmvc.helpers.comet.backends[$.midgardmvc.helpers.comet.backend].launch(type, url, callback, send_type, data);
         	
         	return false;
         }
     });
     
-    $.midcom.services = {};
+    $.midgardmvc.services = {};
     
-    $.midcom.services.configuration = {        
+    $.midgardmvc.services.configuration = {        
         merge: function(a,b) {
             var c = {};
             
@@ -830,7 +830,7 @@
 
             for (var ak in a) {                
                 if (   typeof a[ak] != 'object'
-                    || $.midcom.helpers.is_null(a[ak]))
+                    || $.midgardmvc.helpers.is_null(a[ak]))
                 {
                     c[ak] = a[ak];
                     if (   typeof b[ak] != 'undefined'
@@ -840,9 +840,9 @@
                     }
                 } else {
                     if (typeof b[ak] == 'undefined') {
-                        c[ak] = $.midcom.services.configuration.merge(a[ak], {});
+                        c[ak] = $.midgardmvc.services.configuration.merge(a[ak], {});
                     } else {
-                        c[ak] = $.midcom.services.configuration.merge(a[ak], b[ak]);
+                        c[ak] = $.midgardmvc.services.configuration.merge(a[ak], b[ak]);
                     }                
                 }
             }
@@ -851,9 +851,9 @@
         }
     };
     
-    $.midcom.storage = {};
+    $.midgardmvc.storage = {};
     
-    $.midcom.storage.cookies = function() {        
+    $.midgardmvc.storage.cookies = function() {        
         var config = {};
         this.namespace = null;
         
@@ -872,7 +872,7 @@
         }
 
         this.enabled = false;
-        this.config = $.midcom.services.configuration.merge({
+        this.config = $.midgardmvc.services.configuration.merge({
                 name: 'midcom.storage.cookie',
                 expires: null,
                 domain: null,
@@ -883,8 +883,8 @@
         );
         
         var expdate = new Date();
-        if (!$.midcom.helpers.is_null(this.config.expires)) {
-            if ($.midcom.helpers.is_a(this.config.expires, Date)) {
+        if (!$.midgardmvc.helpers.is_null(this.config.expires)) {
+            if ($.midgardmvc.helpers.is_a(this.config.expires, Date)) {
                 expdate = this.config.expires;
             } else {
                 exp_seconds = this.config.expires;
@@ -910,7 +910,7 @@
             }
         }
     };
-    $.extend($.midcom.storage.cookies.prototype, {
+    $.extend($.midgardmvc.storage.cookies.prototype, {
         exists: function(key) {
             if (   typeof key == 'undefined'
                 || key == ''
@@ -941,7 +941,7 @@
             return true;
         },
         save: function(key, value, section) {
-            $.midcom.logger.debug("cookie save key:"+key+", value: "+$.midcom.helpers.pretty_print(value)+", section: "+section);
+            $.midgardmvc.logger.debug("cookie save key:"+key+", value: "+$.midgardmvc.helpers.pretty_print(value)+", section: "+section);
             
             if (   typeof key == 'undefined'
                 || typeof value == 'undefined')
@@ -957,10 +957,10 @@
                 var section = "data";
             }
 
-            this._updateSection(section, key, $.midcom.helpers.json.convert(value));
+            this._updateSection(section, key, $.midgardmvc.helpers.json.convert(value));
         },
         read: function(key, section) {
-            $.midcom.logger.debug("cookie read key:"+key+" section: "+section);
+            $.midgardmvc.logger.debug("cookie read key:"+key+" section: "+section);
             
             if (typeof key == 'undefined')
             {
@@ -985,7 +985,7 @@
             for (var i=0; i<splitted_raw.length; i++) {
                 var datarow = splitted_raw[i];
                 if (key == datarow.split("#")[0]) {
-                    return $.midcom.helpers.json.parse(datarow.split("#")[1]);
+                    return $.midgardmvc.helpers.json.parse(datarow.split("#")[1]);
                 }
             }
             
@@ -1060,7 +1060,7 @@
             }
         },
         _updateSection: function(section, key, value) {
-            $.midcom.logger.debug("_updateSection key:"+key+" value: "+value+" section: "+section);
+            $.midgardmvc.logger.debug("_updateSection key:"+key+" value: "+value+" section: "+section);
             
             if (   typeof key == 'undefined'
                 || typeof value == 'undefined'
@@ -1130,7 +1130,7 @@
             }
             name = name.replace(/\./g, '_');
             
-            $.midcom.logger.debug("_readcookie cookie: "+document.cookie);
+            $.midgardmvc.logger.debug("_readcookie cookie: "+document.cookie);
             
             var start = document.cookie.indexOf(name+"=");
             var len = start + name.length + 1;
@@ -1172,11 +1172,11 @@
             
             var cookie_str = name + "=" + this._serialize(value) +
             ( ";expires=" + expires.toGMTString() ) +
-            ( (!$.midcom.helpers.is_null(path)) ? ";path=" + path : "" ) +
-            ( (!$.midcom.helpers.is_null(domain)) ? ";domain=" + domain : "") +
+            ( (!$.midgardmvc.helpers.is_null(path)) ? ";path=" + path : "" ) +
+            ( (!$.midgardmvc.helpers.is_null(domain)) ? ";domain=" + domain : "") +
             ( (secure == true) ? ";secure" : "");
 
-            $.midcom.logger.debug("_writeCookie cookie_str: "+cookie_str);
+            $.midgardmvc.logger.debug("_writeCookie cookie_str: "+cookie_str);
             
             if (! this.exists(name)) {
                 document.cookie = cookie_str;
@@ -1198,8 +1198,8 @@
 
             document.cookie = name + "=" +
             ";expires=-1" + //"Thu, 01-Jan-70 00:00:01 GMT" +
-            ( (!$.midcom.helpers.is_null(path)) ? ";path=" + path : "") +
-            ( (!$.midcom.helpers.is_null(domain)) ? ";domain=" + domain : "");
+            ( (!$.midgardmvc.helpers.is_null(path)) ? ";path=" + path : "") +
+            ( (!$.midgardmvc.helpers.is_null(domain)) ? ";domain=" + domain : "");
         },
         _checkSupport: function() {
             var cookieEnabled = false;

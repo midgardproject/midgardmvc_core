@@ -94,7 +94,7 @@ class midgardmvc_core_component_loader
         // Load the interface class
         $this->interfaces[$component] = new $component($configuration, $folder);
         
-        if ($this->_core->head->jsmidcom_enabled)
+        if ($this->_core->head->jsmidgardmvc_enabled)
         {
             $js_component_file = "{$component_directory}/static/component.js";
             if (file_exists($js_component_file))

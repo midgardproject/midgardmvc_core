@@ -17,7 +17,7 @@ class midgardmvc_core_helpers_comet
     
     static function set_html_headers()
     {
-        midgardmvc_core::get_instance()->head->enable_jsmidcom();
+        midgardmvc_core::get_instance()->head->enable_jsmidgardmvc();
         midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/helpers/comet.js");
     }
     

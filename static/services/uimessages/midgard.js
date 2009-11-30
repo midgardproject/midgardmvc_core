@@ -7,35 +7,35 @@
 
 (function($){
 
-    $.midcom.services.uimessages = {
+    $.midgardmvc.services.uimessages = {
         config: {
             enable_comet: false
         }        
     };
-    $.midcom.services.uimessages.midgard = function(element, config) {
+    $.midgardmvc.services.uimessages.midgard = function(element, config) {
         this.holder = $(element);
         
-        this.config = $.midcom.services.configuration.merge(
-            $.midcom.services.uimessages.config,
+        this.config = $.midgardmvc.services.configuration.merge(
+            $.midgardmvc.services.uimessages.config,
             config
         );
         
         this.config.holder_class = this.holder.attr('class');
         
-        $.midcom.logger.log('midcom.services.uimessages.midgard inited');
-        $.midcom.logger.debug(this.config);
+        $.midgardmvc.logger.log('midcom.services.uimessages.midgard inited');
+        $.midgardmvc.logger.debug(this.config);
         
         if (this.config.enable_comet) {
             this.start_comet();
         }
         
-        $.midcom.events.signals.trigger('midcom.services.uimessages::midgard-inited');
+        $.midgardmvc.events.signals.trigger('midcom.services.uimessages::midgard-inited');
     };
-    $.extend($.midcom.services.uimessages.midgard.prototype, {
+    $.extend($.midgardmvc.services.uimessages.midgard.prototype, {
         start_comet: function() {            
             var _self = this;
             var response_method = function(resp) {
-                resp = $.midcom.helpers.json.parse(resp);
+                resp = $.midgardmvc.helpers.json.parse(resp);
                 
                 if (typeof resp.length != 'undefined') {
                     for (var i=0; i<resp.length; i++) {
@@ -53,7 +53,7 @@
     });
 
     jQuery.fn.extend({
-    	midcom_services_uimessages_midgard: function(config) {
+    	midgardmvc_services_uimessages_midgard: function(config) {
     	    return new jQuery.midcom.services.uimessages.midgard(jQuery(this), config);
     	}
     });

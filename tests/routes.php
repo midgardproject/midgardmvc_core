@@ -11,7 +11,7 @@ require_once(dirname(__FILE__) . '/../../tests/testcase.php');
 /**
  * Test that loads all components and dispatches each of their routes
  */
-class midgardmvc_core_tests_routes extends midcom_tests_testcase
+class midgardmvc_core_tests_routes extends midgardmvc_tests_testcase
 {
     
     public function testDispatchAll()

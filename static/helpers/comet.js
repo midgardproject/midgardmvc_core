@@ -7,10 +7,10 @@
 
 (function($){
     
-    $.midcom = $.midcom || {};
-    $.midcom.helpers = $.midcom.helpers || {};
+    $.midgardmvc = $.midgardmvc || {};
+    $.midgardmvc.helpers = $.midgardmvc.helpers || {};
 
-    $.midcom.helpers._cometclass = {
+    $.midgardmvc.helpers._cometclass = {
         _env: {
             _getsetters: ['api', 'callback', 'header', 'data', 'type', 'async', 'url', 'cache', 'mimeType', 'channel', 'multipart', 'timeout', 'name', 'tunnel'],
             _constructor: {
@@ -31,7 +31,7 @@
                 _parent_: null,
                 
         		addCallback: function(funct, rs_val, stat_val) {
-        		    if (! $.midcom.helpers.is_a(this.getCallback(), Array)) {
+        		    if (! $.midgardmvc.helpers.is_a(this.getCallback(), Array)) {
         		        this.callback = [];
         		    }
         			this.getCallback().push({
@@ -70,11 +70,11 @@
         		}
             },
             generate: function(parent) {
-                var inst = $.midcom.helpers.clone($.midcom.helpers._cometclass._env._constructor);
+                var inst = $.midgardmvc.helpers.clone($.midgardmvc.helpers._cometclass._env._constructor);
                 inst._parent_ = parent;
                 
-                for (var key in $.midcom.helpers._cometclass._env._getsetters) {
-                    var item = $.midcom.helpers._cometclass._env._getsetters[key];
+                for (var key in $.midgardmvc.helpers._cometclass._env._getsetters) {
+                    var item = $.midgardmvc.helpers._cometclass._env._getsetters[key];
                     var name = item, title = name.substring(0, 1).toUpperCase()+name.substring(1);
                     
                     if (Boolean(inst['get' + title]) == false) {
@@ -93,7 +93,7 @@
             var api = window.XMLHttpRequest ? XMLHttpRequest : ActiveXObject("Microsoft.XMLHTTP");
             var _self = this;
                         
-            this.env = $.midcom.helpers._cometclass._env.generate(this);
+            this.env = $.midgardmvc.helpers._cometclass._env.generate(this);
             
             this.events = {
                 readystatechange: function() {
@@ -142,7 +142,7 @@
         _listener: function() {
             var _self = this;
 
-            this.env = $.midcom.helpers._cometclass._env.generate(this);
+            this.env = $.midgardmvc.helpers._cometclass._env.generate(this);
 
             this.env.setUrl = function(val) {
     			if (this.getType() > 1) {
@@ -210,28 +210,28 @@
     		this.env.setTunnel(
     			this.env.getType() == 3 ? new ActiveXObject("htmlfile"):
     			this.env.getType() == 2 ? document.createElement("event-source"):
-    			new $.midcom.helpers.cometclass._xhr()
+    			new $.midgardmvc.helpers.cometclass._xhr()
     		);
         }
     };
-    $.midcom.helpers.cometclass = {
+    $.midgardmvc.helpers.cometclass = {
     };
-    $.extend($.midcom.helpers.cometclass, {
+    $.extend($.midgardmvc.helpers.cometclass, {
         listen: function() {
-            return new $.midcom.helpers.cometclass._listener();
+            return new $.midgardmvc.helpers.cometclass._listener();
         },
         send: function() {
-            return new $.midcom.helpers.cometclass._xhr();
+            return new $.midgardmvc.helpers.cometclass._xhr();
         },
         _listener: function() {
-            var inst = new $.midcom.helpers._cometclass._listener();
+            var inst = new $.midgardmvc.helpers._cometclass._listener();
             inst.abort = inst.actions.abort;
             inst.send = inst.actions.send;
             
             return inst;
         },
         _xhr: function() {
-            var inst = new $.midcom.helpers._cometclass._xhr();
+            var inst = new $.midgardmvc.helpers._cometclass._xhr();
             inst.abort = inst.actions.abort;
             inst.send = inst.actions.send;
             

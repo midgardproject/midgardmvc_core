@@ -11,7 +11,7 @@ require_once(dirname(__FILE__) . '/../../tests/testcase.php');
 /**
  * Test to see if midgardmvc_core is working
  */
-class midgardmvc_core_tests_core extends midcom_tests_testcase
+class midgardmvc_core_tests_core extends midgardmvc_tests_testcase
 {
     public function test_singleton()
     {

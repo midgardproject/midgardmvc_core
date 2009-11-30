@@ -28,7 +28,7 @@ if (!defined('MIDGARDMVC_TEST_RUN'))
  * This makes life much, much better when making static copies for whatever reason
  */
 if (   isset($_SERVER['REQUEST_URI'])
-    && !preg_match('%\?|/$|midcom-.+-|/.+\..+$%', $_SERVER['REQUEST_URI']) 
+    && !preg_match('%\?|/$|midgardmvc-.+-|/.+\..+$%', $_SERVER['REQUEST_URI']) 
     && $_SERVER['REQUEST_METHOD'] == 'GET')
 {
     header('HTTP/1.0 301 Moved Permanently');

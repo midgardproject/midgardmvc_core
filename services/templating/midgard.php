@@ -484,10 +484,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             if ($this->midcom->configuration->get('enable_included_list'))
             {
                 $included = get_included_files();
-                $this->midcom->log('midcom_services_templating::display', count($included) . " included files", 'info');
+                $this->midcom->log('midgardmvc_services_templating::display', count($included) . " included files", 'info');
                 foreach ($included as $filename)
                 {
-                    $this->midcom->log('midcom_services_templating::display::included', $filename, 'debug');
+                    $this->midcom->log('midgardmvc_services_templating::display::included', $filename, 'debug');
                 }
             }
         }

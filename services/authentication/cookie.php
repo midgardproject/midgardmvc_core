@@ -17,7 +17,7 @@
  */
 class midgardmvc_core_services_authentication_cookie
 {
-    private $_cookie_id = 'midcom_services_auth_backend_simple-';
+    private $_cookie_id = 'midgardmvc_services_auth_backend_simple-';
     protected $session_id = null;
     protected $user_id = null;
     

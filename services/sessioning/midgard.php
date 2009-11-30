@@ -43,7 +43,7 @@
  * by the framework. Instead use midcocm_service_session which ensures the
  * singleton pattern.
  *
- * Do <b>never</b> work directly with the $_SESSION["midcom_session_data"]
+ * Do <b>never</b> work directly with the $_SESSION["midgardmvc_session_data"]
  * variable, this is a 100% must-not, as this will break functionality.
  *
  * @package midgardmvc_core
@@ -85,11 +85,11 @@ class midgardmvc_core_services_sessioning_midgard
         /* Cache disabling made conditional based on domain/key existence */
 
         // Check for session data and load or initialize it, if necessary
-        if (! isset($_SESSION['midcom_session_data']))
+        if (! isset($_SESSION['midgardmvc_session_data']))
         {
-            $_SESSION['midcom_session_data'] = array();
-            $_SESSION['midcom_session_data']['midgardmvc_core_services_sessioning'] = array();
-            $_SESSION['midcom_session_data']['midgardmvc_core_services_sessioning']['startup'] = serialize(time());
+            $_SESSION['midgardmvc_session_data'] = array();
+            $_SESSION['midgardmvc_session_data']['midgardmvc_core_services_sessioning'] = array();
+            $_SESSION['midgardmvc_session_data']['midgardmvc_core_services_sessioning']['startup'] = serialize(time());
         }
     }
 
@@ -109,7 +109,7 @@ class midgardmvc_core_services_sessioning_midgard
             return false;
         }
         
-        if (! array_key_exists($domain, $_SESSION["midcom_session_data"]))
+        if (! array_key_exists($domain, $_SESSION["midgardmvc_session_data"]))
         {
             // debug_push_class(__CLASS__, __FUNCTION__);
             // debug_add("Request for the domain [{$domain}] failed, because the domain doesn't exist.");
@@ -117,7 +117,7 @@ class midgardmvc_core_services_sessioning_midgard
             return false;
         }
 
-        if (! array_key_exists($key, $_SESSION["midcom_session_data"][$domain]))
+        if (! array_key_exists($key, $_SESSION["midgardmvc_session_data"][$domain]))
         {
             // debug_push_class(__CLASS__, __FUNCTION__);
             // debug_add("Request for the key [{$key}] in the domain [{$domain}] failed, because the key doesn't exist.");
@@ -143,7 +143,7 @@ class midgardmvc_core_services_sessioning_midgard
             return null;
         }
         
-        return unserialize($_SESSION['midcom_session_data'][$domain][$key]);
+        return unserialize($_SESSION['midgardmvc_session_data'][$domain][$key]);
     }
 
     /**
@@ -202,7 +202,7 @@ class midgardmvc_core_services_sessioning_midgard
         if ($this->exists($domain, $key))
         {
             $data = $this->get_helper($domain, $key);
-            unset($_SESSION['midcom_session_data'][$domain][$key]);
+            unset($_SESSION['midgardmvc_session_data'][$domain][$key]);
             return $data;
         }
         else
@@ -236,7 +236,7 @@ class midgardmvc_core_services_sessioning_midgard
             $no_cache = true;
         }
         
-        $_SESSION['midcom_session_data'][$domain][$key] = serialize($value);
+        $_SESSION['midgardmvc_session_data'][$domain][$key] = serialize($value);
     }
 }
 

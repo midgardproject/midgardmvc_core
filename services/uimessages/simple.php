@@ -61,12 +61,12 @@ class midgardmvc_core_services_uimessages_simple extends midgardmvc_core_service
     private function get_messages()
     {
         // Read messages from session
-        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
-        if ($session->exists('midcom_services_uimessages_stack'))
+        $session = new midgardmvc_core_services_sessioning('midgardmvc_services_uimessages');
+        if ($session->exists('midgardmvc_services_uimessages_stack'))
         {
             // We've got old messages in the session
-            $stored_messages = $session->get('midcom_services_uimessages_stack');
-            $session->remove('midcom_services_uimessages_stack');
+            $stored_messages = $session->get('midgardmvc_services_uimessages_stack');
+            $session->remove('midgardmvc_services_uimessages_stack');
             if (! is_array($stored_messages))
             {
                 return false;
@@ -120,15 +120,15 @@ class midgardmvc_core_services_uimessages_simple extends midgardmvc_core_service
             return true;
         }
 
-        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
+        $session = new midgardmvc_core_services_sessioning('midgardmvc_services_uimessages');
 
         // Check if some other request has added stuff to session as well
-        if ($session->exists('midcom_services_uimessages_stack'))
+        if ($session->exists('midgardmvc_services_uimessages_stack'))
         {
-            $old_stack = $session->get('midcom_services_uimessages_stack');
+            $old_stack = $session->get('midgardmvc_services_uimessages_stack');
             $messages_to_store = array_merge($old_stack, $messages_to_store);
         }
-        $session->set('midcom_services_uimessages_stack', $messages_to_store);
+        $session->set('midgardmvc_services_uimessages_stack', $messages_to_store);
         $this->message_stack = array();
     }
     
@@ -195,7 +195,7 @@ class midgardmvc_core_services_uimessages_simple extends midgardmvc_core_service
 
         if (count($this->message_stack) > 0)
         {
-            $html .= "<ul class=\"midcom_services_uimessages\">\n";
+            $html .= "<ul class=\"midgardmvc_services_uimessages\">\n";
             
             if (   !is_null($key)
                 && array_key_exists($key, $this->message_stack))
@@ -227,9 +227,9 @@ class midgardmvc_core_services_uimessages_simple extends midgardmvc_core_service
      */
     private function render_message_html($message)
     {
-        $html  = "<li class=\"midcom_services_uimessages_message msu_{$message['type']}\">\n";
-        $html .= "    <div class=\"midcom_services_uimessages_message_title\">{$message['title']}</div>\n";
-        $html .= "    <div class=\"midcom_services_uimessages_message_msg\">{$message['message']}</div>\n";
+        $html  = "<li class=\"midgardmvc_services_uimessages_message msu_{$message['type']}\">\n";
+        $html .= "    <div class=\"midgardmvc_services_uimessages_message_title\">{$message['title']}</div>\n";
+        $html .= "    <div class=\"midgardmvc_services_uimessages_message_msg\">{$message['message']}</div>\n";
         $html .= "</li>\n";
         
         return $html;

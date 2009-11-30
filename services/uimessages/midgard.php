@@ -53,7 +53,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
     {
         $this->set_configuration($configuration);
         
-        midgardmvc_core::get_instance()->head->enable_jsmidcom();
+        midgardmvc_core::get_instance()->head->enable_jsmidgardmvc();
         midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/services/uimessages/midgard.js");
         midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery.dimensions-1.1.2.js");
         
@@ -93,7 +93,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
         
         if (! array_key_exists('className', $this->configuration))
         {
-            $this->configuration['className'] = 'midcom_services_uimessages_midgard';
+            $this->configuration['className'] = 'midgardmvc_services_uimessages_midgard';
         }
         
         if (array_key_exists('js', $this->configuration))
@@ -121,12 +121,12 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
     private function get_messages()
     {
         // Read messages from session
-        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
-        if ($session->exists('midcom_services_uimessages_stack'))
+        $session = new midgardmvc_core_services_sessioning('midgardmvc_services_uimessages');
+        if ($session->exists('midgardmvc_services_uimessages_stack'))
         {
             // We've got old messages in the session
-            $stored_messages = $session->get('midcom_services_uimessages_stack');
-            $session->remove('midcom_services_uimessages_stack');
+            $stored_messages = $session->get('midgardmvc_services_uimessages_stack');
+            $session->remove('midgardmvc_services_uimessages_stack');
             if (! is_array($stored_messages))
             {
                 return false;
@@ -180,15 +180,15 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
             return true;
         }
 
-        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
+        $session = new midgardmvc_core_services_sessioning('midgardmvc_services_uimessages');
 
         // Check if some other request has added stuff to session as well
-        if ($session->exists('midcom_services_uimessages_stack'))
+        if ($session->exists('midgardmvc_services_uimessages_stack'))
         {
-            $old_stack = $session->get('midcom_services_uimessages_stack');
+            $old_stack = $session->get('midgardmvc_services_uimessages_stack');
             $messages_to_store = array_merge($old_stack, $messages_to_store);
         }
-        $session->set('midcom_services_uimessages_stack', $messages_to_store);
+        $session->set('midgardmvc_services_uimessages_stack', $messages_to_store);
         $this->message_stack = array();
     }
     
@@ -280,7 +280,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
         
         $html .= "<script type=\"text/javascript\">\n";
         $html .= "    jQuery(document).ready(function() {\n";
-        $html .= "        jQuery('.{$this->configuration['className']}').midcom_services_uimessages_midgard({$this->jsconfiguration});\n";
+        $html .= "        jQuery('.{$this->configuration['className']}').midgardmvc_services_uimessages_midgard({$this->jsconfiguration});\n";
         $html .= "    });\n";
         $html .= "</script>\n";
         
@@ -366,7 +366,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
         $data = "{type: '{$message['type']}', title: '{$message['title']}', message: '" . rawurlencode($message['message']) . "'}";
         return $data;
         
-        // return "jQuery('.{$this->configuration['className']}').midcom_services_uimessages_midgard_add({$data});\n";
+        // return "jQuery('.{$this->configuration['className']}').midgardmvc_services_uimessages_midgard_add({$data});\n";
     }
     
 }

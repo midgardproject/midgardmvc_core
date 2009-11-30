@@ -1,9 +1,9 @@
-ul.midcom_services_uimessages
+ul.midgardmvc_services_uimessages
 {
     list-style: none;
     padding: 0px !important;
 }
-ul.midcom_services_uimessages li.midcom_services_uimessages_message
+ul.midgardmvc_services_uimessages li.midgardmvc_services_uimessages_message
 {
     background-color: #eeeeec;
     padding: 4px;
@@ -18,25 +18,25 @@ ul.midcom_services_uimessages li.midcom_services_uimessages_message
     -webkit-border-radius: 8px;
 }
 
-ul.midcom_services_uimessages li.msu_ok
+ul.midgardmvc_services_uimessages li.msu_ok
 {
     background-color: #4e9a06;
     color: #ffffff;
 }
 
-ul.midcom_services_uimessages li.msu_warning
+ul.midgardmvc_services_uimessages li.msu_warning
 {
     background-color: #ce5c00;
     color: #ffffff;
 }
 
-ul.midcom_services_uimessages li.msu_error
+ul.midgardmvc_services_uimessages li.msu_error
 {
     background-color: #a40000;
     color: #ffffff;
 }
 
-ul.midcom_services_uimessages li.midcom_services_uimessages_message .midcom_services_uimessages_message_title
+ul.midgardmvc_services_uimessages li.midgardmvc_services_uimessages_message .midgardmvc_services_uimessages_message_title
 {
     font-weight: bold;
 }

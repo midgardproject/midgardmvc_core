@@ -1,4 +1,4 @@
-#jsmidcom_logger
+#jsmidgardmvc_logger
 {    
     display: block;
     position: fixed;
@@ -8,7 +8,7 @@
     color: #fff;
     -moz-border-radius: 8px;
 }
-#jsmidcom_logger .jsmidcom_logger_header
+#jsmidgardmvc_logger .jsmidgardmvc_logger_header
 {
     width: 100%;
     height: 16px;
@@ -19,7 +19,7 @@
     text-align: center;
     font-weight: bold;
 }
-#jsmidcom_logger .jsmidcom_logger_messages
+#jsmidgardmvc_logger .jsmidgardmvc_logger_messages
 {
     height: 200px;
     padding: 10px;
@@ -30,7 +30,7 @@
     font-size: 13px;
 }
 
-#jsmidcom_logger .jsmidcom_logger_message
+#jsmidgardmvc_logger .jsmidgardmvc_logger_message
 {
     margin-bottom: 3px;
     padding-left: 20px;
@@ -38,19 +38,19 @@
     background-repeat: no-repeat;
 }
 
-#jsmidcom_logger .jsmidcom_logger_message_log
+#jsmidgardmvc_logger .jsmidgardmvc_logger_message_log
 {
     background-image: url('stock-icons/16x16/dialog-information.png');
 }
-#jsmidcom_logger .jsmidcom_logger_message_debug
+#jsmidgardmvc_logger .jsmidgardmvc_logger_message_debug
 {
     background-image: url('stock-icons/16x16/emblem-important.png'); 
 }
-#jsmidcom_logger .jsmidcom_logger_message_warning
+#jsmidgardmvc_logger .jsmidgardmvc_logger_message_warning
 {
     background-image: url('stock-icons/16x16/dialog-warning.png');
 }
-#jsmidcom_logger .jsmidcom_logger_message_error
+#jsmidgardmvc_logger .jsmidgardmvc_logger_message_error
 {
     background-image: url('stock-icons/16x16/dialog-error.png');
 }

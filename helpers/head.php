@@ -33,7 +33,7 @@ class midgardmvc_core_helpers_head
     private $jquery_statuses_append = array();
 
     public $jquery_enabled = false;    
-    public $jsmidcom_enabled = false;
+    public $jsmidgardmvc_enabled = false;
     
     public function __construct(&$configuration)
     {
@@ -45,7 +45,7 @@ class midgardmvc_core_helpers_head
         
         if ($this->configuration->enable_js_midcom)
         {
-            $this->enable_jsmidcom($this->configuration->js_midcom_config);
+            $this->enable_jsmidgardmvc($this->configuration->js_midcom_config);
         }
     }
     
@@ -99,9 +99,9 @@ class midgardmvc_core_helpers_head
         }
     }
     
-    public function enable_jsmidcom($config = null)
+    public function enable_jsmidgardmvc($config = null)
     {
-        if ($this->jsmidcom_enabled)
+        if ($this->jsmidgardmvc_enabled)
         {
             return;
         }
@@ -138,7 +138,7 @@ class midgardmvc_core_helpers_head
         
         $this->add_jquery_state_script($script);
         
-        $this->jsmidcom_enabled = true;
+        $this->jsmidgardmvc_enabled = true;
     }
     
     function add_jsfile($url, $prepend = false)
