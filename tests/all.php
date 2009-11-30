@@ -24,7 +24,7 @@ class midgardmvc_core_tests_all
  
     public static function suite()
     {
-        $suite = new PHPUnit_Framework_TestSuite('MidCOM Core');
+        $suite = new PHPUnit_Framework_TestSuite('Midgard MVC Core');
         
         $tests = midgardmvc_core_tests_helpers::get_tests(__FILE__, __CLASS__, array('dispatch_routes.php'));
         foreach ($tests as $test)
