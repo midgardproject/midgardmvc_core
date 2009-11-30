@@ -24,7 +24,7 @@ class midgardmvc_core_controllers_about
 
         $this->data['versions'] = array
         (
-            'midcom'  => midgardmvc_core::get_instance()->componentloader->manifests['midgardmvc_core']['version'],
+            'midgardmvc'  => midgardmvc_core::get_instance()->componentloader->manifests['midgardmvc_core']['version'],
             'midgard' => mgd_version(),
             'php'     => phpversion(),
         );
