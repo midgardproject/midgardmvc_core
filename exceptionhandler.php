@@ -15,7 +15,6 @@ class midgardmvc_core_exceptionhandler
 {
     public static function handle(Exception $exception)
     {
-        var_dump($exception);
         // Different HTTP error codes for different Exceptions
         $message_type = get_class($exception);
         switch ($message_type)
