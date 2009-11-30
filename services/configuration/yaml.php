@@ -36,20 +36,23 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             require_once 'midgardmvc_core/helpers/spyc.php';
         }
 
-        $_core = midgardmvc_core::get_instance();
-
-        if ($_core->componentloader)
+        if ($component != 'midgardmvc_core')
         {
-            // MidCOM framework is running, check for inheritance
-            while (true)
-            {
-                $component = $_core->componentloader->get_parent($component);
-                if ($component === null)
-                {
-                    break;
-                }
+            $_core = midgardmvc_core::get_instance();
 
-                $this->components[] = $component;
+            if ($_core->componentloader)
+            {
+                // MidCOM framework is running, check for inheritance
+                while (true)
+                {
+                    $component = $_core->componentloader->get_parent($component);
+                    if ($component === null)
+                    {
+                        break;
+                    }
+
+                    $this->components[] = $component;
+                }
             }
         }
 
@@ -58,8 +61,8 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         // Start with the global component config from filesystem 
         $this->load_globals();
         $this->merged = $this->globals;
-        if (   $component == 'midgardmvc_core'
-            || $_core->configuration->get('services_configuration_database_enabled'))
+        if (   $component != 'midgardmvc_core'
+            && $_core->configuration->get('services_configuration_database_enabled'))
         {
             $this->load_locals();
             if (!empty($this->locals))

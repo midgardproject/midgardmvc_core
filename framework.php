@@ -50,5 +50,9 @@ if (   isset($_SERVER['REQUEST_URI'])
 require(MIDGARDMVC_ROOT . '/midgardmvc_core/exceptionhandler.php');
 
 // Start up MidCOM
-require(MIDGARDMVC_ROOT . '/midgardmvc_core/midcom.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/services/configuration.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/services/configuration/yaml.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/component/interface.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/component/baseclass.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/interface.php');
 ?>

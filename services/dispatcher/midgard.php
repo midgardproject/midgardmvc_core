@@ -174,7 +174,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         {
             return $_core->context->core_routes;
         }
-        
+
         $_core->context->component_routes = $_core->configuration->normalize_routes($_core->context->component_instance->configuration->get('routes'));
         
         return array_merge($_core->context->component_routes, $_core->context->core_routes);

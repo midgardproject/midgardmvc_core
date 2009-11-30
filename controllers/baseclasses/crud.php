@@ -129,9 +129,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     public function get_read(array $args)
     {
         $this->load_object($args);
-        $this->load_datamanager($this->configuration->get('schemadb'));
         $this->data['object'] =& $this->object;
-
+        $this->load_datamanager($this->configuration->get('schemadb'));
+        
         if (midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
         {
             midgardmvc_core::get_instance()->head->add_link_head
