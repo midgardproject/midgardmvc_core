@@ -86,6 +86,8 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
                 $this->argv[] = $argument;
             }
         }
+        
+        $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
     private function get_subpage($parent, $child_name)
