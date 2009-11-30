@@ -1,12 +1,12 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-include MIDGARDMVC_ROOT . "/midcom_core/services/cache.php";
+include MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
 
 /**
  * Midgard cache backend.
@@ -14,9 +14,9 @@ include MIDGARDMVC_ROOT . "/midcom_core/services/cache.php";
  * This cache backend stores cached data to host's parameter
  * Primary use for the backend is for testing and developing purposes
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_cache_midgard extends midcom_core_services_cache_base implements midcom_core_services_cache
+class midgardmvc_core_services_cache_midgard extends midgardmvc_core_services_cache_base implements midgardmvc_core_services_cache
 {
     private $_db;
     private $_table;
@@ -32,7 +32,7 @@ class midcom_core_services_cache_midgard extends midcom_core_services_cache_base
         {
             return;
         }
-        $this->_core->context->host->set_parameter("midcom_core_services_cache_midgard:{$module}", $identifier, serialize($data));
+        $this->_core->context->host->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, serialize($data));
     }
 
     public function get($module, $identifier)
@@ -41,7 +41,7 @@ class midcom_core_services_cache_midgard extends midcom_core_services_cache_base
         {
             return;
         }
-        $data = $this->_core->context->host->get_parameter("midcom_core_services_cache_midgard:{$module}", $identifier);
+        $data = $this->_core->context->host->get_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier);
         if (!$data)
         {
             return;
@@ -55,7 +55,7 @@ class midcom_core_services_cache_midgard extends midcom_core_services_cache_base
         {
             return;
         }
-        $this->_core->context->host->set_parameter("midcom_core_services_cache_midgard:{$module}", $identifier, '');
+        $this->_core->context->host->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, '');
     }
 
     public function exists($module, $identifier)
@@ -77,7 +77,7 @@ class midcom_core_services_cache_midgard extends midcom_core_services_cache_base
         {
             return;
         }
-        $args = array('domain' => "midcom_core_services_cache_midgard:{$module}");
+        $args = array('domain' => "midgardmvc_core_services_cache_midgard:{$module}");
         $this->_core->context->host->delete_parameters($args);
     }    
 }

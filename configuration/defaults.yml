@@ -1,16 +1,16 @@
-services_authentication: midcom_core_services_authentication_sessionauth
+services_authentication: midgardmvc_core_services_authentication_sessionauth
 services_authentication_cookie_cookiepath: /
 services_authentication_authtype: Plaintext
-services_authorization: midcom_core_services_authorization_simple
-services_templating: midcom_core_services_templating_midgard
+services_authorization: midgardmvc_core_services_authorization_simple
+services_templating: midgardmvc_core_services_templating_midgard
 services_templating_components:
-    - midcom_core
+    - midgardmvc_core
 services_templating_database_enabled: true
 services_configuration_database_enabled: true
-services_sessioning: midcom_core_services_sessioning_midgard
-services_uimessages: midcom_core_services_uimessages_simple
-services_i18n: midcom_core_services_i18n_gettext
-services_cache: midcom_core_services_cache_midgard
+services_sessioning: midgardmvc_core_services_sessioning_midgard
+services_uimessages: midgardmvc_core_services_uimessages_simple
+services_i18n: midgardmvc_core_services_i18n_gettext
+services_cache: midgardmvc_core_services_cache_midgard
 services_cache_configuration:
     expiry: 86400
     strategy: private
@@ -35,7 +35,7 @@ date_formats:
     short: '%d/%m/%Y'
     long: '%x %X'
 metadata_lock_timeout: 30
-schemadb: file:/midcom_core/configuration/schema.yml
+schemadb: file:/midgardmvc_core/configuration/schema.yml
 default_timezone: UTC
 default_language: en_US
 uimessages_configuration:
@@ -45,7 +45,7 @@ output_filters:
 #    - net_protoblogr_filters: tidy
 routes:
     page_read:
-        controller: midcom_core_controllers_page
+        controller: midgardmvc_core_controllers_page
         action: read
         route: /
         allowed_methods:
@@ -54,7 +54,7 @@ routes:
             - POST
             - PROPFIND
     page_variants:
-        controller: midcom_core_controllers_page
+        controller: midgardmvc_core_controllers_page
         action: read
         route: '/{$token:variant}'
         allowed_methods:
@@ -63,74 +63,74 @@ routes:
             - PUT
             - PROPFIND
     page_update:
-        controller: midcom_core_controllers_page
+        controller: midgardmvc_core_controllers_page
         action: update
         route: /mgd:update
         content_entry_point: midcom-edit-page
     page_create:
-        controller: midcom_core_controllers_page
+        controller: midgardmvc_core_controllers_page
         action: create
         route: /mgd:create
         content_entry_point: midcom-edit-page
     page_delete:
-        controller: midcom_core_controllers_page
+        controller: midgardmvc_core_controllers_page
         action: delete
         route: /mgd:delete
         content_entry_point: midcom-delete-page
 #    page_configure:
-#        controller: midcom_core_controllers_configuration
+#        controller: midgardmvc_core_controllers_configuration
 #        action: configure
 #        route: /mgd:configure
 #        content_entry_point: midcom-configure-page
 #    component_configure:
-#        controller: midcom_core_controllers_configuration
+#        controller: midgardmvc_core_controllers_configuration
 #        action: configure
 #        route: '/mgd:configure/{$component}/'
 #        content_entry_point: midcom-configure-component
     cache_invalidate:
-        controller: midcom_core_controllers_cache
+        controller: midgardmvc_core_controllers_cache
         action: invalidate
         route: /mgd:cache/invalidate
         root_only: true
         content_entry_point: midcom-invalidate-cache
     midcom_about:
-        controller: midcom_core_controllers_about
+        controller: midgardmvc_core_controllers_about
         action: about
         route: /mgd:about/
         root_only: true
         content_entry_point: midcom-show-about
     midcom_about_database:
-        controller: midcom_core_controllers_about
+        controller: midgardmvc_core_controllers_about
         action: database
         route: /mgd:about/database
         root_only: true
         content_entry_point: midcom-show-database
     midcom_documentation_show:
-        controller: midcom_core_controllers_documentation
+        controller: midgardmvc_core_controllers_documentation
         action: show
         route: '/mgd:documentation@'
         root_only: true
         content_entry_point: midcom-show-documentation_file
     midcom_documentation_index:
-        controller: midcom_core_controllers_documentation
+        controller: midgardmvc_core_controllers_documentation
         action: index
         route: '/mgd:documentation/{$component}'
         root_only: true
         content_entry_point: midcom-show-documentation_index
     midcom_documentation_routes:
-        controller: midcom_core_controllers_documentation
+        controller: midgardmvc_core_controllers_documentation
         action: routes
         route: '/mgd:documentation/{$component}/routes'
         root_only: true
         content_entry_point: midcom-show-documentation_routes
     midcom_documentation_class:
-        controller: midcom_core_controllers_documentation
+        controller: midgardmvc_core_controllers_documentation
         action: class
         route: '/mgd:documentation/class/{$class}'
         root_only: true
         content_entry_point: midcom-show-documentation_class
     midcom_object_actions_json:
-        controller: midcom_core_controllers_actions
+        controller: midgardmvc_core_controllers_actions
         action: object
         route: '/mgd:actions/{$guid}.json'
         root_only: true
@@ -139,7 +139,7 @@ routes:
         allowed_methods:
             - GET
     midcom_category_actions_json:
-        controller: midcom_core_controllers_actions
+        controller: midgardmvc_core_controllers_actions
         action: category
         route: '/mgd:actions/{$guid}/{$category}.json'
         root_only: true
@@ -148,7 +148,7 @@ routes:
         allowed_methods:
             - GET
     midcom_action_categories_json:
-        controller: midcom_core_controllers_actions
+        controller: midgardmvc_core_controllers_actions
         action: categories
         route: '/mgd:actions/categories.json'
         root_only: true
@@ -157,17 +157,17 @@ routes:
         allowed_methods:
             - GET
     comet_messages:
-        controller: midcom_core_controllers_comet
+        controller: midgardmvc_core_controllers_comet
         action: messages
         route: /mgd:comet/messages
         content_entry_point: midcom-comet-messages
     serveattachment:
-        controller: midcom_core_controllers_attachment
+        controller: midgardmvc_core_controllers_attachment
         action: serve
         route: '/mgd:serveattachment/{$guid}/'
         root_only: true
     fckeditor_connector:
-        controller: midcom_helper_datamanager_controllers_fckeditor
+        controller: midgardmvc_helper_datamanager_controllers_fckeditor
         action: connector
         route: /mgd:fckeditor/
         allowed_methods:
@@ -177,13 +177,13 @@ routes:
         template_entry_point: midcom-fckeditor
         mimetype: text/xml
     login:
-        controller: midcom_core_controllers_authentication
+        controller: midgardmvc_core_controllers_authentication
         action: login
         route: /mgd:login
         root_only: true
         template_entry_point: midcom-login-form
     logout:
-        controller: midcom_core_controllers_authentication
+        controller: midgardmvc_core_controllers_authentication
         action: logout
         route: /mgd:logout
         root_only: true

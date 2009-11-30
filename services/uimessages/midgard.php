@@ -1,18 +1,18 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-include MIDGARDMVC_ROOT . "/midcom_core/services/uimessages.php";
+include MIDGARDMVC_ROOT . "/midgardmvc_core/services/uimessages.php";
 
 /**
  * Basic UI Message class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_uimessages_midgard extends midcom_core_services_uimessages_baseclass implements midcom_core_services_uimessages
+class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_services_uimessages_baseclass implements midgardmvc_core_services_uimessages
 {
     private $configuration = array();
     private $jsconfiguration = '{}';
@@ -54,8 +54,8 @@ class midcom_core_services_uimessages_midgard extends midcom_core_services_uimes
         $this->set_configuration($configuration);
         
         $_MIDCOM->head->enable_jsmidcom();
-        $_MIDCOM->head->add_jsfile(MIDCOM_STATIC_URL . "/midcom_core/services/uimessages/midgard.js");
-        $_MIDCOM->head->add_jsfile(MIDCOM_STATIC_URL . "/midcom_core/jQuery/jquery.dimensions-1.1.2.js");
+        $_MIDCOM->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/services/uimessages/midgard.js");
+        $_MIDCOM->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery.dimensions-1.1.2.js");
         
         $_MIDCOM->head->add_link_head(
             array
@@ -63,7 +63,7 @@ class midcom_core_services_uimessages_midgard extends midcom_core_services_uimes
                 'rel'   => 'stylesheet',
                 'type'  => 'text/css',
                 'media' => 'screen',
-                'href'  => MIDCOM_STATIC_URL . '/midcom_core/services/uimessages/midgard.css',
+                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/services/uimessages/midgard.css',
             )
         );
         $_MIDCOM->head->add_link_head(
@@ -73,7 +73,7 @@ class midcom_core_services_uimessages_midgard extends midcom_core_services_uimes
                 'rel'   => 'stylesheet',
                 'type'  => 'text/css',
                 'media' => 'screen',
-                'href'  => MIDCOM_STATIC_URL . '/midcom_core/services/uimessages/midgard-ie.css',
+                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/services/uimessages/midgard-ie.css',
             )
         );
         
@@ -121,7 +121,7 @@ class midcom_core_services_uimessages_midgard extends midcom_core_services_uimes
     private function get_messages()
     {
         // Read messages from session
-        $session = new midcom_core_services_sessioning('midcom_services_uimessages');
+        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
         if ($session->exists('midcom_services_uimessages_stack'))
         {
             // We've got old messages in the session
@@ -180,7 +180,7 @@ class midcom_core_services_uimessages_midgard extends midcom_core_services_uimes
             return true;
         }
 
-        $session = new midcom_core_services_sessioning('midcom_services_uimessages');
+        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
 
         // Check if some other request has added stuff to session as well
         if ($session->exists('midcom_services_uimessages_stack'))

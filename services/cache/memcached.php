@@ -1,21 +1,21 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-include MIDGARDMVC_ROOT . "/midcom_core/services/cache.php";
+include MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
 
 /**
  * memcached cache backend.
  * 
  * Backend requires Memcache PECL package for PHP, and memcached to be running.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_cache_memcached extends midcom_core_services_cache_base implements midcom_core_services_cache
+class midgardmvc_core_services_cache_memcached extends midgardmvc_core_services_cache_base implements midgardmvc_core_services_cache
 {
     private $memcache;
     private $name;

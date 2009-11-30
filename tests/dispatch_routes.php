@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -28,8 +28,8 @@ $midgard = midgard_connection::get_instance();
 $midgard->open($conffile);
 
 // Load MidCOM with the manual dispatcher
-require('midcom_core/framework.php');
-$_MIDCOM = new midcom_core_midcom('manual');
+require('midgardmvc_core/framework.php');
+$_MIDCOM = new midgardmvc_core_midcom('manual');
 
 echo "Loading all components and their routes\n\n";
 

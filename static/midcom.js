@@ -1,5 +1,5 @@
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -10,8 +10,8 @@
     $.midcom = {
         _inited: false,
         config: {
-            MIDCOM_STATIC_URL: '/midcom-static',
-            MIDCOM_PAGE_PREFIX: '/',
+            MIDGARDMVC_STATIC_URL: '/midcom-static',
+            MIDGARDMVC_PAGE_PREFIX: '/',
             enable_watchers: false,
             debug: false
         },
@@ -369,7 +369,7 @@
                 return;
             }
             
-            var url = $.midcom.config.MIDCOM_STATIC_URL + '/midcom_core/jQuery/jqXMLUtils.js';
+            var url = $.midcom.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/jQuery/jqXMLUtils.js';
             $.midcom.utils.load_script(url, callback, callback_args);
             
             $.midcom.helpers.xml.utils_loaded = true;
@@ -706,7 +706,7 @@
             	}
             },
             _load: function(callback, callback_args) {
-                var url = $.midcom.config.MIDCOM_STATIC_URL + '/midcom_core/pi.js';
+                var url = $.midcom.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/pi.js';
                 $.midcom.utils.load_script(url, callback, callback_args);
                 
                 return true;
@@ -749,7 +749,7 @@
     			return tunnel;
             },
             _load: function(callback, callback_args) {
-                var url = $.midcom.config.MIDCOM_STATIC_URL + '/midcom_core/helpers/comet.js';
+                var url = $.midcom.config.MIDGARDMVC_STATIC_URL + '/midgardmvc_core/helpers/comet.js';
                 $.midcom.utils.load_script(url, callback, callback_args);
             }
         }

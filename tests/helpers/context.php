@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,7 +11,7 @@ require_once(dirname(__FILE__) . '/../../../tests/testcase.php');
 /**
  * Test to see if contexts are working
  */
-class midcom_core_tests_helpers_context extends midcom_tests_testcase
+class midgardmvc_core_tests_helpers_context extends midcom_tests_testcase
 {
     public function setUp()
     {        

@@ -32,5 +32,5 @@ cache.delete('test_domain', 'test')
 
 # Testing configuration
 conf = configuration.configuration()
-conf.load_component_configuration("midcom_core")
+conf.load_component_configuration("midgardmvc_core")
 print conf.get('authentication_configuration', 'fallback_translation')

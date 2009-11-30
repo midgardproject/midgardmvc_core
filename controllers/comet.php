@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,11 +9,11 @@
 /**
  * Comet listeners controller
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_controllers_comet
+class midgardmvc_core_controllers_comet
 {
-    public function __construct(midcom_core_component_interface $instance)
+    public function __construct(midgardmvc_core_component_interface $instance)
     {
         $this->configuration = $_MIDCOM->configuration;
     }
@@ -65,7 +65,7 @@ class midcom_core_controllers_comet
                 ));
             }
             
-            midcom_core_helpers_comet::pushdata($messages, $type, $name);
+            midgardmvc_core_helpers_comet::pushdata($messages, $type, $name);
 
             ob_flush();
             flush();

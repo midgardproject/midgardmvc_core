@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Dispatcher is the heart of the component architecture. It is responsible for mapping requests to components
  * and their specific controllers and calling those.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-interface midcom_core_services_dispatcher
+interface midgardmvc_core_services_dispatcher
 {
     public function __construct();
     

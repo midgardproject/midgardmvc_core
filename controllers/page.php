@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,23 +9,23 @@
 /**
  * Page management controller
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_controllers_page extends midcom_core_controllers_baseclasses_crud
+class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_baseclasses_crud
 {
-    public function __construct(midcom_core_component_interface $instance)
+    public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->configuration =& midcom_core_midcom::get_instance()->configuration;
+        $this->configuration =& midgardmvc_core_midcom::get_instance()->configuration;
     }
 
     public function load_object(array $args)
     {
-        if (!isset(midcom_core_midcom::get_instance()->context->page->id))
+        if (!isset(midgardmvc_core_midcom::get_instance()->context->page->id))
         {
             throw new midcom_exception_notfound('No Midgard page found');
         }
         
-        $this->object = midcom_core_midcom::get_instance()->context->page;
+        $this->object = midgardmvc_core_midcom::get_instance()->context->page;
     }
     
     public function prepare_new_object(array $args)
@@ -37,12 +37,12 @@ class midcom_core_controllers_page extends midcom_core_controllers_baseclasses_c
     
     public function get_url_read()
     {
-        return midcom_core_midcom::get_instance()->context->prefix;
+        return midgardmvc_core_midcom::get_instance()->context->prefix;
     }
     
     public function get_url_update()
     {
-        return midcom_core_midcom::get_instance()->dispatcher->generate_url('page_update', array());
+        return midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('page_update', array());
     }
 
     public function get_read(array $args)
@@ -50,13 +50,13 @@ class midcom_core_controllers_page extends midcom_core_controllers_baseclasses_c
         parent::get_read($args);
         
         // Neutron introspection file
-        midcom_core_midcom::get_instance()->head->add_link_head
+        midgardmvc_core_midcom::get_instance()->head->add_link_head
         (
             array
             (
                 'rel' => 'neutron-introspection',
                 'type' => 'application/neutron+xml',
-                'href' => midcom_core_midcom::get_instance()->dispatcher->generate_url
+                'href' => midgardmvc_core_midcom::get_instance()->dispatcher->generate_url
                 (
                     'page_variants', array
                     (
@@ -71,10 +71,10 @@ class midcom_core_controllers_page extends midcom_core_controllers_baseclasses_c
             )
         );
 
-        if (midcom_core_midcom::get_instance()->context->route_id == 'page_variants')
+        if (midgardmvc_core_midcom::get_instance()->context->route_id == 'page_variants')
         {
             // Get variant of the page
-            $variant = new midcom_core_helpers_variants();
+            $variant = new midgardmvc_core_helpers_variants();
             $variant->datamanager = $this->data['datamanager'];
             $variant->object = $this->data['object'];
             echo $variant->handle($args['variant'], $this->dispatcher->request_method);
@@ -91,10 +91,10 @@ class midcom_core_controllers_page extends midcom_core_controllers_baseclasses_c
     {
         parent::get_read($args);
         
-        midcom_core_midcom::get_instance()->authorization->require_do('midgard:update', $this->data['object']);
+        midgardmvc_core_midcom::get_instance()->authorization->require_do('midgard:update', $this->data['object']);
 
         // Get variant of the page
-        $variant = new midcom_core_helpers_variants();
+        $variant = new midgardmvc_core_helpers_variants();
         $variant->datamanager = $this->data['datamanager'];
         $variant->object = $this->data['object'];
         echo $variant->handle($args['variant'], $this->dispatcher->request_method);
@@ -106,7 +106,7 @@ class midcom_core_controllers_page extends midcom_core_controllers_baseclasses_c
         parent::get_read($args);
 
         // Create subpage
-        midcom_core_midcom::get_instance()->authorization->require_do('midgard:create', $this->data['object']);
+        midgardmvc_core_midcom::get_instance()->authorization->require_do('midgard:create', $this->data['object']);
         $this->prepare_new_object($args);
         $this->object->name = $args['name']['identifier'];    
         $this->object->create();

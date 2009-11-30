@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,27 +9,27 @@
 /**
  * MidCOM core class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_midcom
+class midgardmvc_core_midcom
 {
     /**
-     * @var midcom_core_services_configuration_yaml
+     * @var midgardmvc_core_services_configuration_yaml
      */
     public $configuration;
 
     /**
-     * @var midcom_core_component_loader
+     * @var midgardmvc_core_component_loader
      */
     public $componentloader;
 
     /**
-     * @var midcom_core_services dispatcher
+     * @var midgardmvc_core_services dispatcher
      */
     public $dispatcher;
 
     /**
-     * @var midcom_core_helpers_context
+     * @var midgardmvc_core_helpers_context
      */
     public $context;
     
@@ -57,17 +57,17 @@ class midcom_core_midcom
     public function load_base_services($dispatcher = 'midgard')
     {
         // Load the request dispatcher
-        $dispatcher_implementation = "midcom_core_services_dispatcher_{$dispatcher}";
+        $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$dispatcher}";
         $this->dispatcher = new $dispatcher_implementation();
 
         // Load the context helper
-        $this->context = new midcom_core_helpers_context();
+        $this->context = new midgardmvc_core_helpers_context();
 
         // Load the configuration loader and load core config
-        $this->configuration = new midcom_core_services_configuration_yaml('midcom_core');
+        $this->configuration = new midgardmvc_core_services_configuration_yaml('midgardmvc_core');
 
         // Load the head helper
-        $this->head = new midcom_core_helpers_head($this->configuration);
+        $this->head = new midgardmvc_core_helpers_head($this->configuration);
         
         if ($this->configuration->development_mode)
         {
@@ -93,7 +93,7 @@ class midcom_core_midcom
             return;
         }
         
-        $interface_file = MIDGARDMVC_ROOT . "/midcom_core/services/{$service}.php";
+        $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/services/{$service}.php";
         if (!file_exists($interface_file))
         {
             throw new InvalidArgumentException("Service {$service} not installed");
@@ -125,7 +125,7 @@ class midcom_core_midcom
             {
                 try
                 {
-                    $logger = new midcom_core_helpers_log();
+                    $logger = new midgardmvc_core_helpers_log();
                 }
                 catch (Exception $e)
                 {
@@ -193,7 +193,7 @@ class midcom_core_midcom
      */
     public function autoload($class_name)
     {
-        static $components = array('midcom_core');
+        static $components = array('midgardmvc_core');
         if (   count($components) < 2
             && isset(self::$instance->componentloader))
         {
@@ -255,7 +255,7 @@ class midcom_core_midcom
         $this->log('MidCOM', "Serving {$this->dispatcher->request_method} {$this->context->uri} at " . gmdate('r'), 'info');
 
         // Let injectors do their work
-        $this->componentloader = new midcom_core_component_loader();
+        $this->componentloader = new midgardmvc_core_component_loader();
         $this->componentloader->inject_process();
 
         // Load the cache service and check for content cache
@@ -273,7 +273,7 @@ class midcom_core_midcom
             array
             (
                 'name' => 'generator',
-                'content' => "Midgard/" . mgd_version() . " MidCOM/{$this->componentloader->manifests['midcom_core']['version']} PHP/" . phpversion()
+                'content' => "Midgard/" . mgd_version() . " MidCOM/{$this->componentloader->manifests['midgardmvc_core']['version']} PHP/" . phpversion()
             )
         );
 
@@ -288,7 +288,7 @@ class midcom_core_midcom
         }
         if (!$component)
         {
-            $component = 'midcom_core';
+            $component = 'midgardmvc_core';
         }
 
         if ($this->configuration->enable_attachment_cache)
@@ -342,7 +342,7 @@ class midcom_core_midcom
         {
             // Start the full WebDAV server instance
             // FIXME: Figure out how to prevent this with Variants
-            $webdav_server = new midcom_core_helpers_webdav();
+            $webdav_server = new midgardmvc_core_helpers_webdav();
             $webdav_server->serve();
             // This will exit
         }
@@ -374,7 +374,7 @@ class midcom_core_midcom
 
         if (is_null(self::$instance))
         {
-            self::$instance = new midcom_core_midcom();
+            self::$instance = new midgardmvc_core_midcom();
             if (is_null($dispatcher))
             {
                 self::$instance->load_base_services();

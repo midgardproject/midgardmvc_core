@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,12 +11,12 @@
  *
  * The defines the structure of component instance interface class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-abstract class midcom_core_component_baseclass implements midcom_core_component_interface
+abstract class midgardmvc_core_component_baseclass implements midgardmvc_core_component_interface
 {
     /**
-     * @var midcom_core_services_configuration
+     * @var midgardmvc_core_services_configuration
      */
     public $configuration = false;
 
@@ -25,12 +25,12 @@ abstract class midcom_core_component_baseclass implements midcom_core_component_
      */
     public $folder = null;
     
-    public function __construct(midcom_core_services_configuration $configuration, midgard_page $folder = null)
+    public function __construct(midgardmvc_core_services_configuration $configuration, midgard_page $folder = null)
     {        
         $this->configuration = $configuration;
         $this->folder = $folder;
         $component = $configuration->get_component();
-        midcom_core_midcom::get_instance()->i18n->set_translation_domain($component);
+        midgardmvc_core_midcom::get_instance()->i18n->set_translation_domain($component);
     }
 
     public function initialize()

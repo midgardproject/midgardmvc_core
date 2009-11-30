@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -10,9 +10,9 @@
  * Head includes helper for MidCOM 3
  *
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_helpers_snippet
+class midgardmvc_core_helpers_snippet
 {
     public function __construct() {}
     
@@ -20,17 +20,17 @@ class midcom_core_helpers_snippet
     {
         if ($graceful)
         {
-            $content = midcom_core_helpers_snippet::get_contents_graceful($path);
+            $content = midgardmvc_core_helpers_snippet::get_contents_graceful($path);
         }
         else
         {
-            $content = midcom_core_helpers_snippet::get_contents($path);
+            $content = midgardmvc_core_helpers_snippet::get_contents($path);
         }
 
         if (!extension_loaded('syck'))
         {
             // Syck PHP extension is not loaded, include the pure-PHP implementation
-            require_once('midcom_core/helpers/spyc.php');
+            require_once('midgardmvc_core/helpers/spyc.php');
             return Spyc::YAMLLoad($content);
         }
         else

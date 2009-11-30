@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,9 +11,9 @@
  *
  * Dispatches Midgard HTTP requests to components.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_dispatcher_midgard2 extends midcom_core_services_dispatcher_midgard implements midcom_core_services_dispatcher
+class midgardmvc_core_services_dispatcher_midgard2 extends midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
     /**
      * Midgard's request configuration object

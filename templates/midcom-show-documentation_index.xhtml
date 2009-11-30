@@ -1,4 +1,4 @@
-<h1 tal:content="midcom_core/component">Component</h1>
+<h1 tal:content="midgardmvc_core/component">Component</h1>
 
 <ul metal:define-macro="midcom-show-documentation_index">
     <li tal:repeat="file files/files">
@@ -12,4 +12,4 @@
     </tal:block>
 </ul>
 
-<tal:block metal:use-macro="midcom-show-documentation_index" tal:define="files midcom_core/files" />
+<tal:block metal:use-macro="midcom-show-documentation_index" tal:define="files midgardmvc_core/files" />

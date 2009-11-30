@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,15 +11,15 @@
  *
  * Provides a way to cache lists of files for a MidCOM execution for the autoloader to use.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_cache_module_autoload
+class midgardmvc_core_services_cache_module_autoload
 {
     private $midcom = null;
 
     public function __construct()
     {
-        $this->midcom = midcom_core_midcom::get_instance();
+        $this->midcom = midgardmvc_core_midcom::get_instance();
     }
     
     public function check($identifier)

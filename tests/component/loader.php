@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,31 +11,31 @@ require_once(dirname(__FILE__) . '/../../../tests/testcase.php');
 /**
  * Test to see if contexts are working
  */
-class midcom_core_tests_component_loader extends midcom_tests_testcase
+class midgardmvc_core_tests_component_loader extends midcom_tests_testcase
 {   
 
     public function setUp()
     {
         parent::setUp();
-        $this->loader = new midcom_core_component_loader();
+        $this->loader = new midgardmvc_core_component_loader();
     }
 
     public function test_can_load_nonexisting_component()
     {
-        $loader = new midcom_core_component_loader();
+        $loader = new midgardmvc_core_component_loader();
         $this->assertTrue( !$loader->can_load(md5(time())));
     }
     
     public function test_load_nonexisting_component()
     {
-        $loader = new midcom_core_component_loader();
+        $loader = new midgardmvc_core_component_loader();
         $this->assertTrue( !$loader->load(md5(time())));
     }
 
     
     public function test_can_load_nonexisting_component_twice()
     {
-        $loader = new midcom_core_component_loader();
+        $loader = new midgardmvc_core_component_loader();
         $component_name = md5(time());
         $this->assertTrue( !$loader->can_load($component_name));
         $this->assertTrue( !$loader->can_load($component_name));
@@ -56,8 +56,8 @@ class midcom_core_tests_component_loader extends midcom_tests_testcase
     
     public function test_component_to_filepath()
     {
-        $filepath_correct = MIDGARDMVC_ROOT . '/' . 'midcom_core';
-        $filepath_loader = $this->loader->component_to_filepath('midcom_core');
+        $filepath_correct = MIDGARDMVC_ROOT . '/' . 'midgardmvc_core';
+        $filepath_loader = $this->loader->component_to_filepath('midgardmvc_core');
         $this->assertEquals($filepath_loader, $filepath_correct);
     }
     
@@ -77,10 +77,10 @@ class midcom_core_tests_component_loader extends midcom_tests_testcase
 
     public function test_can_load_component()
     {
-        $this->assertTrue($this->loader->can_load('midcom_core'));
+        $this->assertTrue($this->loader->can_load('midgardmvc_core'));
         
         // Run it a second time to test caching
-        $this->assertTrue($this->loader->can_load('midcom_core'));
+        $this->assertTrue($this->loader->can_load('midgardmvc_core'));
     }
 
     public function test_can_load_unknown_component()
@@ -90,12 +90,12 @@ class midcom_core_tests_component_loader extends midcom_tests_testcase
 
     public function test_load_component()
     {
-        $interface = $this->loader->load('midcom_core');
-        $this->assertTrue(is_a($interface, 'midcom_core_component_interface'));
+        $interface = $this->loader->load('midgardmvc_core');
+        $this->assertTrue(is_a($interface, 'midgardmvc_core_component_interface'));
         
         // Run it a second time to test caching
-        $interface = $this->loader->load('midcom_core');
-        $this->assertTrue(is_a($interface, 'midcom_core_component_interface'));
+        $interface = $this->loader->load('midgardmvc_core');
+        $this->assertTrue(is_a($interface, 'midgardmvc_core_component_interface'));
     }
 
     public function test_load_unknown_component()

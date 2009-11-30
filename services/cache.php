@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * Cache interface for MidCOM 3
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-interface midcom_core_services_cache
+interface midgardmvc_core_services_cache
 {
     /**
      * Register an array of tags to all caches
@@ -86,7 +86,7 @@ interface midcom_core_services_cache
     public function delete_all($module);
 }
 
-abstract class midcom_core_services_cache_base
+abstract class midgardmvc_core_services_cache_base
 {
     protected $_core;
     private $modules = array();
@@ -94,7 +94,7 @@ abstract class midcom_core_services_cache_base
 
     public function __construct()
     {
-        $this->_core = midcom_core_midcom::get_instance();
+        $this->_core = midgardmvc_core_midcom::get_instance();
 
         $this->configuration = $this->_core->configuration->get('services_cache_configuration');
 
@@ -154,13 +154,13 @@ abstract class midcom_core_services_cache_base
             return;
         }
         
-        $module_file = MIDGARDMVC_ROOT . "/midcom_core/services/cache/module/{$module}.php";
+        $module_file = MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache/module/{$module}.php";
         if (!file_exists($module_file))
         {
             throw new Exception("Cache module {$module} not installed");
         }
 
-        $module_class = "midcom_core_services_cache_module_{$module}";
+        $module_class = "midgardmvc_core_services_cache_module_{$module}";
         $module_config = array();
         if (isset($this->configuration["module_{$module}"]))
         {

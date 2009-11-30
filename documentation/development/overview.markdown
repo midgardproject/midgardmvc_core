@@ -260,8 +260,8 @@ Everybody interested in MidCOM 3 is welcome to install a [Midgard 8.09][15] or n
 [14]: http://phptal.motion-twin.com/manual/en/#tal-namespace
 [15]: http://www.midgard-project.org/download/
 [16]: http://trac.midgard-project.org/browser/trunk/midcom
-[17]: http://github.com/bergie/midcom/blob/67224f92c1520d94a3f50b1c25661a0504023610/midcom_core/documentation/usage.markdown
+[17]: http://github.com/bergie/midcom/blob/67224f92c1520d94a3f50b1c25661a0504023610/midgardmvc_core/documentation/usage.markdown
 [18]: http://bergie.iki.fi/blog/building_a_new_admin_interface_for_midgard.html
 [19]: http://bergie.iki.fi/blog/
-[20]: http://trac.midgard-project.org/browser/trunk/midcom/midcom_core/documentation
+[20]: http://trac.midgard-project.org/browser/trunk/midcom/midgardmvc_core/documentation
 [21]: http://phing.info/trac/

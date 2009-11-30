@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -10,9 +10,9 @@
  * Head includes helper for MidCOM 3
  *
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_helpers_head
+class midgardmvc_core_helpers_head
 {
     private $link_head = array();
     private $link_head_urls = array();
@@ -67,7 +67,7 @@ class midcom_core_helpers_head
         else
         {
             // Load from a locally installed PEAR package
-            $url = MIDCOM_STATIC_URL . "/midcom_core/jQuery/jquery-{$version}.js";
+            $url = MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-{$version}.js";
             $this->jquery_inits = "        <script type=\"text/javascript\" src=\"{$url}\"></script>\n";
         }
         
@@ -111,7 +111,7 @@ class midcom_core_helpers_head
             $this->enable_jquery();
         }
         
-        $this->add_jsfile(MIDCOM_STATIC_URL . "/midcom_core/midcom.js", true);
+        $this->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/midcom.js", true);
         
         $this->add_link_head(
             array
@@ -119,13 +119,13 @@ class midcom_core_helpers_head
                 'rel'   => 'stylesheet',
                 'type'  => 'text/css',
                 'media' => 'screen',
-                'href'  => MIDCOM_STATIC_URL . '/midcom_core/midcom.css',
+                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/midcom.css',
             )
         );
         
         $script = "jQuery.midcom.init({\n";
-        $script .= "    MIDCOM_STATIC_URL: '" . MIDCOM_STATIC_URL . "',\n";
-        $script .= "    MIDCOM_PAGE_PREFIX: '/'\n"; //$_MIDCOM->get_page_prefix()
+        $script .= "    MIDGARDMVC_STATIC_URL: '" . MIDGARDMVC_STATIC_URL . "',\n";
+        $script .= "    MIDGARDMVC_PAGE_PREFIX: '/'\n"; //$_MIDCOM->get_page_prefix()
         $script .= "});\n";
 
         if (! is_null($config))
@@ -382,7 +382,7 @@ class midcom_core_helpers_head
         {
             $url = $_SERVER['REQUEST_URI'];
         }
-        midcom_core_midcom::get_instance()->uimessages->store();
+        midgardmvc_core_midcom::get_instance()->uimessages->store();
         header("Location: $url");
         exit(0);
     }

@@ -15,7 +15,7 @@
  *
  * @package midcom_service_sessionauth
  */
-class midcom_core_services_authentication_cookie
+class midgardmvc_core_services_authentication_cookie
 {
     private $_cookie_id = 'midcom_services_auth_backend_simple-';
     protected $session_id = null;
@@ -28,7 +28,7 @@ class midcom_core_services_authentication_cookie
     public function read_login_session()
     {
         $reset_cookie = false;
-        if (   array_key_exists($this->_cookie_id, midcom_core_midcom::get_instance()->dispatcher->get)
+        if (   array_key_exists($this->_cookie_id, midgardmvc_core_midcom::get_instance()->dispatcher->get)
             && !array_key_exists($this->_cookie_id, $_COOKIE))
         {
             $reset_cookie = true;
@@ -64,7 +64,7 @@ class midcom_core_services_authentication_cookie
             $this->_cookie_id,
             "{$this->session_id}:{$this->user_id}",
             0,
-            midcom_core_midcom::get_instance()->configuration->services_authentication_cookie_cookiepath
+            midgardmvc_core_midcom::get_instance()->configuration->services_authentication_cookie_cookiepath
         );
     }
     
@@ -79,7 +79,7 @@ class midcom_core_services_authentication_cookie
                     $this->_cookie_id,
                     false,
                     time()-86400,
-                    midcom_core_midcom::get_instance()->configuration->services_authentication_cookie_cookiepath
+                    midgardmvc_core_midcom::get_instance()->configuration->services_authentication_cookie_cookiepath
                 );
     }
     

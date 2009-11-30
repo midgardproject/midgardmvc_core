@@ -1,4 +1,4 @@
-component: midcom_core
+component: midgardmvc_core
 version: 9.09.0devel
 authors:
     bergie:

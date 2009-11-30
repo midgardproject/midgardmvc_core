@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * Configuration interface for MidCOM 3
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-interface midcom_core_services_configuration
+interface midgardmvc_core_services_configuration
 {
     /**
      * Loads the configuration system for a given component
@@ -28,12 +28,12 @@ interface midcom_core_services_configuration
      *
      * @param string $key The configuration key to query.
      * @return mixed Its value
-     * @see midcom_helper_configuration::exists()
+     * @see midgardmvc_helper_configuration::exists()
      */
     public function get($key, $subkey = false);
 
     /**
-     * @see midcom_helper_configuration::get()
+     * @see midgardmvc_helper_configuration::get()
      */
     public function __get($key);
 
@@ -46,7 +46,7 @@ interface midcom_core_services_configuration
     public function exists($key);
 
     /**
-     * @see midcom_helper_configuration::exists()
+     * @see midgardmvc_helper_configuration::exists()
      */
     public function __isset($key);
 

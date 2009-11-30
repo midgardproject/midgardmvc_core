@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,12 +9,12 @@
 /**
  * Very simple attachment serving by guid.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_controllers_attachment
+class midgardmvc_core_controllers_attachment
 {
 
-    public function __construct(midcom_core_component_interface $instance)
+    public function __construct(midgardmvc_core_component_interface $instance)
     {
       $this->configuration = $instance->configuration;
     }
@@ -31,7 +31,7 @@ class midcom_core_controllers_attachment
                 
         if ($_MIDCOM->configuration->enable_attachment_cache)
         {
-            header('Location: ' . midcom_core_helpers_attachment::get_url($att));
+            header('Location: ' . midgardmvc_core_helpers_attachment::get_url($att));
             exit();
         }
 

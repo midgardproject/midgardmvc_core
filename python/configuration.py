@@ -13,7 +13,7 @@ class configuration:
         # self.components.append(component)
         
         # A bit of kludge solution but it works
-        # This way we can determine the path where the /midcom_core/python
+        # This way we can determine the path where the /midgardmvc_core/python
         # is and reverse to the root of the installation
         os.chdir(sys.path[0])
         os.chdir('..')

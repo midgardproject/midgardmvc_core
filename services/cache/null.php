@@ -1,21 +1,21 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-include MIDGARDMVC_ROOT . "/midcom_core/services/cache.php";
+include MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
 
 /**
  * null cache backend.
  * 
  * This backend does not perform any I/O operations, and therefore doesn't really cache anything.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_cache_null extends midcom_core_services_cache_base implements midcom_core_services_cache
+class midgardmvc_core_services_cache_null extends midgardmvc_core_services_cache_base implements midgardmvc_core_services_cache
 {
     public function __construct()
     {

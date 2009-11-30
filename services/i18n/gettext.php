@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,11 +9,11 @@
 /**
  * HTTP Basic authentication service for MidCOM
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
 require_once('PHPTAL.php'); // FIXME: Better place required
 require_once 'PHPTAL/GetTextTranslator.php'; // FIXME: Better place required
-class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
+class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_i18n
 {
     /**
      * Simple constructor.
@@ -27,22 +27,22 @@ class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
     public function __construct()
     {
         // Adding MidCOM core messages to the translation domains
-        bindtextdomain('midcom_core', MIDGARDMVC_ROOT . '/midcom_core/locale/');
+        bindtextdomain('midgardmvc_core', MIDGARDMVC_ROOT . '/midgardmvc_core/locale/');
         
         try 
         {
             // set language to use for this session (first valid language will 
             // be used)
-            $this->language = midcom_core_midcom::get_instance()->configuration->get('default_language');
+            $this->language = midgardmvc_core_midcom::get_instance()->configuration->get('default_language');
         }
         catch (Exception $e)
         {
             echo $e;
         }
         
-        $path = MIDGARDMVC_ROOT . "/midcom_core/locale/";
-        $this->tr['midcom_core'] = new PHPTAL_GetTextTranslator();
-        $this->tr['midcom_core']->addDomain('midcom_core', $path);
+        $path = MIDGARDMVC_ROOT . "/midgardmvc_core/locale/";
+        $this->tr['midgardmvc_core'] = new PHPTAL_GetTextTranslator();
+        $this->tr['midgardmvc_core']->addDomain('midgardmvc_core', $path);
     }
     
     public function get($key, $component = null)
@@ -63,7 +63,7 @@ class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
         // translations are going to get searched.
         if ($component_name == '')
         {
-            $component_name = 'midcom_core';
+            $component_name = 'midgardmvc_core';
         }
         
          // Checking if TAL translator is already available
@@ -102,7 +102,7 @@ class midcom_core_services_i18n_gettext implements midcom_core_services_i18n
             $this->tr[$key]->setLanguage($this->language.'.utf8', $this->language);
         }
 
-        // midcom_core_midcom::get_instance()->context->gettext_translator->setLanguage($lang.'.utf8', $lang);
+        // midgardmvc_core_midcom::get_instance()->context->gettext_translator->setLanguage($lang.'.utf8', $lang);
 
         if ($switch_content_language)
         {

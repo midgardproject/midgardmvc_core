@@ -1,18 +1,18 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-include MIDGARDMVC_ROOT . "/midcom_core/services/uimessages.php";
+include MIDGARDMVC_ROOT . "/midgardmvc_core/services/uimessages.php";
 
 /**
  * Basic UI Message class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_uimessages_simple extends midcom_core_services_uimessages_baseclass implements midcom_core_services_uimessages
+class midgardmvc_core_services_uimessages_simple extends midgardmvc_core_services_uimessages_baseclass implements midgardmvc_core_services_uimessages
 {
     /**
      * The current message stack
@@ -61,7 +61,7 @@ class midcom_core_services_uimessages_simple extends midcom_core_services_uimess
     private function get_messages()
     {
         // Read messages from session
-        $session = new midcom_core_services_sessioning('midcom_services_uimessages');
+        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
         if ($session->exists('midcom_services_uimessages_stack'))
         {
             // We've got old messages in the session
@@ -120,7 +120,7 @@ class midcom_core_services_uimessages_simple extends midcom_core_services_uimess
             return true;
         }
 
-        $session = new midcom_core_services_sessioning('midcom_services_uimessages');
+        $session = new midgardmvc_core_services_sessioning('midcom_services_uimessages');
 
         // Check if some other request has added stuff to session as well
         if ($session->exists('midcom_services_uimessages_stack'))

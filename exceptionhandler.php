@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * MidCOM 3 exception handler
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_exceptionhandler
+class midgardmvc_core_exceptionhandler
 {
     public static function handle(Exception $exception)
     {
@@ -32,7 +32,7 @@ class midcom_core_exceptionhandler
         $message = strip_tags($exception->getMessage());
         $message = str_replace("\n", ' ', $message);
 
-        $midcom = midcom_core_midcom::get_instance();
+        $midcom = midgardmvc_core_midcom::get_instance();
         $midcom->log($message_type, $message, 'warn');
         if ($midcom->firephp)
         {
@@ -77,7 +77,7 @@ class midcom_core_exceptionhandler
                     throw new Exception();
                 }
 
-                $midcom->context->set_item('midcom_core_exceptionhandler', $data);
+                $midcom->context->set_item('midgardmvc_core_exceptionhandler', $data);
                 $midcom->context->set_item('template_entry_point', 'midcom-show-error');
                 $midcom->context->set_item('cache_enabled', false);
 
@@ -132,7 +132,7 @@ class midcom_core_exceptionhandler
 /**
  * MidCOM 3 "not found" exception
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
 class midcom_exception_notfound extends Exception
 {
@@ -146,7 +146,7 @@ class midcom_exception_notfound extends Exception
 /**
  * MidCOM 3 "unauthorized" exception
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
 class midcom_exception_unauthorized extends Exception
 {
@@ -160,7 +160,7 @@ class midcom_exception_unauthorized extends Exception
 /**
  * MidCOM 3 generic HTTP error exception
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
 class midcom_exception_httperror extends Exception
 {
@@ -171,5 +171,5 @@ class midcom_exception_httperror extends Exception
     }
 }
 
-set_exception_handler(array('midcom_core_exceptionhandler', 'handle'));
+set_exception_handler(array('midgardmvc_core_exceptionhandler', 'handle'));
 ?>

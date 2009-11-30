@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -46,10 +46,10 @@
  * Do <b>never</b> work directly with the $_SESSION["midcom_session_data"]
  * variable, this is a 100% must-not, as this will break functionality.
  *
- * @package midcom_core
- * @see midcom_core_services_sessioning
+ * @package midgardmvc_core
+ * @see midgardmvc_core_services_sessioning
  */
-class midcom_core_services_sessioning_midgard
+class midgardmvc_core_services_sessioning_midgard
 {
     private $enabled = true;
     
@@ -88,8 +88,8 @@ class midcom_core_services_sessioning_midgard
         if (! isset($_SESSION['midcom_session_data']))
         {
             $_SESSION['midcom_session_data'] = array();
-            $_SESSION['midcom_session_data']['midcom_core_services_sessioning'] = array();
-            $_SESSION['midcom_session_data']['midcom_core_services_sessioning']['startup'] = serialize(time());
+            $_SESSION['midcom_session_data']['midgardmvc_core_services_sessioning'] = array();
+            $_SESSION['midcom_session_data']['midgardmvc_core_services_sessioning']['startup'] = serialize(time());
         }
     }
 
@@ -157,7 +157,7 @@ class midcom_core_services_sessioning_midgard
      * @param string $domain    The domain in which to search for the key.
      * @param mixed $key        The key to query.
      * @return mixed            The session key's data value, or NULL on failure.
-     * @see midcom_core_services_sessioning_midgard::exists()
+     * @see midgardmvc_core_services_sessioning_midgard::exists()
      */
     public function get($domain, $key)
     {
@@ -190,7 +190,7 @@ class midcom_core_services_sessioning_midgard
      * @param string $domain    The domain in which to search for the key.
      * @param mixed $key        The key to remove.
      * @return mixed            The session key's data value, or NULL on failure.
-     * @see midcom_core_services_sessioning_midgard::exists()
+     * @see midgardmvc_core_services_sessioning_midgard::exists()
      */
     public function remove($domain, $key)
     {

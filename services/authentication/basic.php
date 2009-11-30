@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * HTTP Basic authentication service for MidCOM
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_authentication_basic implements midcom_core_services_authentication
+class midgardmvc_core_services_authentication_basic implements midgardmvc_core_services_authentication
 {
     private $user = null;
     private $person = null;
@@ -25,7 +25,7 @@ class midcom_core_services_authentication_basic implements midcom_core_services_
         }
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -33,7 +33,7 @@ class midcom_core_services_authentication_basic implements midcom_core_services_
      */
     public function on_auth_changed_callback()
     {
-        midcom_core_midcom::get_instance()->authentication->on_auth_changed();
+        midgardmvc_core_midcom::get_instance()->authentication->on_auth_changed();
     }
 
     /**
@@ -41,7 +41,7 @@ class midcom_core_services_authentication_basic implements midcom_core_services_
      */
     public function on_auth_changed()
     {
-        $this->user = midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_user();
+        $this->user = midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_user();
     }
 
     public function is_user()
@@ -64,7 +64,7 @@ class midcom_core_services_authentication_basic implements midcom_core_services_
         if (is_null($this->person))
         {
             $this->person = new midgard_person($this->user->guid);
-            midcom_core_midcom::get_instance()->cache->register_object($this->person->guid);
+            midgardmvc_core_midcom::get_instance()->cache->register_object($this->person->guid);
         }
         
         return $this->person;
@@ -80,14 +80,14 @@ class midcom_core_services_authentication_basic implements midcom_core_services_
         if (!$this->sitegroup)
         {
             // In Midgard2 we need current SG name for authentication
-            $this->sitegroup = midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
+            $this->sitegroup = midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
         }
         
         $this->user = midgard_user::auth($username, $password, $this->sitegroup);
         
         if (!$this->user)
         {
-            midcom_core_midcom::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
+            midgardmvc_core_midcom::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
             return false;
         }
         

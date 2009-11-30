@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -15,7 +15,7 @@
  * 
  * <code>
  * <?php
- * $session = new midcom_core_services_sessioning();
+ * $session = new midgardmvc_core_services_sessioning();
  * if ($session->exists("mykey")) {
  *     echo "found session value: " . $session->get ("mykey") . ", removing it.";
  *     $value = $session->remove("mykey");
@@ -40,15 +40,15 @@
  * Basically this wrapper ensures the singleton pattern is maintained and provides
  * you with an easy way of lock the domain you're working in.
  * 
- * @package midcom_core
- * @see midcom_core_services_sessioning_midgard
+ * @package midgardmvc_core
+ * @see midgardmvc_core_services_sessioning_midgard
  */
-class midcom_core_services_sessioning
+class midgardmvc_core_services_sessioning
 {
     /**
      * Sessioning singleton.
      * 
-     * @var midcom_core_services_sessioning_midgard
+     * @var midgardmvc_core_services_sessioning_midgard
      * @access private
      */
     private $sessioning;
@@ -83,7 +83,7 @@ class midcom_core_services_sessioning
      */
     public function __construct($context = null)
     {
-        $this->core = midcom_core_midcom::get_instance();
+        $this->core = midgardmvc_core_midcom::get_instance();
         if (is_null($context))
         {
             $this->domain = $this->core->context->get_item('component');
@@ -117,7 +117,7 @@ class midcom_core_services_sessioning
      * 
      * @param mixed $key    The key to query.
      * @return mixed        The session key's data value, or NULL on failure.
-     * @see midcom_core_services_sessioning::exists()
+     * @see midgardmvc_core_services_sessioning::exists()
      */
     public function get($key)
     {
@@ -160,7 +160,7 @@ class midcom_core_services_sessioning
      * 
      * @param mixed $key    The key to remove.
      * @return mixed        The session key's data value, or NULL on failure.
-     * @see midcom_core_services_sessioning::exists()
+     * @see midgardmvc_core_services_sessioning::exists()
      */
     public function remove($key)
     {

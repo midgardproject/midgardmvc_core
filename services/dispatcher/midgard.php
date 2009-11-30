@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,9 +11,9 @@
  *
  * Dispatches Midgard HTTP requests to components.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_dispatcher_midgard implements midcom_core_services_dispatcher
+class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
     public $argv = array();
     public $get = array();
@@ -76,7 +76,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
             $style_id = $page->style;
         }
 
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         $_core->context->page = $page;
         $_core->context->style_id = $style_id;
@@ -106,7 +106,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
      */
     public function generate_request_identifier()
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         if (isset($_core->context->cache_request_identifier))
         {
@@ -145,13 +145,13 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
 
     public function initialize($component)
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         // In main Midgard request we dispatch the component in connection to a page
         $this->component_name = $component;
         $_core->context->component = $component;
         $_core->context->component_instance = $_core->componentloader->load($this->component_name, $_core->context->page);
-        if ($component == 'midcom_core')
+        if ($component == 'midgardmvc_core')
         {
             // MidCOM core templates are already appended
             return;
@@ -164,7 +164,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
      */
     public function get_routes()
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         $_core->context->core_routes = $_core->configuration->normalize_routes($_core->configuration->get('routes'));
         $_core->context->component_routes = array();
@@ -186,7 +186,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
      */
     public function dispatch()
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
         $this->route_definitions = $this->get_routes();
 
         $route_id_map = array();
@@ -272,7 +272,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
     
     private function dispatch_route($route)
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         $this->route_id = $route;
         $_core->context->route_id = $this->route_id;
@@ -347,7 +347,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
     
     private function is_core_route($route_id)
     {
-        $context = midcom_core_midcom::get_instance()->context;
+        $context = midgardmvc_core_midcom::get_instance()->context;
 
         if (!isset($context->component_routes))
         {
@@ -363,11 +363,11 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
 
     private function data_to_context($route_configuration, $data)
     {
-        $context = midcom_core_midcom::get_instance()->context;
+        $context = midgardmvc_core_midcom::get_instance()->context;
 
         if ($this->is_core_route($this->route_id))
         {
-            $component_name = 'midcom_core';
+            $component_name = 'midgardmvc_core';
         }
         else
         {
@@ -400,7 +400,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
      */
     public function generate_url($route_id, array $args, midgard_page $page = null, $component = null)
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         if (   is_null($page)
             && !is_null($component))
@@ -506,7 +506,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
             $this->action_arguments[$route_id] = array();
             
             // Reset variables
-            list ($route_path, $route_get, $route_args) = midcom_core_midcom::get_instance()->configuration->split_route($route);
+            list ($route_path, $route_get, $route_args) = midgardmvc_core_midcom::get_instance()->configuration->split_route($route);
             
             if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
             {
@@ -716,7 +716,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
     
     public function set_page(midgard_page $page)
     {
-        $context = midcom_core_midcom::get_instance()->context;
+        $context = midgardmvc_core_midcom::get_instance()->context;
 
         $context->page = $page;
         $context->prefix = $this->get_page_prefix();
@@ -724,7 +724,7 @@ class midcom_core_services_dispatcher_midgard implements midcom_core_services_di
     
     private function get_page_prefix()
     {
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
         $context = $_core->context;
 
 

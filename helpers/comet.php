@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,16 +9,16 @@
 /**
  * Comet helper class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_helpers_comet
+class midgardmvc_core_helpers_comet
 {
     public function __construct() {}
     
     static function set_html_headers()
     {
         $_MIDCOM->head->enable_jsmidcom();
-        $_MIDCOM->head->add_jsfile(MIDCOM_STATIC_URL . "/midcom_core/helpers/comet.js");
+        $_MIDCOM->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/helpers/comet.js");
     }
     
     static function pushdata($data, $type=1, $name='')

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,9 +11,9 @@
  *
  * Dispatches requested route and controller of components.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_dispatcher_manual implements midcom_core_services_dispatcher
+class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_services_dispatcher
 {
     public $component_name = '';
     public $component_instance = false;
@@ -24,7 +24,7 @@ class midcom_core_services_dispatcher_manual implements midcom_core_services_dis
 
     public function __construct()
     {
-        $this->_core = midcom_core_midcom::get_instance();
+        $this->_core = midgardmvc_core_midcom::get_instance();
 
         if (isset($_GET))
         {
@@ -301,7 +301,7 @@ class midcom_core_services_dispatcher_manual implements midcom_core_services_dis
 
         if ($this->is_core_route($this->route_id))
         {
-            $component_name = 'midcom_core';
+            $component_name = 'midgardmvc_core';
         }
         else
         {

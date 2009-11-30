@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
  /**
   * UI Message interface
   *
-  * @package midcom_core
+  * @package midgardmvc_core
   */
-interface midcom_core_services_uimessages
+interface midgardmvc_core_services_uimessages
 {
     /**
      * @param &$configuration Configuration for the current uimessage type
@@ -38,9 +38,9 @@ interface midcom_core_services_uimessages
 /**
  * UI Messages core class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_uimessages_baseclass
+class midgardmvc_core_services_uimessages_baseclass
 {
     public $implementation = null;
     private $configuration = array();

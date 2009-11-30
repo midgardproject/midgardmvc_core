@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,30 +9,30 @@
 /**
  * MidCOM "About Midgard CMS" controller
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_controllers_about
+class midgardmvc_core_controllers_about
 {
-    public function __construct(midcom_core_component_interface $instance)
+    public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->configuration = midcom_core_midcom::get_instance()->configuration;
+        $this->configuration = midgardmvc_core_midcom::get_instance()->configuration;
     }
     
     public function get_about(array $args)
     {
-        midcom_core_midcom::get_instance()->authorization->require_user();
+        midgardmvc_core_midcom::get_instance()->authorization->require_user();
 
         $this->data['versions'] = array
         (
-            'midcom'  => midcom_core_midcom::get_instance()->componentloader->manifests['midcom_core']['version'],
+            'midcom'  => midgardmvc_core_midcom::get_instance()->componentloader->manifests['midgardmvc_core']['version'],
             'midgard' => mgd_version(),
             'php'     => phpversion(),
         );
         
         $this->data['components'] = array();
-        foreach (midcom_core_midcom::get_instance()->componentloader->manifests as $component => $manifest)
+        foreach (midgardmvc_core_midcom::get_instance()->componentloader->manifests as $component => $manifest)
         {
-            if ($component == 'midcom_core')
+            if ($component == 'midgardmvc_core')
             {
                 continue;
             }
@@ -44,20 +44,20 @@ class midcom_core_controllers_about
             );
         }
         
-        $this->data['authors'] = midcom_core_midcom::get_instance()->componentloader->authors;
+        $this->data['authors'] = midgardmvc_core_midcom::get_instance()->componentloader->authors;
         ksort($this->data['authors']);
     }
 
     public function get_database(array $args)
     {
-        midcom_core_midcom::get_instance()->authorization->require_admin();
+        midgardmvc_core_midcom::get_instance()->authorization->require_admin();
 
-        $this->data['installed_types'] = midcom_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
+        $this->data['installed_types'] = midgardmvc_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
     }
     
     public function post_database(array $args)
     {
-        midcom_core_midcom::get_instance()->authorization->require_admin();
+        midgardmvc_core_midcom::get_instance()->authorization->require_admin();
         if (isset($_POST['update']))
         {
             //Disable limits
@@ -65,7 +65,7 @@ class midcom_core_controllers_about
             @ini_set('memory_limit', -1);
             @ini_set('max_execution_time', 0);
 
-            midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection()->set_loglevel('debug');
+            midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->set_loglevel('debug');
             
             if (!class_exists('midgard_storage'))
             {
@@ -75,19 +75,19 @@ class midcom_core_controllers_about
                     throw new Exception("Could not create Midgard class tables");
                 }
                 // And update as necessary
-                $mgdschema_types = midcom_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
+                $mgdschema_types = midgardmvc_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
                 foreach ($mgdschema_types as $type)
                 {
                     if (midgard_config::class_table_exists($type))
                     {
-                        midcom_core_midcom::get_instance()->log('midcom_core_controllers_about::post_database', "Updating database table for type {$type}", 'debug');
+                        midgardmvc_core_midcom::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Updating database table for type {$type}", 'debug');
                         if (!midgard_config::update_class_table($type))
                         {
                             throw new Exception('Could not update ' . $type . ' tables in test database');
                         }
                         continue;
                     }
-                    midcom_core_midcom::get_instance()->log('midcom_core_controllers_about::post_database', "Creating database table for type {$type}", 'debug');
+                    midgardmvc_core_midcom::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Creating database table for type {$type}", 'debug');
                     if (!midgard_config::create_class_table($type))
                     {
                         throw new Exception('Could not create ' . $type . ' tables in test database');
@@ -102,28 +102,28 @@ class midcom_core_controllers_about
                     throw new Exception("Could not create Midgard class tables");
                 }
                 // And update as necessary
-                $mgdschema_types = midcom_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
+                $mgdschema_types = midgardmvc_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
                 foreach ($mgdschema_types as $type)
                 {
                     if (midgard_storage::class_storage_exists($type))
                     {
                         // FIXME: Skip updates until http://trac.midgard-project.org/ticket/1426 is fixed
                         continue;
-                        midcom_core_midcom::get_instance()->log('midcom_core_controllers_about::post_database', "Updating storage for type {$type}", 'debug');
+                        midgardmvc_core_midcom::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Updating storage for type {$type}", 'debug');
                         if (!midgard_storage::update_class_storage($type))
                         {
                             throw new Exception('Could not update ' . $type . ' storage');
                         }
                         continue;
                     }
-                    midcom_core_midcom::get_instance()->log('midcom_core_controllers_about::post_database', "Creating storage for type {$type}", 'debug');
+                    midgardmvc_core_midcom::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Creating storage for type {$type}", 'debug');
                     if (!midgard_storage::create_class_storage($type))
                     {
                         throw new Exception('Could not create ' . $type . ' storage');
                     }
                 }
             }
-            midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection()->set_loglevel(midcom_core_midcom::get_instance()->configuration->get('log_level'));
+            midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->set_loglevel(midgardmvc_core_midcom::get_instance()->configuration->get('log_level'));
         }
         
         $this->get_database($args);

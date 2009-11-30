@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * MidCOM 3 component loader
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_component_loader
+class midgardmvc_core_component_loader
 {
     public $manifests = array();
     public $authors = array();
@@ -25,7 +25,7 @@ class midcom_core_component_loader
 
     public function __construct()
     {
-        $this->_core = midcom_core_midcom::get_instance();
+        $this->_core = midgardmvc_core_midcom::get_instance();
         $this->load_all_manifests();
     }
     
@@ -89,7 +89,7 @@ class midcom_core_component_loader
         }
 
         // Load configuration for the component
-        $configuration = new midcom_core_services_configuration_yaml($component, $folder);
+        $configuration = new midgardmvc_core_services_configuration_yaml($component, $folder);
 
         // Load the interface class
         $this->interfaces[$component] = new $component($configuration, $folder);
@@ -99,7 +99,7 @@ class midcom_core_component_loader
             $js_component_file = "{$component_directory}/static/component.js";
             if (file_exists($js_component_file))
             {
-                $this->_core->head->add_jsfile(MIDCOM_STATIC_URL . "/{$component}/component.js");
+                $this->_core->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/{$component}/component.js");
             }
         }
         
@@ -148,7 +148,7 @@ class midcom_core_component_loader
         if (!extension_loaded('syck'))
         {
             // Syck PHP extension is not loaded, include the pure-PHP implementation
-            require_once('midcom_core/helpers/spyc.php');
+            require_once('midgardmvc_core/helpers/spyc.php');
             $manifest = Spyc::YAMLLoad($manifest_yaml);
         }
         else
@@ -256,9 +256,9 @@ class midcom_core_component_loader
             $cache_identifier = "{$_MIDGARD['sitegroup']}-{$_MIDGARD['host']}";
         }
 
-        $manifests = midcom_core_midcom::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
+        $manifests = midgardmvc_core_midcom::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
 
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         if (   !$manifests
             || !is_array($manifests))

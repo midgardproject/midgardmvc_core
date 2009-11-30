@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,9 +11,9 @@
  *
  * Dispatches Midgard HTTP requests to components.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispatcher_midgard implements midcom_core_services_dispatcher
+class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
     private $_page_guid = '4a2f5298c09611de9dcf75343667cef6cef6'; // FIXME: set from config
     private $_root_page = null;
@@ -115,7 +115,7 @@ class midcom_core_services_dispatcher_mjolnir extends midcom_core_services_dispa
         $prefix = $this->_prefix;
         $uri = "{$this->_prefix}/";
 
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         $_core->context->style_id = 0;
         $_core->context->root = $this->_root_page->id;

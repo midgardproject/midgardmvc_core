@@ -3,26 +3,26 @@
     <head>
         <title></title>
         <span tal:replace="php: MIDCOM.head.print_elements()" />
-        <link rel="stylesheet" type="text/css" href="/midcom-static/midcom_core/midgard/screen.css" media="screen,projection,tv" />
-        <link rel="stylesheet" type="text/css" href="/midcom-static/midcom_core/midgard/content.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="/midcom-static/midgardmvc_core/midgard/screen.css" media="screen,projection,tv" />
+        <link rel="stylesheet" type="text/css" href="/midcom-static/midgardmvc_core/midgard/content.css" media="all" />
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-        <link rel="shortcut icon" href="/midcom-static/midcom_core/midgard/midgard.ico" type="image/vnd.microsoft.icon" />
+        <link rel="shortcut icon" href="/midcom-static/midgardmvc_core/midgard/midgard.ico" type="image/vnd.microsoft.icon" />
     </head>
     <body class="error">
         <div id="container">
             <header>
                 <div class="grouplogo">
-                    <a href="/"><img src="/midcom-static/midcom_core/midgard/midgard.gif" alt="Midgard" width="135" height="138" /></a>
+                    <a href="/"><img src="/midcom-static/midgardmvc_core/midgard/midgard.gif" alt="Midgard" width="135" height="138" /></a>
                 </div>
             </header>
             
-            <div class="errors" tal:content="midcom_core_exceptionhandler/message">Lorem ipsum</div>
+            <div class="errors" tal:content="midgardmvc_core_exceptionhandler/message">Lorem ipsum</div>
             
             <form method='post' action=''>
                 <table>
                 	<tr>
                 		<td>
-                		    <span i18n:domain="midcom_core" i18n:translate="'username'" />:
+                		    <span i18n:domain="midgardmvc_core" i18n:translate="'username'" />:
                 		</td>
                 		<td>
                 			<input type='text' name='username' spellcheck='false' /> 
@@ -30,7 +30,7 @@
                 	</tr>
                 	<tr>
                 		<td>
-                		    <span i18n:domain="midcom_core" i18n:translate="'password'" />:
+                		    <span i18n:domain="midgardmvc_core" i18n:translate="'password'" />:
                 		</td>
                 		<td>
                 			<input type='password' name='password' />
@@ -38,7 +38,7 @@
                 	</tr>
                 	<tr>
                 		<td>
-                		    <span i18n:domain="midcom_core" i18n:translate="'remember login'" />:
+                		    <span i18n:domain="midgardmvc_core" i18n:translate="'remember login'" />:
                 		</td>
                 		<td>
                 			<input type='checkbox' name='remember_login' value='1' />
@@ -46,7 +46,7 @@
                 	</tr>
                 	<tr>
                 		<td>
-                			<input type='submit' name='login' value='Login' i18n:domain="midcom_core" i18n:attributes="value login" />
+                			<input type='submit' name='login' value='Login' i18n:domain="midgardmvc_core" i18n:attributes="value login" />
                 		</td>
                 	</tr>
                 </table>

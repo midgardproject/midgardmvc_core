@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,13 +11,13 @@ require_once(dirname(__FILE__) . '/../../tests/testcase.php');
 /**
  * Test that loads all components and dispatches each of their routes
  */
-class midcom_core_tests_routes extends midcom_tests_testcase
+class midgardmvc_core_tests_routes extends midcom_tests_testcase
 {
     
     public function testDispatchAll()
     {
         return;
-        if (MIDCOM_TESTS_ENABLE_OUTPUT)
+        if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
         {
             echo __FUNCTION__ . "\n";
             echo "Loading all components and their routes\n\n";
@@ -34,7 +34,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
             }
             catch (Exception $e)
             {
-                if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "Skipping {$component_name}: component failed to load\n";
                 }
@@ -44,7 +44,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
             
             if (!$_MIDCOM->context->component_instance)
             {
-                if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "Skipping {$component_name}: component failed to load\n";
                 }
@@ -55,7 +55,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
             if (!$_MIDCOM->context->component_instance->configuration->exists('routes'))
             {
                 // No routes in this component, skip
-                if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "Skipping {$component_name}: no routes\n";
                 }
@@ -63,7 +63,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
                 continue;
             }
 
-            if (MIDCOM_TESTS_ENABLE_OUTPUT)
+            if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
             {
                 echo "Running {$component_name}...\n";
             }
@@ -83,7 +83,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
                 }
 
                 $_MIDCOM->dispatcher->set_route($route_id, $args);
-                if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                 {
                     echo "    {$route_id}: {$route_string}\n";
                 }
@@ -94,7 +94,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
                 }
                 catch (Exception $e)
                 {
-                    if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                    if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                     {
                         echo "        " . get_class($e) . ': ' . $e->getMessage() . "\n";
                     }
@@ -103,14 +103,14 @@ class midcom_core_tests_routes extends midcom_tests_testcase
 
                 try
                 {
-                    if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                    if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                     {
                         echo "        returned keys: " . implode(', ', array_keys($_MIDCOM->context->$component_name)) . "\n";
                     }
                 }
                 catch (Exception $e)
                 {
-                    if (MIDCOM_TESTS_ENABLE_OUTPUT)
+                    if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
                     {
                         echo "        returned no data\n";
                     }
@@ -119,7 +119,7 @@ class midcom_core_tests_routes extends midcom_tests_testcase
             // Delete the context
             $_MIDCOM->context->delete();
 
-            if (MIDCOM_TESTS_ENABLE_OUTPUT)
+            if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
             {
                 echo "\n";
             }

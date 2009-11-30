@@ -1,18 +1,18 @@
-<h1 tal:content="midcom_core/class">midgard_person</h1>
+<h1 tal:content="midgardmvc_core/class">midgard_person</h1>
 
-<p class="extends" tal:condition="exists: midcom_core/class_documentation/extends">
-    Extends <a class="class" tal:attributes="href midcom_core/class_documentation/extends_url" tal:content="midcom_core/class_documentation/extends">midgard_object</a>
+<p class="extends" tal:condition="exists: midgardmvc_core/class_documentation/extends">
+    Extends <a class="class" tal:attributes="href midgardmvc_core/class_documentation/extends_url" tal:content="midgardmvc_core/class_documentation/extends">midgard_object</a>
 </p>
 
-<p class="docblock" tal:content="structure midcom_core/class_documentation/docblock">
+<p class="docblock" tal:content="structure midgardmvc_core/class_documentation/docblock">
 Documentation about the class
 </p>
 
-<div class="properties" tal:condition="midcom_core/properties">
+<div class="properties" tal:condition="midgardmvc_core/properties">
     <h2>Properties</h2>
     
     <dl>
-        <dt tal:repeat="property midcom_core/properties">
+        <dt tal:repeat="property midgardmvc_core/properties">
             <div class="property_signature" tal:attributes="id property/name">
                 <a class="type" tal:condition="property/type_url" tal:attributes="href property/type_url" tal:content="property/type">midgard_metadata</a>
                 <span class="type" tal:condition="not: property/type_url" tal:content="property/type">string</span> 
@@ -28,7 +28,7 @@ Documentation about the class
     </dl>
 </div>
 
-<div class="methods" tal:condition="midcom_core/abstract_methods">
+<div class="methods" tal:condition="midgardmvc_core/abstract_methods">
     <h2>Abstract methods</h2>
     
     <p>
@@ -36,7 +36,7 @@ Documentation about the class
     </p>
     
     <dl>
-        <dt tal:repeat="method midcom_core/abstract_methods">
+        <dt tal:repeat="method midgardmvc_core/abstract_methods">
             <div class="signature" id="" tal:content="method/signature" tal:attributes="id method/name">void mgd_get_social_life()</div>
             <dd tal:content="structure method/documentation">
                 Documentation
@@ -45,11 +45,11 @@ Documentation about the class
     </dl>
 </div>
 
-<div class="methods" tal:condition="midcom_core/methods">
+<div class="methods" tal:condition="midgardmvc_core/methods">
     <h2>Methods</h2>
     
     <dl>
-        <dt tal:repeat="method midcom_core/methods">
+        <dt tal:repeat="method midgardmvc_core/methods">
             <div class="signature" id="" tal:content="method/signature" tal:attributes="id method/name">void mgd_get_social_life()</div>
             <dd tal:content="structure method/documentation">
                 Documentation
@@ -58,11 +58,11 @@ Documentation about the class
     </dl>
 </div>
 
-<div class="methods" tal:condition="midcom_core/static_methods">
+<div class="methods" tal:condition="midgardmvc_core/static_methods">
     <h2>Static methods</h2>
     
     <dl>
-        <dt tal:repeat="method midcom_core/static_methods">
+        <dt tal:repeat="method midgardmvc_core/static_methods">
             <div class="signature" id="" tal:content="method/signature" tal:attributes="id method/name">void mgd_get_social_life()</div>
             <dd tal:content="structure method/documentation">
                 Documentation
@@ -71,10 +71,10 @@ Documentation about the class
     </dl>
 </div>
 
-<div class="signals" tal:condition="midcom_core/signals">
+<div class="signals" tal:condition="midgardmvc_core/signals">
     <h2>Signals</h2>
     
     <ul>
-        <li tal:repeat="signal midcom_core/signals" tal:content="signal">signal-name</li>
+        <li tal:repeat="signal midgardmvc_core/signals" tal:content="signal">signal-name</li>
     </ul>
 </div>

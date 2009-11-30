@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -11,9 +11,9 @@
  *
  * Provides a way to cache all elements collected by the MidCOM templating service to a file.
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_cache_module_template
+class midgardmvc_core_services_cache_module_template
 {
     private $configuration = array();
     private $cache_directory = '';
@@ -96,7 +96,7 @@ class midcom_core_services_cache_module_template
         // Associate the tags with the template ID
         foreach ($tags as $tag)
         {
-            $identifiers = midcom_core_midcom::get_instance()->cache->get('template', $tag);
+            $identifiers = midgardmvc_core_midcom::get_instance()->cache->get('template', $tag);
             if (!is_array($identifiers))
             {
                 $identifiers = array();
@@ -107,7 +107,7 @@ class midcom_core_services_cache_module_template
             }
             $identifiers[] = $identifier;
 
-            midcom_core_midcom::get_instance()->cache->put('template', $tag, $identifiers);
+            midgardmvc_core_midcom::get_instance()->cache->put('template', $tag, $identifiers);
         }
     }
 
@@ -119,7 +119,7 @@ class midcom_core_services_cache_module_template
         $invalidate = array();
         foreach ($tags as $tag)
         {
-            $identifiers = midcom_core_midcom::get_instance()->cache->get('template', $tag);
+            $identifiers = midgardmvc_core_midcom::get_instance()->cache->get('template', $tag);
             if ($identifiers)
             {
                 foreach ($identifiers as $identifier)
@@ -169,7 +169,7 @@ class midcom_core_services_cache_module_template
         $directory->close();
         
         // Delete all tag/template mappings
-        midcom_core_midcom::get_instance()->cache->delete_all('template');
+        midgardmvc_core_midcom::get_instance()->cache->delete_all('template');
     }
 }
 ?>

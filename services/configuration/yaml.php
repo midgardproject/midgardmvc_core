@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * YAML-based configuration implementation for MidCOM 3
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_configuration_yaml implements midcom_core_services_configuration
+class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_services_configuration
 {
     private $component = '';
     private $components = array();
@@ -33,10 +33,10 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
         if (!$this->use_syck)
         {
             // Syck PHP extension is not loaded, include the pure-PHP implementation
-            require_once 'midcom_core/helpers/spyc.php';
+            require_once 'midgardmvc_core/helpers/spyc.php';
         }
 
-        $_core = midcom_core_midcom::get_instance();
+        $_core = midgardmvc_core_midcom::get_instance();
 
         if ($_core->componentloader)
         {
@@ -58,7 +58,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
         // Start with the global component config from filesystem 
         $this->load_globals();
         $this->merged = $this->globals;
-        if (   $component == 'midcom_core'
+        if (   $component == 'midgardmvc_core'
             || $_core->configuration->get('services_configuration_database_enabled'))
         {
             $this->load_locals();
@@ -97,7 +97,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
                     $merged[$key] = array();
                 }
                 
-                $merged[$key] = midcom_core_services_configuration_yaml::merge_configs($merged[$key], $value);
+                $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
                 continue;
             }
 
@@ -137,7 +137,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
      */
     private function load_snippet($snippet_path)
     {
-        if (!midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection())
+        if (!midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection())
         {
             return array();
         }
@@ -209,7 +209,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
     
     private function load_objects($object_guid)
     {
-        if (!midcom_core_midcom::get_instance()->dispatcher->get_midgard_connection())
+        if (!midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection())
         {
             return array();
         }
@@ -241,7 +241,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
      *
      * @param string $key The configuration key to query.
      * @return mixed Its value
-     * @see midcom_helper_configuration::exists()
+     * @see midgardmvc_helper_configuration::exists()
      */
     public function get($key, $subkey=false)
     {
@@ -270,8 +270,8 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
     
     public function set_value($key, $value)
     {
-        if (   defined('MIDCOM_TEST_RUN')
-            && MIDCOM_TEST_RUN)
+        if (   defined('MIDGARDMVC_TEST_RUN')
+            && MIDGARDMVC_TEST_RUN)
         {
             $this->merged[$key] = $value;
         }
@@ -363,7 +363,7 @@ class midcom_core_services_configuration_yaml implements midcom_core_services_co
                 );
             }
             
-            if (!midcom_core_midcom::get_instance()->configuration->get('enable_webdav'))
+            if (!midgardmvc_core_midcom::get_instance()->configuration->get('enable_webdav'))
             {
                 // Only allow GET and POST
                 $route['allowed_methods'] = array

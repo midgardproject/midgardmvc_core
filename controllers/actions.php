@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,13 +9,13 @@
 /**
  * Action introspection controllers
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_controllers_actions
+class midgardmvc_core_controllers_actions
 {
-    public function __construct(midcom_core_component_interface $instance)
+    public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->_core = midcom_core_midcom::get_instance();
+        $this->_core = midgardmvc_core_midcom::get_instance();
         $this->configuration = $this->_core->configuration;
     }
     

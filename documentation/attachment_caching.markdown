@@ -6,7 +6,7 @@ MidCOM 3 supports attachment caching. Basically it means that attachments can be
 Usage: Add following lines to the default configuration
 
     enable_attachment_cache: true
-    attachment_handler: midcom_core_helpers_attachment
+    attachment_handler: midgardmvc_core_helpers_attachment
     attachment_cache_url: http://myimageserver.com/blobs/
     attachment_cache_directory: /path/to/the/directory/accessible/by/webserver/blobs/
 

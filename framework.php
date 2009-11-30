@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -12,14 +12,14 @@ if (!defined('MIDGARDMVC_ROOT'))
     define('MIDGARDMVC_ROOT', realpath(dirname(__FILE__) . '/../'));
 }
 
-if (!defined('MIDCOM_STATIC_URL'))
+if (!defined('MIDGARDMVC_STATIC_URL'))
 {
-    define('MIDCOM_STATIC_URL', '/midcom-static');
+    define('MIDGARDMVC_STATIC_URL', '/midcom-static');
 }
 
-if (!defined('MIDCOM_TEST_RUN'))
+if (!defined('MIDGARDMVC_TEST_RUN'))
 {
-    define('MIDCOM_TEST_RUN', false);
+    define('MIDGARDMVC_TEST_RUN', false);
 }
 /**
  * Make sure the URLs not having query string (or midcom-xxx- -method signature)
@@ -47,8 +47,8 @@ if (   isset($_SERVER['REQUEST_URI'])
 }
 
 // Load the exception handler
-require(MIDGARDMVC_ROOT . '/midcom_core/exceptionhandler.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/exceptionhandler.php');
 
 // Start up MidCOM
-require(MIDGARDMVC_ROOT . '/midcom_core/midcom.php');
+require(MIDGARDMVC_ROOT . '/midgardmvc_core/midcom.php');
 ?>

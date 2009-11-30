@@ -8,7 +8,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr tal:repeat="route midcom_core/routes">
+        <tr tal:repeat="route midgardmvc_core/routes">
             <td><code tal:content="route/route">Route</code></td>
             <td><a href="#" tal:attributes="href route/controller_url" tal:content="route/controller_action">Controller</a></td>
             <td tal:content="route/template_entry_point">Main template</td>

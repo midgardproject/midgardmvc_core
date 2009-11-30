@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -16,9 +16,9 @@ $_SERVER['SCRIPT_NAME'] = $_MIDCOM->context->prefix;
 /**
  * WebDAV server for MidCOM 3
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_helpers_webdav extends HTTP_WebDAV_Server
+class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
 {
     private $locks = array();
     private $data = array();
@@ -311,13 +311,13 @@ class midcom_core_helpers_webdav extends HTTP_WebDAV_Server
             throw new midcom_exception_notfound("Not found");
         }
         
-        if (midcom_core_helpers_metadata::is_locked($this->data['object']))
+        if (midgardmvc_core_helpers_metadata::is_locked($this->data['object']))
         {
             $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Object is locked by another user {$this->data['object']->metadata->locker}");
             return "423 Locked";
         }
 
-        midcom_core_helpers_metadata::lock($this->data['object'], $shared, $options['locktoken']);
+        midgardmvc_core_helpers_metadata::lock($this->data['object'], $shared, $options['locktoken']);
         
         return "200 OK";
     }
@@ -337,14 +337,14 @@ class midcom_core_helpers_webdav extends HTTP_WebDAV_Server
             throw new midcom_exception_notfound("No lockable objects");
         }
         
-        if (midcom_core_helpers_metadata::is_locked($this->data['object']))
+        if (midgardmvc_core_helpers_metadata::is_locked($this->data['object']))
         {
             $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Object is locked by another user {$this->data['object']->metadata->locker}");
             return "423 Locked";
         }
 
         $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Unlocking");
-        midcom_core_helpers_metadata::unlock($this->data['object']);
+        midgardmvc_core_helpers_metadata::unlock($this->data['object']);
 
         return "200 OK";
     }
@@ -377,7 +377,7 @@ class midcom_core_helpers_webdav extends HTTP_WebDAV_Server
         $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Resolving {$path} for locks using manual dispatcher");
         if (is_null($this->dispatcher))
         {
-            $this->dispatcher = new midcom_core_services_dispatcher_manual();
+            $this->dispatcher = new midgardmvc_core_services_dispatcher_manual();
         }
         
         $_MIDCOM->context->create();
@@ -406,7 +406,7 @@ class midcom_core_helpers_webdav extends HTTP_WebDAV_Server
         }
         
 
-        if (!midcom_core_helpers_metadata::is_locked($this->data['object'], false))
+        if (!midgardmvc_core_helpers_metadata::is_locked($this->data['object'], false))
         {
             $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Not locked, locked = {$this->data['object']->metadata->locked}, locker = {$this->data['object']->metadata->locker}");
             $this->locks[$path] = false;
@@ -430,7 +430,7 @@ class midcom_core_helpers_webdav extends HTTP_WebDAV_Server
             $lock['scope'] = 'exclusive';
         }
         
-        $lock_token = $this->data['object']->parameter('midcom_core_helper_metadata', 'lock_token');
+        $lock_token = $this->data['object']->parameter('midgardmvc_core_helper_metadata', 'lock_token');
         if ($lock_token)
         {
             $lock['token'] = $lock_token;

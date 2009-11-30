@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * Midgard-based templating interface for MidCOM 3
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_templating_midgard implements midcom_core_services_templating
+class midgardmvc_core_services_templating_midgard implements midgardmvc_core_services_templating
 {
     private $dispatcher = null;
     private $stacks = array();
@@ -27,7 +27,7 @@ class midcom_core_services_templating_midgard implements midcom_core_services_te
     {
         $this->stacks[0] = array();
         
-        $this->midcom = midcom_core_midcom::get_instance();
+        $this->midcom = midgardmvc_core_midcom::get_instance();
     }
 
     public function get_cache_identifier()
@@ -278,7 +278,7 @@ class midcom_core_services_templating_midgard implements midcom_core_services_te
     {
         if (is_null($this->dispatcher))
         {
-            $this->dispatcher = new midcom_core_services_dispatcher_manual();
+            $this->dispatcher = new midgardmvc_core_services_dispatcher_manual();
         }
         
         if ($switch_context)

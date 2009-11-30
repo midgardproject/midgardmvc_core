@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,13 +9,13 @@
 /**
  * MidCOM documentation display controller
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_controllers_documentation
+class midgardmvc_core_controllers_documentation
 {
-    public function __construct(midcom_core_component_interface $instance)
+    public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->midgardmvc = midcom_core_midcom::get_instance();
+        $this->midgardmvc = midgardmvc_core_midcom::get_instance();
         $this->configuration = $this->midgardmvc->configuration;
     }
     
@@ -23,7 +23,7 @@ class midcom_core_controllers_documentation
     {
         $this->data['component'] = $component;
         
-        if (   $this->data['component'] != 'midcom_core'
+        if (   $this->data['component'] != 'midgardmvc_core'
             && !$this->midgardmvc->componentloader->load($this->data['component']))
         {
             throw new midcom_exception_notfound("Component {$this->data['component']} not found");
@@ -87,7 +87,7 @@ class midcom_core_controllers_documentation
 
         $this->data['files'] = $this->list_directory(MIDGARDMVC_ROOT . "/{$this->data['component']}/documentation");
 
-        $configuration = new midcom_core_services_configuration_yaml($this->data['component']);
+        $configuration = new midgardmvc_core_services_configuration_yaml($this->data['component']);
         $this->data['routes'] = $configuration->get('routes');
         if ($this->data['routes'])
         {
@@ -152,7 +152,7 @@ class midcom_core_controllers_documentation
         $this->midgardmvc->authorization->require_user();
         $this->prepare_component($args['component'], $this->data);
 
-        $configuration = new midcom_core_services_configuration_yaml($this->data['component']);
+        $configuration = new midgardmvc_core_services_configuration_yaml($this->data['component']);
         $this->data['routes'] = $configuration->get('routes');
         
         if (!$this->data['routes'])
@@ -193,10 +193,10 @@ class midcom_core_controllers_documentation
         }
         
         $reflectionclass = new midgard_reflection_class($this->data['class']);
-        $this->data['class_documentation'] = midcom_core_helpers_documentation::get_class_documentation($reflectionclass);
+        $this->data['class_documentation'] = midgardmvc_core_helpers_documentation::get_class_documentation($reflectionclass);
 
-        $this->data['properties'] = midcom_core_helpers_documentation::get_property_documentation($this->data['class']);
-        $this->data['signals'] = midcom_core_helpers_documentation::get_signal_documentation($this->data['class']);
+        $this->data['properties'] = midgardmvc_core_helpers_documentation::get_property_documentation($this->data['class']);
+        $this->data['signals'] = midgardmvc_core_helpers_documentation::get_signal_documentation($this->data['class']);
  
         $this->data['methods'] = array();
         $this->data['abstract_methods'] = array(); 
@@ -204,7 +204,7 @@ class midcom_core_controllers_documentation
         $reflectionmethods = $reflectionclass->getMethods();
         foreach ($reflectionmethods as $method)
         {
-            $method_docs = midcom_core_helpers_documentation::get_method_documentation($this->data['class'], $method->getName());
+            $method_docs = midgardmvc_core_helpers_documentation::get_method_documentation($this->data['class'], $method->getName());
             if (isset($method_docs['abstract']))
             {
                 $this->data['abstract_methods'][] = $method_docs;

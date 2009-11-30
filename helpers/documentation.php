@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * MidCOM documentation helper
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_helpers_documentation
+class midgardmvc_core_helpers_documentation
 {
     public static function get_midgard_type_signature($type)
     {
@@ -40,7 +40,7 @@ class midcom_core_helpers_documentation
     {
         $property_docs = array();
         $props = array();
-        $mgdschemas = midcom_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
+        $mgdschemas = midgardmvc_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
         if (in_array($class, $mgdschemas))
         {
             $dummy = new $class;
@@ -71,7 +71,7 @@ class midcom_core_helpers_documentation
                     'type_url' => null,
                     'link_url' => null,
                     'signature' => $property->name,
-                    'documentation' => midcom_core_helpers_documentation::render_docblock($property->getDocComment()),
+                    'documentation' => midgardmvc_core_helpers_documentation::render_docblock($property->getDocComment()),
                 );
                 $property_docs[] = $property_doc;
             }
@@ -86,7 +86,7 @@ class midcom_core_helpers_documentation
                 continue;
             }
             
-            $type = midcom_core_helpers_documentation::get_midgard_type_signature($reflectionproperty->get_midgard_type($property));
+            $type = midgardmvc_core_helpers_documentation::get_midgard_type_signature($reflectionproperty->get_midgard_type($property));
             if (   !$type
                 && $property == 'metadata')
             {
@@ -109,7 +109,7 @@ class midcom_core_helpers_documentation
                 if (   strpos($type, '_') !== false
                     && class_exists($type))
                 {
-                    $property_doc['type_url'] = midcom_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $type));
+                    $property_doc['type_url'] = midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $type));
                 }
             }
             catch (Exception $e)
@@ -118,7 +118,7 @@ class midcom_core_helpers_documentation
             
             if ($reflectionproperty->is_link($property))
             {
-                $property_doc['link_url'] = midcom_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $reflectionproperty->get_link_name($property)));
+                $property_doc['link_url'] = midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $reflectionproperty->get_link_name($property)));
                 $property_doc['link'] = $reflectionproperty->get_link_name($property) . '::' . $reflectionproperty->get_link_target($property);
             }
 
@@ -214,7 +214,7 @@ class midcom_core_helpers_documentation
         $parameters = $method->getParameters();
         foreach ($parameters as $reflectionparameter)
         {
-            $parametersdata[] = midcom_core_helpers_documentation::get_parameter_documentation($reflectionparameter);
+            $parametersdata[] = midgardmvc_core_helpers_documentation::get_parameter_documentation($reflectionparameter);
         }
         
         $arguments .= '(' . implode(', ', $parametersdata) . ')';
@@ -236,7 +236,7 @@ class midcom_core_helpers_documentation
         $method_documentation['modifiers'] = $modifiers;
         $method_documentation['arguments'] = $arguments;
         $method_documentation['signature'] = $methodsignature;
-        $method_documentation['documentation'] = midcom_core_helpers_documentation::render_docblock($method->getDocComment());
+        $method_documentation['documentation'] = midgardmvc_core_helpers_documentation::render_docblock($method->getDocComment());
         
         return $method_documentation;
     }           
@@ -244,13 +244,13 @@ class midcom_core_helpers_documentation
     public static function get_class_documentation(midgard_reflection_class $reflectionclass)
     {
         $class_documentation = array();
-        $class_documentation['docblock'] = midcom_core_helpers_documentation::render_docblock($reflectionclass->getDocComment());
+        $class_documentation['docblock'] = midgardmvc_core_helpers_documentation::render_docblock($reflectionclass->getDocComment());
         
         $parent_class = $reflectionclass->getParentClass();
         if ($parent_class)
         {
             $class_documentation['extends'] = $parent_class->getName();
-            $class_documentation['extends_url'] = midcom_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $parent_class->getName()));
+            $class_documentation['extends_url'] = midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $parent_class->getName()));
         }
         
         return $class_documentation;

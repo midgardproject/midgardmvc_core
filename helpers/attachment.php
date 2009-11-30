@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -13,10 +13,10 @@
  * or it provides methods for caching attachment to some internal or external storage
  *
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
 
-interface midcom_core_attachment
+interface midgardmvc_core_attachment
 {
     /**
       * Function implements signal connection. It should connect to on-created and on-deleted signals
@@ -46,7 +46,7 @@ interface midcom_core_attachment
     
 } 
 
-class midcom_core_helpers_attachment implements midcom_core_attachment
+class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
 {
     public function __construct() {}
     
@@ -71,14 +71,14 @@ class midcom_core_helpers_attachment implements midcom_core_attachment
     {
         if ($_MIDCOM->authorization->can_do('midgard:read', $attachment, null))
         {
-            midcom_core_helpers_attachment::add_to_cache($attachment);
+            midgardmvc_core_helpers_attachment::add_to_cache($attachment);
         }
     }
     
     // TODO: Undelete support. Basically same as create
     private function on_deleting(midgard_attachment $attachment, $params)
     {
-        midcom_core_helpers_attachment::remove_from_cache($attachment);   
+        midgardmvc_core_helpers_attachment::remove_from_cache($attachment);   
     }    
 
     /**

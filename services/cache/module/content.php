@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Provides a way to cache a page produced by MidCOM.
  *
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_services_cache_module_content
+class midgardmvc_core_services_cache_module_content
 {
     private $configuration = array();
     private $cache_directory = '';
@@ -26,19 +26,19 @@ class midcom_core_services_cache_module_content
 
     public function check($identifier)
     {
-        if (midcom_core_midcom::get_instance()->context->request_method != 'GET')
+        if (midgardmvc_core_midcom::get_instance()->context->request_method != 'GET')
         {
             return false;
         }
 
-        if (!midcom_core_midcom::get_instance()->cache->exists('content_metadata', $identifier))
+        if (!midgardmvc_core_midcom::get_instance()->cache->exists('content_metadata', $identifier))
         {
             // Nothing in meta cache about the identifier
             return false;
         }
         
         // Check the data for validity
-        $meta = midcom_core_midcom::get_instance()->cache->get('content_metadata', $identifier);
+        $meta = midgardmvc_core_midcom::get_instance()->cache->get('content_metadata', $identifier);
         
         if (   isset($data['expires'])
             && $data['expires'] < time())
@@ -50,7 +50,7 @@ class midcom_core_services_cache_module_content
         // TODO: Check "not modified" and etag sent by browser
         
         // Check that we have the content
-        if (!midcom_core_midcom::get_instance()->cache->exists('content', $identifier))
+        if (!midgardmvc_core_midcom::get_instance()->cache->exists('content', $identifier))
         {
             // Nothing in meta cache about the identifier
             return false;
@@ -59,23 +59,23 @@ class midcom_core_services_cache_module_content
         // TODO: Send the headers the original page sent
 
         // Serve the contents and exit
-        echo midcom_core_midcom::get_instance()->cache->get('content', $identifier);
+        echo midgardmvc_core_midcom::get_instance()->cache->get('content', $identifier);
         exit(0);
     }
     
     public function put($identifier, $content)
     {
-        if (!isset(midcom_core_midcom::get_instance()->context->etag))
+        if (!isset(midgardmvc_core_midcom::get_instance()->context->etag))
         {
             // Generate eTag from content
-            midcom_core_midcom::get_instance()->context->etag = md5($content);
+            midgardmvc_core_midcom::get_instance()->context->etag = md5($content);
         }
 
         // Store metadata
         $this->put_metadata($identifier);
 
         // Store the contents
-        midcom_core_midcom::get_instance()->cache->put('content', $identifier, $content);
+        midgardmvc_core_midcom::get_instance()->cache->put('content', $identifier, $content);
     }
     
     private function put_metadata($identifier)
@@ -83,11 +83,11 @@ class midcom_core_services_cache_module_content
         $metadata = array();
         
         // Store the expiry time
-        $metadata['expires'] = time() + midcom_core_midcom::get_instance()->context->cache_expiry;
+        $metadata['expires'] = time() + midgardmvc_core_midcom::get_instance()->context->cache_expiry;
         
-        $metadata['etag'] = midcom_core_midcom::get_instance()->context->etag;
+        $metadata['etag'] = midgardmvc_core_midcom::get_instance()->context->etag;
         
-        midcom_core_midcom::get_instance()->cache->put('content_metadata', $identifier, $metadata);
+        midgardmvc_core_midcom::get_instance()->cache->put('content_metadata', $identifier, $metadata);
     }
 
     /**
@@ -98,7 +98,7 @@ class midcom_core_services_cache_module_content
         // Associate the tags with the template ID
         foreach ($tags as $tag)
         {
-            $identifiers = midcom_core_midcom::get_instance()->cache->get('content_tags', $tag);
+            $identifiers = midgardmvc_core_midcom::get_instance()->cache->get('content_tags', $tag);
             if (!is_array($identifiers))
             {
                 $identifiers = array();
@@ -109,7 +109,7 @@ class midcom_core_services_cache_module_content
             }
             $identifiers[] = $identifier;
 
-            midcom_core_midcom::get_instance()->cache->put('content_tags', $tag, $identifiers);
+            midgardmvc_core_midcom::get_instance()->cache->put('content_tags', $tag, $identifiers);
         }
     }
 
@@ -121,7 +121,7 @@ class midcom_core_services_cache_module_content
         $invalidate = array();
         foreach ($tags as $tag)
         {
-            $identifiers = midcom_core_midcom::get_instance()->cache->get('content_tags', $tag);
+            $identifiers = midgardmvc_core_midcom::get_instance()->cache->get('content_tags', $tag);
             if ($identifiers)
             {
                 foreach ($identifiers as $identifier)
@@ -136,9 +136,9 @@ class midcom_core_services_cache_module_content
 
         foreach ($invalidate as $identifier)
         {
-            midcom_core_midcom::get_instance()->cache->delete('content', $identifier);
-            midcom_core_midcom::get_instance()->cache->delete('content_metadata', $identifier);
-            midcom_core_midcom::get_instance()->cache->delete('content_tags', $identifier);
+            midgardmvc_core_midcom::get_instance()->cache->delete('content', $identifier);
+            midgardmvc_core_midcom::get_instance()->cache->delete('content_metadata', $identifier);
+            midgardmvc_core_midcom::get_instance()->cache->delete('content_tags', $identifier);
         }
     }
 
@@ -148,9 +148,9 @@ class midcom_core_services_cache_module_content
     public function invalidate_all()
     {
         // Delete all entries of both content, meta and tag cache
-        midcom_core_midcom::get_instance()->cache->delete_all('content');
-        midcom_core_midcom::get_instance()->cache->delete_all('content_metadata');
-        midcom_core_midcom::get_instance()->cache->delete_all('content_tags');
+        midgardmvc_core_midcom::get_instance()->cache->delete_all('content');
+        midgardmvc_core_midcom::get_instance()->cache->delete_all('content_metadata');
+        midgardmvc_core_midcom::get_instance()->cache->delete_all('content_tags');
     }
 }
 ?>

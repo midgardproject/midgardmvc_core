@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -10,9 +10,9 @@
  * Context data management helper for MidCOM 3
  *
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core_helpers_context
+class midgardmvc_core_helpers_context
 {
     private $contexts = array();
     private $current_context = 0;
@@ -34,7 +34,7 @@ class midcom_core_helpers_context
             'template_engine'      => 'tal',
             'template_entry_point' => 'ROOT',
             'content_entry_point'  => 'content',
-            'component'            => 'midcom_core'
+            'component'            => 'midgardmvc_core'
         );
         $this->current_context = $context_id;
     }

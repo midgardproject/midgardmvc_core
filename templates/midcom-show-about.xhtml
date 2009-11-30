@@ -8,18 +8,18 @@
         <thead>
             <tr typeof="doap:Project" about="http://www.midgard-project.org/documentation/midcom/">
                 <th property="doap:name">MidCOM</th>
-                <td tal:content="midcom_core/versions/midcom" property="doap:revision">9</td>
+                <td tal:content="midgardmvc_core/versions/midcom" property="doap:revision">9</td>
             </tr>
             <tr typeof="doap:Project" about="http://www.midgard-project.org/">
                 <th property="doap:name">Midgard</th>
-                <td tal:content="midcom_core/versions/midgard" property="doap:revision">9</td>
+                <td tal:content="midgardmvc_core/versions/midgard" property="doap:revision">9</td>
             </tr>
             <tr typeof="doap:Project" about="http://www.php.net/">
                 <th property="doap:name">PHP</th>
-                <td tal:content="midcom_core/versions/php" property="doap:revision">5</td>
+                <td tal:content="midgardmvc_core/versions/php" property="doap:revision">5</td>
             </tr>
         </thead>
-        <tbody tal:repeat="component midcom_core/components">
+        <tbody tal:repeat="component midgardmvc_core/components">
             <tr>
                 <th tal:content="component/name">Some component</th>
                 <td tal:content="component/version">1.0</td>
@@ -49,7 +49,7 @@
     
     <h2>Credits</h2>
     
-    <ul class="developers" tal:repeat="author midcom_core/authors">
+    <ul class="developers" tal:repeat="author midgardmvc_core/authors">
         <li class="vcard" typeof="foaf:Person" about="http://example.net" tal:attributes="about author/url">
             <link rel="foaf:member" href="http://www.midgard-project.org/" />
             <span class="fn" rel="foaf:member">
@@ -62,7 +62,7 @@
     
     <div class="logos">
         <a href="http://www.gnu.org/licenses/lgpl.html" rel="license">
-            <img src="/midcom-static/midcom_core/midgard/lgplv3.png" alt="LGPLv3" />
+            <img src="/midcom-static/midgardmvc_core/midgard/lgplv3.png" alt="LGPLv3" />
         </a>
     </div>
 </div>

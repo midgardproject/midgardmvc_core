@@ -9,7 +9,7 @@ import sys
 class cache_midgard:
     cnc = ''
     host = ''
-    cache_domain = 'midcom_core_services_cache_midgard'
+    cache_domain = 'midgardmvc_core_services_cache_midgard'
     
     def __init__(self, cnc, host):
         self.cnc = cnc

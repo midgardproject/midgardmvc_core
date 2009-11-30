@@ -1,6 +1,6 @@
 <?php
 /**
- * @package midcom_core
+ * @package midgardmvc_core
  * @author The Midgard Project, http://www.midgard-project.org
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
@@ -9,9 +9,9 @@
 /**
  * MidCOM interface class
  *
- * @package midcom_core
+ * @package midgardmvc_core
  */
-class midcom_core extends midcom_core_component_baseclass
+class midgardmvc_core extends midgardmvc_core_component_baseclass
 {
     public function get_object_actions(midgard_page &$object, $variant = null)
     {
@@ -27,15 +27,15 @@ class midcom_core extends midcom_core_component_baseclass
         (
             'url' => $_MIDCOM->dispatcher->generate_url('page_update', array(), $object),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('update', 'midcom_core'),
-            'icon' => 'midcom_core/stock-icons/16x16/update.png',
+            'label' => $_MIDCOM->i18n->get('update', 'midgardmvc_core'),
+            'icon' => 'midgardmvc_core/stock-icons/16x16/update.png',
         );
         $actions['delete'] = array
         (
             'url' => $_MIDCOM->dispatcher->generate_url('page_delete', array(), $object),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('delete', 'midcom_core'),
-            'icon' => 'midcom_core/stock-icons/16x16/delete.png',
+            'label' => $_MIDCOM->i18n->get('delete', 'midgardmvc_core'),
+            'icon' => 'midgardmvc_core/stock-icons/16x16/delete.png',
         );
         
         return $actions;
@@ -55,8 +55,8 @@ class midcom_core extends midcom_core_component_baseclass
         (
             'url' => $_MIDCOM->dispatcher->generate_url('logout', array()),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('logout', 'midcom_core'),
-            'icon' => 'midcom_core/stock-icons/16x16/exit.png',
+            'label' => $_MIDCOM->i18n->get('logout', 'midgardmvc_core'),
+            'icon' => 'midgardmvc_core/stock-icons/16x16/exit.png',
         );
         
         return $actions;
@@ -76,8 +76,8 @@ class midcom_core extends midcom_core_component_baseclass
         (
             'url' => $_MIDCOM->dispatcher->generate_url('page_create', array()),
             'method' => 'GET',
-            'label' => $_MIDCOM->i18n->get('create folder', 'midcom_core'),
-            'icon' => 'midcom_core/stock-icons/16x16/folder.png',
+            'label' => $_MIDCOM->i18n->get('create folder', 'midgardmvc_core'),
+            'icon' => 'midgardmvc_core/stock-icons/16x16/folder.png',
         );
         
         return $actions;
