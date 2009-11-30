@@ -30,7 +30,7 @@ abstract class midgardmvc_core_component_baseclass implements midgardmvc_core_co
         $this->configuration = $configuration;
         $this->folder = $folder;
         $component = $configuration->get_component();
-        midgardmvc_core_midcom::get_instance()->i18n->set_translation_domain($component);
+        midgardmvc_core::get_instance()->i18n->set_translation_domain($component);
     }
 
     public function initialize()

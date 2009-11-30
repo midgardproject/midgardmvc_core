@@ -76,7 +76,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             $style_id = $page->style;
         }
 
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         $_core->context->page = $page;
         $_core->context->style_id = $style_id;
@@ -106,7 +106,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function generate_request_identifier()
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         if (isset($_core->context->cache_request_identifier))
         {
@@ -145,7 +145,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
 
     public function initialize($component)
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         // In main Midgard request we dispatch the component in connection to a page
         $this->component_name = $component;
@@ -164,7 +164,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function get_routes()
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         $_core->context->core_routes = $_core->configuration->normalize_routes($_core->configuration->get('routes'));
         $_core->context->component_routes = array();
@@ -186,7 +186,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function dispatch()
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
         $this->route_definitions = $this->get_routes();
 
         $route_id_map = array();
@@ -213,7 +213,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         if (!$this->route_matches($route_id_map))
         {
             // TODO: Check message
-            throw new midcom_exception_notfound('No route matches current URL');
+            throw new midgardmvc_exception_notfound('No route matches current URL');
         }
         unset($route_id_map);
 
@@ -227,7 +227,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             }
             catch (Exception $e)
             {
-                if (get_class($e) == 'midcom_exception_unauthorized')
+                if (get_class($e) == 'midgardmvc_exception_unauthorized')
                 {
                     // ACL exceptions override anything else
                     throw $e;
@@ -249,10 +249,10 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             {
                 switch (get_class($exception))
                 {
-                    case 'midcom_exception_unauthorized':
+                    case 'midgardmvc_exception_unauthorized':
                         throw $exception;
                         // This will exit
-                    case 'midcom_exception_httperror':
+                    case 'midgardmvc_exception_httperror':
                         if (   $exception->getCode() != 405
                             || count($this->exceptions_stack) == 1)
                         {
@@ -266,13 +266,13 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                 }
             }
             // 404 MultiFail
-            throw new midcom_exception_notfound($messages);
+            throw new midgardmvc_exception_notfound($messages);
         }
     }
     
     private function dispatch_route($route)
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         $this->route_id = $route;
         $_core->context->route_id = $this->route_id;
@@ -309,13 +309,13 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                     $action_method = "action_{$selected_route_configuration['action']}";
                     if (!method_exists($controller, $action_method))
                     {
-                        throw new midcom_exception_httperror("{$this->request_method} action {$selected_route_configuration['action']} not found", 405);
+                        throw new midgardmvc_exception_httperror("{$this->request_method} action {$selected_route_configuration['action']} not found", 405);
                     }
                     $controller->$action_method($this->route_id, $data, $this->action_arguments[$this->route_id]);
                 }                    
                 else
                 {
-                    throw new midcom_exception_httperror("{$this->request_method} not allowed", 405);
+                    throw new midgardmvc_exception_httperror("{$this->request_method} not allowed", 405);
                 }
             }
             else
@@ -347,7 +347,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     
     private function is_core_route($route_id)
     {
-        $context = midgardmvc_core_midcom::get_instance()->context;
+        $context = midgardmvc_core::get_instance()->context;
 
         if (!isset($context->component_routes))
         {
@@ -363,7 +363,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
 
     private function data_to_context($route_configuration, $data)
     {
-        $context = midgardmvc_core_midcom::get_instance()->context;
+        $context = midgardmvc_core::get_instance()->context;
 
         if ($this->is_core_route($this->route_id))
         {
@@ -400,7 +400,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function generate_url($route_id, array $args, midgard_page $page = null, $component = null)
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         if (   is_null($page)
             && !is_null($component))
@@ -506,7 +506,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             $this->action_arguments[$route_id] = array();
             
             // Reset variables
-            list ($route_path, $route_get, $route_args) = midgardmvc_core_midcom::get_instance()->configuration->split_route($route);
+            list ($route_path, $route_get, $route_args) = midgardmvc_core::get_instance()->configuration->split_route($route);
             
             if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
             {
@@ -716,7 +716,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     
     public function set_page(midgard_page $page)
     {
-        $context = midgardmvc_core_midcom::get_instance()->context;
+        $context = midgardmvc_core::get_instance()->context;
 
         $context->page = $page;
         $context->prefix = $this->get_page_prefix();
@@ -724,7 +724,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     
     private function get_page_prefix()
     {
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
         $context = $_core->context;
 
 

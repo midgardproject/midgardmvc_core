@@ -25,7 +25,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         }
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -33,7 +33,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
      */
     public function on_auth_changed_callback()
     {
-        midgardmvc_core_midcom::get_instance()->authentication->on_auth_changed();
+        midgardmvc_core::get_instance()->authentication->on_auth_changed();
     }
 
     /**
@@ -41,7 +41,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
      */
     public function on_auth_changed()
     {
-        $this->user = midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_user();
+        $this->user = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_user();
     }
 
     public function is_user()
@@ -64,7 +64,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         if (is_null($this->person))
         {
             $this->person = new midgard_person($this->user->guid);
-            midgardmvc_core_midcom::get_instance()->cache->register_object($this->person->guid);
+            midgardmvc_core::get_instance()->cache->register_object($this->person->guid);
         }
         
         return $this->person;
@@ -80,14 +80,14 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         if (!$this->sitegroup)
         {
             // In Midgard2 we need current SG name for authentication
-            $this->sitegroup = midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
+            $this->sitegroup = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
         }
         
         $this->user = midgard_user::auth($username, $password, $this->sitegroup);
         
         if (!$this->user)
         {
-            midgardmvc_core_midcom::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
+            midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
             return false;
         }
         

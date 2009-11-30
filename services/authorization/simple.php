@@ -22,7 +22,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
      */
     public function __construct()
     {
-        $this->_core = midgardmvc_core_midcom::get_instance();
+        $this->_core = midgardmvc_core::get_instance();
 
         $mgdschemas = $this->_core->dispatcher->get_mgdschema_classes();
         foreach ($mgdschemas as $mgdschema)
@@ -44,7 +44,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
         if (!$this->_core->authorization->can_do('midgard:read', $object))
         {
             // Note: this is a *hook* so the object is still empty
-            throw new midcom_exception_unauthorized("Not authorized to read " . get_class($object));
+            throw new midgardmvc_exception_unauthorized("Not authorized to read " . get_class($object));
         }
     }
    
@@ -52,7 +52,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
     {
         if (!$this->_core->authorization->can_do('midgard:create', $object))
         {
-            throw new midcom_exception_unauthorized("Not authorized to create " . get_class($object) . " {$object->guid}");
+            throw new midgardmvc_exception_unauthorized("Not authorized to create " . get_class($object) . " {$object->guid}");
         }
     }
     
@@ -60,7 +60,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
     {
         if (!$this->_core->authorization->can_do('midgard:update', $object))
         {
-            throw new midcom_exception_unauthorized("Not authorized to update " . get_class($object) . " {$object->guid}");
+            throw new midgardmvc_exception_unauthorized("Not authorized to update " . get_class($object) . " {$object->guid}");
         }
     }
     
@@ -68,7 +68,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
     {
         if (!$this->_core->authorization->can_do('midgard:delete', $object))
         {
-            throw new midcom_exception_unauthorized("Not authorized to delete " . get_class($object) . " {$object->guid}");
+            throw new midgardmvc_exception_unauthorized("Not authorized to delete " . get_class($object) . " {$object->guid}");
         }
     }
     
@@ -107,7 +107,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
     {
         if (!$this->can_do($privilege, $object, $user))
         {
-            throw new midcom_exception_unauthorized("Not authorized to {$privilege} " . get_class($object) . " {$object->guid}");
+            throw new midgardmvc_exception_unauthorized("Not authorized to {$privilege} " . get_class($object) . " {$object->guid}");
         }
     }
     
@@ -115,7 +115,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
     {
         if (!$this->_core->authentication->is_user())
         {
-            throw new midcom_exception_unauthorized("Authentication required");
+            throw new midgardmvc_exception_unauthorized("Authentication required");
         }
     }
     
@@ -125,7 +125,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
         
         if (!$this->_core->authentication->get_user()->is_admin())
         {
-            throw new midcom_exception_unauthorized("Administrative privileges required");   
+            throw new midgardmvc_exception_unauthorized("Administrative privileges required");   
         }
     }
     

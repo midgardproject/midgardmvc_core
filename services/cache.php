@@ -94,7 +94,7 @@ abstract class midgardmvc_core_services_cache_base
 
     public function __construct()
     {
-        $this->_core = midgardmvc_core_midcom::get_instance();
+        $this->_core = midgardmvc_core::get_instance();
 
         $this->configuration = $this->_core->configuration->get('services_cache_configuration');
 

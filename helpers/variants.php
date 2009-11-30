@@ -33,7 +33,7 @@ class midgardmvc_core_helpers_variants
                 return $this->handle_put($variant);
                 break;
             default:
-                throw new midcom_exception_httperror("{$request_method} not allowed", 405);
+                throw new midgardmvc_exception_httperror("{$request_method} not allowed", 405);
         }
     }
 
@@ -42,12 +42,12 @@ class midgardmvc_core_helpers_variants
         if (!isset($this->datamanager))
         {
             // TODO: non-DM variants
-            throw new midcom_exception_notfound("Datamanager not available");
+            throw new midgardmvc_exception_notfound("Datamanager not available");
         }
 
         if ($variant['type'] != 'xml')
         {
-            throw new midcom_exception_notfound("Neutron Protocol introspection available only as XML");
+            throw new midgardmvc_exception_notfound("Neutron Protocol introspection available only as XML");
         }
 
         $_MIDCOM->context->mimetype = 'application/neutron+xml';
@@ -82,13 +82,13 @@ class midgardmvc_core_helpers_variants
         if (!isset($this->datamanager))
         {
             // TODO: non-DM variants
-            throw new midcom_exception_notfound("Datamanager not available");
+            throw new midgardmvc_exception_notfound("Datamanager not available");
         }
         
         $variant_field = $variant['variant'];
         if (!isset($this->datamanager->types->$variant_field))
         {
-            throw new midcom_exception_notfound("{$variant_field} not available");
+            throw new midgardmvc_exception_notfound("{$variant_field} not available");
         }
     }
 
@@ -120,7 +120,7 @@ class midgardmvc_core_helpers_variants
 
         if (!$this->datamanager->save())
         {
-            throw new midcom_exception_httperror("Saving {$variant_field} failed");
+            throw new midgardmvc_exception_httperror("Saving {$variant_field} failed");
         }
         
         // Return original content
@@ -135,7 +135,7 @@ class midgardmvc_core_helpers_variants
         $type_field = "as_{$variant['type']}";
         if (!isset($this->datamanager->types->$variant_field->$type_field))
         {
-            throw new midcom_exception_notfound("Type {$type_field} of {$variant_field} not available");
+            throw new midgardmvc_exception_notfound("Type {$type_field} of {$variant_field} not available");
         }
 
         // TODO: Other headers

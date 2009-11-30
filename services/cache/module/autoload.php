@@ -19,7 +19,7 @@ class midgardmvc_core_services_cache_module_autoload
 
     public function __construct()
     {
-        $this->midcom = midgardmvc_core_midcom::get_instance();
+        $this->midcom = midgardmvc_core::get_instance();
     }
     
     public function check($identifier)

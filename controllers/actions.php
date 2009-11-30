@@ -15,7 +15,7 @@ class midgardmvc_core_controllers_actions
 {
     public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->_core = midgardmvc_core_midcom::get_instance();
+        $this->_core = midgardmvc_core::get_instance();
         $this->configuration = $this->_core->configuration;
     }
     
@@ -26,7 +26,7 @@ class midgardmvc_core_controllers_actions
         $object = midgard_object_class::get_object_by_guid($args['guid']);
         if (!$object->guid)
         {
-            throw new midcom_exception_notfound("Object {$args['guid']} not found");
+            throw new midgardmvc_exception_notfound("Object {$args['guid']} not found");
         }
         
         $this->data['actions'] = $this->_core->componentloader->get_object_actions($object);
@@ -46,13 +46,13 @@ class midgardmvc_core_controllers_actions
         $categories = $this->_core->componentloader->get_action_categories();
         if (!in_array($args['category'], $categories))
         {
-            throw new midcom_exception_notfound("Category {$args['category']} not found");
+            throw new midgardmvc_exception_notfound("Category {$args['category']} not found");
         }
 
         $page = new midgard_page($args['guid']);
         if (!$page->guid)
         {
-            throw new midcom_exception_notfound("Folder {$args['guid']} not found");
+            throw new midgardmvc_exception_notfound("Folder {$args['guid']} not found");
         }
         
         $this->data['actions'] = $this->_core->componentloader->get_category_actions($args['category'], $page);

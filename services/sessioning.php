@@ -83,7 +83,7 @@ class midgardmvc_core_services_sessioning
      */
     public function __construct($context = null)
     {
-        $this->core = midgardmvc_core_midcom::get_instance();
+        $this->core = midgardmvc_core::get_instance();
         if (is_null($context))
         {
             $this->domain = $this->core->context->get_item('component');

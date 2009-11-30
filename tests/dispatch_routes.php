@@ -29,7 +29,7 @@ $midgard->open($conffile);
 
 // Load MidCOM with the manual dispatcher
 require('midgardmvc_core/framework.php');
-$_MIDCOM = new midgardmvc_core_midcom('manual');
+$_MIDCOM = new midgardmvc_core('manual');
 
 echo "Loading all components and their routes\n\n";
 

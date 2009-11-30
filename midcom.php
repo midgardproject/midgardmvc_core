@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_midcom
+class midgardmvc_core
 {
     /**
      * @var midgardmvc_core_services_configuration_yaml
@@ -323,7 +323,7 @@ class midgardmvc_core_midcom
         {
             $this->dispatcher->dispatch();
         }
-        catch (midcom_exception_unauthorized $exception)
+        catch (midgardmvc_exception_unauthorized $exception)
         {
             // Pass the exception to authentication handler
             self::$instance->authentication->handle_exception($exception);
@@ -374,7 +374,7 @@ class midgardmvc_core_midcom
 
         if (is_null(self::$instance))
         {
-            self::$instance = new midgardmvc_core_midcom();
+            self::$instance = new midgardmvc_core();
             if (is_null($dispatcher))
             {
                 self::$instance->load_base_services();

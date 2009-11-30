@@ -115,7 +115,7 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         $prefix = $this->_prefix;
         $uri = "{$this->_prefix}/";
 
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         $_core->context->style_id = 0;
         $_core->context->root = $this->_root_page->id;

@@ -187,7 +187,7 @@ Routes are stored in configuration file so that they can be easily overridden on
 
 ## Write your controllers
 
-Each controller is responsible for doing one of two things: Populating a `data` array with content of the requested page, or raising an exception like `midcom_exception_notfound`.
+Each controller is responsible for doing one of two things: Populating a `data` array with content of the requested page, or raising an exception like `midgardmvc_exception_notfound`.
 
 The controller class in this case would be stored to `net_nemein_news/controllers/article.php`. 
 
@@ -209,7 +209,7 @@ The controller class in this case would be stored to `net_nemein_news/controller
             $articles = $qb->execute();        
             if (count($articles) == 0)
             {
-                throw new midcom_exception_notfound("Article {$args['name']} not found.");
+                throw new midgardmvc_exception_notfound("Article {$args['name']} not found.");
             }
             $this->data['article'] = $articles[0];
         }

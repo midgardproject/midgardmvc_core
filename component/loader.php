@@ -25,7 +25,7 @@ class midgardmvc_core_component_loader
 
     public function __construct()
     {
-        $this->_core = midgardmvc_core_midcom::get_instance();
+        $this->_core = midgardmvc_core::get_instance();
         $this->load_all_manifests();
     }
     
@@ -256,9 +256,9 @@ class midgardmvc_core_component_loader
             $cache_identifier = "{$_MIDGARD['sitegroup']}-{$_MIDGARD['host']}";
         }
 
-        $manifests = midgardmvc_core_midcom::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
+        $manifests = midgardmvc_core::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
 
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         if (   !$manifests
             || !is_array($manifests))

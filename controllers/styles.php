@@ -125,7 +125,7 @@ class midgardmvc_core_controllers_styles
         {
             if (!$this->get_element($this->object_path))
             {
-                throw new midcom_exception_notfound("Style {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Style {$this->object_path} not found");
             }
             
             // Just put the element itself there
@@ -151,7 +151,7 @@ class midgardmvc_core_controllers_styles
         if (   $route_id == 'styles_root'
             || $this->get_style($this->object_path))
         {
-            throw new midcom_exception_httperror("PUT to style not allowed", 405);
+            throw new midgardmvc_exception_httperror("PUT to style not allowed", 405);
         }
         
         if (!$this->get_element($this->object_path))
@@ -159,7 +159,7 @@ class midgardmvc_core_controllers_styles
             $parent_path = dirname($this->object_path);
             if (!$this->get_style($parent_path))
             {
-                throw new midcom_exception_notfound("Style {$parent_path} not found");
+                throw new midgardmvc_exception_notfound("Style {$parent_path} not found");
             }
             $_MIDCOM->authorization->require_do('midgard:create', $this->style);
             
@@ -182,14 +182,14 @@ class midgardmvc_core_controllers_styles
         if (   $this->get_element
             || $this->style)
         {
-            throw new midcom_exception_httperror("MKCOL not allowed", 405);
+            throw new midgardmvc_exception_httperror("MKCOL not allowed", 405);
         }
         
         $parent_path = dirname($this->object_path);
         if (   $parent_path != '/'
             && !$this->get_style($parent_path))
         {
-            throw new midcom_exception_notfound("Style {$parent_path} not found");
+            throw new midgardmvc_exception_notfound("Style {$parent_path} not found");
         }
 
         $new_style = new midgard_style();
@@ -238,7 +238,7 @@ class midgardmvc_core_controllers_styles
             // Possibly copying elements instead
             if (!$this->get_element($this->object_path))
             {
-                throw new midcom_exception_notfound("Style {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Style {$this->object_path} not found");
             }
 
             $new_element = new midgard_element();
@@ -264,7 +264,7 @@ class midgardmvc_core_controllers_styles
             // Possibly moving elements instead
             if (!$this->get_element($this->object_path))
             {
-                throw new midcom_exception_notfound("Style {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Style {$this->object_path} not found");
             }
 
             $this->element->style = $destination['style']->id;
@@ -327,7 +327,7 @@ class midgardmvc_core_controllers_styles
                     return;
                 }
 
-                throw new midcom_exception_notfound("Style {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Style {$this->object_path} not found");
 
             case 'PUT':
                 $this->handle_put($route_id, $data);
@@ -357,11 +357,11 @@ class midgardmvc_core_controllers_styles
                     return;
                 }
 
-                throw new midcom_exception_notfound("Style {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Style {$this->object_path} not found");
                 return;
 
             default:
-                throw new midcom_exception_httperror("{$this->dispatcher->request_method} not allowed", 405);
+                throw new midgardmvc_exception_httperror("{$this->dispatcher->request_method} not allowed", 405);
         }
 
     }

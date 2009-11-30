@@ -24,7 +24,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
 
     public function __construct()
     {
-        $this->_core = midgardmvc_core_midcom::get_instance();
+        $this->_core = midgardmvc_core::get_instance();
 
         if (isset($_GET))
         {
@@ -279,7 +279,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
                     $action_method = "action_{$selected_route_configuration['action']}";
                     if (!method_exists($controller, $action_method))
                     {
-                        throw new midcom_exception_notfound("Action {$selected_route_configuration['action']} not found");
+                        throw new midgardmvc_exception_notfound("Action {$selected_route_configuration['action']} not found");
                     }
                     $controller->$action_method($this->route_id, $data, $this->action_arguments);
                 }
@@ -290,7 +290,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             }
             else
             {
-                throw new midcom_exception_httperror("{$this->request_method} not allowed", 405);
+                throw new midgardmvc_exception_httperror("{$this->request_method} not allowed", 405);
             }
         }
         else

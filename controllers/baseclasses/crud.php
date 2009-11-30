@@ -55,7 +55,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     public function load_datamanager($schemadb)
     {
         // Load the object via Datamanager for configurability
-        midgardmvc_core_midcom::get_instance()->componentloader->load('midgardmvc_helper_datamanager');
+        midgardmvc_core::get_instance()->componentloader->load('midgardmvc_helper_datamanager');
         
         $this->datamanager = new midgardmvc_helper_datamanager_datamanager($schemadb);
         $this->datamanager->autoset_storage($this->object);
@@ -66,7 +66,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     public function load_creation_datamanager($schemadb, $schema_name)
     {
         // Load the Datamanager in creation mode for configurability
-        midgardmvc_core_midcom::get_instance()->componentloader->load('midgardmvc_helper_datamanager');
+        midgardmvc_core::get_instance()->componentloader->load('midgardmvc_helper_datamanager');
         
         $this->datamanager = new midgardmvc_helper_datamanager_datamanager($schemadb);
         
@@ -80,18 +80,18 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     // TODO: Refactor. There is code duplication with edit
     public function get_create(array $args)
     { 
-        if (!isset(midgardmvc_core_midcom::get_instance()->context->page))
+        if (!isset(midgardmvc_core::get_instance()->context->page))
         {
-            throw new midcom_exception_notfound('No Midgard page found');
+            throw new midgardmvc_exception_notfound('No Midgard page found');
         }
         
         $this->data['object'] =& $this->object;
-        $this->data['parent'] = midgardmvc_core_midcom::get_instance()->context->page;
+        $this->data['parent'] = midgardmvc_core::get_instance()->context->page;
         
         // Prepare the new object that datamanager will eventually create
         $this->prepare_new_object($args);
 
-        midgardmvc_core_midcom::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
+        midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         
         // Load datamanager in creation mode
         $this->load_creation_datamanager($this->configuration->get('schemadb'), 'default');
@@ -99,7 +99,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
           // Handle saves through the datamanager
         $this->data['datamanager_form'] =& $this->datamanager->get_form('simple');
 
-        midgardmvc_core_midcom::get_instance()->head->add_link_head
+        midgardmvc_core::get_instance()->head->add_link_head
         (
             array
             (
@@ -121,7 +121,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         }
         catch (midgardmvc_helper_datamanager_exception_save $e)
         {
-            midgardmvc_core_midcom::get_instance()->head->relocate($this->get_url_read());
+            midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
             // TODO: add uimessage of $e->getMessage();
         }
     }
@@ -132,9 +132,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->load_datamanager($this->configuration->get('schemadb'));
         $this->data['object'] =& $this->object;
 
-        if (midgardmvc_core_midcom::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
+        if (midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
         {
-            midgardmvc_core_midcom::get_instance()->head->add_link_head
+            midgardmvc_core::get_instance()->head->add_link_head
             (
                 array
                 (
@@ -152,12 +152,12 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->load_object($args);
         $this->load_datamanager($this->configuration->get('schemadb'));
         $this->data['object'] =& $this->object;
-        midgardmvc_core_midcom::get_instance()->authorization->require_do('midgard:update', $this->object);
+        midgardmvc_core::get_instance()->authorization->require_do('midgard:update', $this->object);
         
         // Handle saves through the datamanager
         $this->data['datamanager_form'] =& $this->datamanager->get_form('simple');
         
-        midgardmvc_core_midcom::get_instance()->head->add_link_head
+        midgardmvc_core::get_instance()->head->add_link_head
         (
             array
             (
@@ -180,10 +180,10 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         catch (midgardmvc_helper_datamanager_exception_datamanager $e)
         {
             // FIXME: We can remove this once signals work again
-            midgardmvc_core_midcom::get_instance()->cache->invalidate(array($this->object->guid));
+            midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
 
             // TODO: add uimessage of $e->getMessage();
-            midgardmvc_core_midcom::get_instance()->head->relocate($this->get_url_read());
+            midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
         }
     }
         
@@ -197,9 +197,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->data['datamanager_form'] =& $this->datamanager->get_form('simple');
         $this->data['datamanager_form']->freeze();
         
-        midgardmvc_core_midcom::get_instance()->authorization->require_do('midgard:delete', $this->object);
+        midgardmvc_core::get_instance()->authorization->require_do('midgard:delete', $this->object);
         
-        midgardmvc_core_midcom::get_instance()->head->add_link_head
+        midgardmvc_core::get_instance()->head->add_link_head
         (
             array
             (
@@ -219,8 +219,8 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         {
             $this->object->delete();
             // FIXME: We can remove this once signals work again
-            midgardmvc_core_midcom::get_instance()->cache->invalidate($this->object->guid);
-            midgardmvc_core_midcom::get_instance()->head->relocate("{$_MIDCOM->context->prefix}/");
+            midgardmvc_core::get_instance()->cache->invalidate($this->object->guid);
+            midgardmvc_core::get_instance()->head->relocate("{$_MIDCOM->context->prefix}/");
             // TODO: This needs a better redirect 
         }
     }

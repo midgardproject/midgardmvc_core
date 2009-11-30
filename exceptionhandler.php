@@ -19,9 +19,9 @@ class midgardmvc_core_exceptionhandler
         $message_type = get_class($exception);
         switch ($message_type)
         {
-            case 'midcom_exception_notfound':
-            case 'midcom_exception_unauthorized':
-            case 'midcom_exception_httperror':
+            case 'midgardmvc_exception_notfound':
+            case 'midgardmvc_exception_unauthorized':
+            case 'midgardmvc_exception_httperror':
                 $http_code = $exception->getCode();
                 break;
             default:
@@ -32,7 +32,7 @@ class midgardmvc_core_exceptionhandler
         $message = strip_tags($exception->getMessage());
         $message = str_replace("\n", ' ', $message);
 
-        $midcom = midgardmvc_core_midcom::get_instance();
+        $midcom = midgardmvc_core::get_instance();
         $midcom->log($message_type, $message, 'warn');
         if ($midcom->firephp)
         {
@@ -134,7 +134,7 @@ class midgardmvc_core_exceptionhandler
  *
  * @package midgardmvc_core
  */
-class midcom_exception_notfound extends Exception
+class midgardmvc_exception_notfound extends Exception
 {
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 404) 
@@ -148,7 +148,7 @@ class midcom_exception_notfound extends Exception
  *
  * @package midgardmvc_core
  */
-class midcom_exception_unauthorized extends Exception
+class midgardmvc_exception_unauthorized extends Exception
 {
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 401) 
@@ -162,7 +162,7 @@ class midcom_exception_unauthorized extends Exception
  *
  * @package midgardmvc_core
  */
-class midcom_exception_httperror extends Exception
+class midgardmvc_exception_httperror extends Exception
 {
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 500) 

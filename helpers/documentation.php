@@ -40,7 +40,7 @@ class midgardmvc_core_helpers_documentation
     {
         $property_docs = array();
         $props = array();
-        $mgdschemas = midgardmvc_core_midcom::get_instance()->dispatcher->get_mgdschema_classes();
+        $mgdschemas = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
         if (in_array($class, $mgdschemas))
         {
             $dummy = new $class;
@@ -109,7 +109,7 @@ class midgardmvc_core_helpers_documentation
                 if (   strpos($type, '_') !== false
                     && class_exists($type))
                 {
-                    $property_doc['type_url'] = midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $type));
+                    $property_doc['type_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $type));
                 }
             }
             catch (Exception $e)
@@ -118,7 +118,7 @@ class midgardmvc_core_helpers_documentation
             
             if ($reflectionproperty->is_link($property))
             {
-                $property_doc['link_url'] = midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $reflectionproperty->get_link_name($property)));
+                $property_doc['link_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $reflectionproperty->get_link_name($property)));
                 $property_doc['link'] = $reflectionproperty->get_link_name($property) . '::' . $reflectionproperty->get_link_target($property);
             }
 
@@ -250,7 +250,7 @@ class midgardmvc_core_helpers_documentation
         if ($parent_class)
         {
             $class_documentation['extends'] = $parent_class->getName();
-            $class_documentation['extends_url'] = midgardmvc_core_midcom::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $parent_class->getName()));
+            $class_documentation['extends_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $parent_class->getName()));
         }
         
         return $class_documentation;

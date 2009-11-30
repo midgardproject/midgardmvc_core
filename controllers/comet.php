@@ -42,7 +42,7 @@ class midgardmvc_core_controllers_comet
         if (   $type == null
             && $name == null)
         {
-            throw new midcom_exception_notfound("No comet name or type defined");
+            throw new midgardmvc_exception_notfound("No comet name or type defined");
         }
 
         if (ob_get_level() == 0)

@@ -27,7 +27,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
     {
         $this->stacks[0] = array();
         
-        $this->midcom = midgardmvc_core_midcom::get_instance();
+        $this->midcom = midgardmvc_core::get_instance();
     }
 
     public function get_cache_identifier()

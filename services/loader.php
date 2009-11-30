@@ -17,7 +17,7 @@ class midgardmvc_core_services_loader
     
     public function &load($name, &$configuration=null)
     {        
-        $services_implementation = midgardmvc_core_midcom::get_instance()->configuration->get("services_{$name}");
+        $services_implementation = midgardmvc_core::get_instance()->configuration->get("services_{$name}");
         if (   $services_implementation
             && !array_key_exists($name, $this->services))
         {

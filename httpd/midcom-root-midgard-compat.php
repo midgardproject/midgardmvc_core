@@ -16,7 +16,7 @@ else
 {
     // Note: your MidCOM base directory has to be in PHP include_path
     require('midgardmvc_core/framework.php');
-    $_MIDCOM = midgardmvc_core_midcom::get_instance('midgard');
+    $_MIDCOM = midgardmvc_core::get_instance('midgard');
 }
 
 // code- elements used for things run before output

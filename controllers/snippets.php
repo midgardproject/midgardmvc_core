@@ -126,7 +126,7 @@ class midgardmvc_core_controllers_snippets
         {
             if (!$this->get_snippet($this->object_path))
             {
-                throw new midcom_exception_notfound("Snippetdir {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Snippetdir {$this->object_path} not found");
             }
             
             // Just put the snippet itself there
@@ -152,7 +152,7 @@ class midgardmvc_core_controllers_snippets
         if (   $route_id == 'snippets_root'
             || $this->get_snippetdir($this->object_path))
         {
-            throw new midcom_exception_httperror("PUT to snippetdir not allowed", 405);
+            throw new midgardmvc_exception_httperror("PUT to snippetdir not allowed", 405);
         }
         
         if (!$this->get_snippet($this->object_path))
@@ -160,7 +160,7 @@ class midgardmvc_core_controllers_snippets
             $parent_path = dirname($this->object_path);
             if (!$this->get_snippetdir($parent_path))
             {
-                throw new midcom_exception_notfound("Snippetdir {$parent_path} not found");
+                throw new midgardmvc_exception_notfound("Snippetdir {$parent_path} not found");
             }
             $_MIDCOM->authorization->require_do('midgard:create', $this->snippetdir);
             
@@ -183,14 +183,14 @@ class midgardmvc_core_controllers_snippets
         if (   $this->get_snippet
             || $this->snippetdir)
         {
-            throw new midcom_exception_httperror("MKCOL not allowed", 405);
+            throw new midgardmvc_exception_httperror("MKCOL not allowed", 405);
         }
         
         $parent_path = dirname($this->object_path);
         if (   $parent_path != '/'
             && !$this->get_snippetdir($parent_path))
         {
-            throw new midcom_exception_notfound("Snippetdir {$parent_path} not found");
+            throw new midgardmvc_exception_notfound("Snippetdir {$parent_path} not found");
         }
 
         $new_snippetdir = new midgard_snippetdir();
@@ -239,7 +239,7 @@ class midgardmvc_core_controllers_snippets
             // Possibly copying snippets instead
             if (!$this->get_snippet($this->object_path))
             {
-                throw new midcom_exception_notfound("Snippetdir {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Snippetdir {$this->object_path} not found");
             }
 
             $new_snippet = new midgard_snippet();
@@ -265,7 +265,7 @@ class midgardmvc_core_controllers_snippets
             // Possibly moving snippets instead
             if (!$this->get_snippet($this->object_path))
             {
-                throw new midcom_exception_notfound("Snippetdir {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Snippetdir {$this->object_path} not found");
             }
 
             $this->snippet->up = $destination['snippetdir']->id;
@@ -329,7 +329,7 @@ class midgardmvc_core_controllers_snippets
                     return;
                 }
 
-                throw new midcom_exception_notfound("Snippetdir {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Snippetdir {$this->object_path} not found");
 
             case 'PUT':
                 $this->handle_put($route_id, $data);
@@ -359,11 +359,11 @@ class midgardmvc_core_controllers_snippets
                     return;
                 }
 
-                throw new midcom_exception_notfound("Snippetdir {$this->object_path} not found");
+                throw new midgardmvc_exception_notfound("Snippetdir {$this->object_path} not found");
                 return;
 
             default:
-                throw new midcom_exception_httperror("{$this->dispatcher->request_method} not allowed", 405);
+                throw new midgardmvc_exception_httperror("{$this->dispatcher->request_method} not allowed", 405);
         }
 
     }

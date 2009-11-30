@@ -15,7 +15,7 @@ class midgardmvc_core_controllers_documentation
 {
     public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->midgardmvc = midgardmvc_core_midcom::get_instance();
+        $this->midgardmvc = midgardmvc_core::get_instance();
         $this->configuration = $this->midgardmvc->configuration;
     }
     
@@ -26,7 +26,7 @@ class midgardmvc_core_controllers_documentation
         if (   $this->data['component'] != 'midgardmvc_core'
             && !$this->midgardmvc->componentloader->load($this->data['component']))
         {
-            throw new midcom_exception_notfound("Component {$this->data['component']} not found");
+            throw new midgardmvc_exception_notfound("Component {$this->data['component']} not found");
         }
     }
 
@@ -139,7 +139,7 @@ class midgardmvc_core_controllers_documentation
         $path .= '.markdown';
         if (!file_exists($path))
         {
-            throw new midcom_exception_notfound("File not found");
+            throw new midgardmvc_exception_notfound("File not found");
         }
 
         require_once 'markdown.php';        
@@ -157,7 +157,7 @@ class midgardmvc_core_controllers_documentation
         
         if (!$this->data['routes'])
         {
-            throw new midcom_exception_notfound("Component {$this->data['component']} has no routes");
+            throw new midgardmvc_exception_notfound("Component {$this->data['component']} has no routes");
         }
         
         foreach ($this->data['routes'] as $route_id => $route_def)
@@ -189,7 +189,7 @@ class midgardmvc_core_controllers_documentation
         $this->data['class'] = $args['class'];
         if (!class_exists($this->data['class']))
         {
-            throw new midcom_exception_notfound("Class {$this->data['class']} not defined");
+            throw new midgardmvc_exception_notfound("Class {$this->data['class']} not defined");
         }
         
         $reflectionclass = new midgard_reflection_class($this->data['class']);

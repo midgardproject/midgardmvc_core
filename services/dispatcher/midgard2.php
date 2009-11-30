@@ -35,7 +35,7 @@ class midgardmvc_core_services_dispatcher_midgard2 extends midgardmvc_core_servi
         $this->request_config = $this->get_midgard_connection()->get_request_config();
         if (!$this->request_config)
         {
-            throw new midcom_exception_httperror('Midgard database connection not found.', 503);
+            throw new midgardmvc_exception_httperror('Midgard database connection not found.', 503);
         }
 
         $_argv = $this->request_config->get_argv();

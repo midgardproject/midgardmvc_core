@@ -204,7 +204,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             || substr($filename, 0, 2) == '._')
         {
             $_MIDCOM->log(__CLASS__ . '::' . __FUNCTION__, "Raising 404 for {$filename} because of filename sanity rules");
-            throw new midcom_exception_notfound("OS X DotFiles not allowed");
+            throw new midgardmvc_exception_notfound("OS X DotFiles not allowed");
         }
     }
 
@@ -297,7 +297,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             || !is_object($this->data['object'])
             || !$this->data['object']->guid)
         {
-            throw new midcom_exception_notfound("No lockable objects");
+            throw new midgardmvc_exception_notfound("No lockable objects");
         }
 
         $shared = false;
@@ -308,7 +308,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         
         if (is_null($this->data['object']))
         {
-            throw new midcom_exception_notfound("Not found");
+            throw new midgardmvc_exception_notfound("Not found");
         }
         
         if (midgardmvc_core_helpers_metadata::is_locked($this->data['object']))
@@ -334,7 +334,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             || !is_object($this->data['object'])
             || !$this->data['object']->guid)
         {
-            throw new midcom_exception_notfound("No lockable objects");
+            throw new midgardmvc_exception_notfound("No lockable objects");
         }
         
         if (midgardmvc_core_helpers_metadata::is_locked($this->data['object']))

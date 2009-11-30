@@ -39,7 +39,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
         // FIXME: Add when #1478 is fixed
-        //midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        //midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -47,7 +47,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      */
     public function on_auth_changed_callback()
     {
-        midgardmvc_core_midcom::get_instance()->authentication->on_auth_changed();
+        midgardmvc_core::get_instance()->authentication->on_auth_changed();
     }
 
     /**
@@ -55,7 +55,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      */
     public function on_auth_changed()
     {
-        $this->user = midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_user();
+        $this->user = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_user();
     }
 
     public function login($username, $password, $read_session = true)
@@ -100,7 +100,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         if (is_null($this->person))
         {
             $this->person = $this->user->get_person();
-            midgardmvc_core_midcom::get_instance()->cache->register_object($this->person->guid);
+            midgardmvc_core::get_instance()->cache->register_object($this->person->guid);
         }
         return $this->person;
     }
@@ -112,7 +112,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
 
     private function prepare_tokens($username, $password)
     {
-        $auth_type = midgardmvc_core_midcom::get_instance()->configuration->get('services_authentication_authtype');
+        $auth_type = midgardmvc_core::get_instance()->configuration->get('services_authentication_authtype');
         $login_tokens = array
         (
             'login' => $username,
@@ -134,7 +134,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
                 $login_tokens['password'] = md5($password);
                 break;
             default:
-                throw new midcom_exception_httperror('Unsupported authentication type attempted', 500);
+                throw new midgardmvc_exception_httperror('Unsupported authentication type attempted', 500);
         }
         // TODO: Support other types
         
@@ -155,7 +155,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             if (!$this->sitegroup)
             {
                 // Sitegroups are only used in Midgard 9.03 and older
-                $this->sitegroup = midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
+                $this->sitegroup = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
             }
             
             if ($this->sitegroup)
@@ -178,7 +178,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
 
             if (!$this->user)
             {
-                midgardmvc_core_midcom::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
+                midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
                 $this->session_cookie->delete_login_session_cookie();          
                 return false;
             }
@@ -196,7 +196,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             }
             catch (Exception $e)
             {
-                midgardmvc_core_midcom::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
+                midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
                 $this->session_cookie->delete_login_session_cookie(); 
                 return false;
             }
@@ -215,7 +215,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      */
     private function create_login_session($username, $password, $clientip = null)
     {
-        midgardmvc_core_midcom::get_instance()->authorization->enter_sudo('midgardmvc_core');    
+        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');    
     
         if (is_null($clientip))
         {
@@ -256,7 +256,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             $this->session_cookie->create_login_session_cookie($session->guid, $this->user->guid);
         }
 
-        midgardmvc_core_midcom::get_instance()->authorization->leave_sudo();         
+        midgardmvc_core::get_instance()->authorization->leave_sudo();         
 
         return $result;
     
@@ -376,32 +376,32 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             if ($this->login($_POST['username'], $_POST['password']))
             {
                 // Dispatch again since now we have a user
-                midgardmvc_core_midcom::get_instance()->dispatcher->dispatch();
+                midgardmvc_core::get_instance()->dispatcher->dispatch();
                 return;
             }
         }
 
         $log_message = str_replace("\n", ' ', $exception->getMessage());
-        if (isset(midgardmvc_core_midcom::get_instance()->context->uri))
+        if (isset(midgardmvc_core::get_instance()->context->uri))
         {
-            $uri = midgardmvc_core_midcom::get_instance()->context->uri;
+            $uri = midgardmvc_core::get_instance()->context->uri;
             $log_message .= " ($uri)";
         }
-        midgardmvc_core_midcom::get_instance()->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warn');
+        midgardmvc_core::get_instance()->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warn');
         
         // Pass some data to the handler
         $data = array();
         $data['message'] = $exception->getMessage();
         $data['exception'] = $exception;
-        midgardmvc_core_midcom::get_instance()->context->midgardmvc_core_exceptionhandler = $data;
+        midgardmvc_core::get_instance()->context->midgardmvc_core_exceptionhandler = $data;
         
         // Set entry point and disable cache
-        midgardmvc_core_midcom::get_instance()->context->template_entry_point = 'midcom-login-form';
-        midgardmvc_core_midcom::get_instance()->context->cache_enabled = false;
+        midgardmvc_core::get_instance()->context->template_entry_point = 'midcom-login-form';
+        midgardmvc_core::get_instance()->context->cache_enabled = false;
         
         // Do normal templating
-        midgardmvc_core_midcom::get_instance()->templating->template();
-        midgardmvc_core_midcom::get_instance()->templating->display();
+        midgardmvc_core::get_instance()->templating->template();
+        midgardmvc_core::get_instance()->templating->display();
         exit(0);
     }
 

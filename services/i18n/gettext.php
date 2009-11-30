@@ -33,7 +33,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
         {
             // set language to use for this session (first valid language will 
             // be used)
-            $this->language = midgardmvc_core_midcom::get_instance()->configuration->get('default_language');
+            $this->language = midgardmvc_core::get_instance()->configuration->get('default_language');
         }
         catch (Exception $e)
         {
@@ -102,7 +102,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
             $this->tr[$key]->setLanguage($this->language.'.utf8', $this->language);
         }
 
-        // midgardmvc_core_midcom::get_instance()->context->gettext_translator->setLanguage($lang.'.utf8', $lang);
+        // midgardmvc_core::get_instance()->context->gettext_translator->setLanguage($lang.'.utf8', $lang);
 
         if ($switch_content_language)
         {

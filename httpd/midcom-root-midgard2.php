@@ -11,7 +11,7 @@
 // Load MidCOM 3
 // Note: your MidCOM base directory has to be in PHP include_path
 require('midgardmvc_core/framework.php');
-$_MIDCOM = midgardmvc_core_midcom::get_instance('midgard2');
+$_MIDCOM = midgardmvc_core::get_instance('midgard2');
     
 // Process the request
 $_MIDCOM->process();

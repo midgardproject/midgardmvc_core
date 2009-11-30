@@ -16,7 +16,7 @@ class midgardmvc_core_tests_core extends midcom_tests_testcase
     public function test_singleton()
     {
         $this->_core->newproperty = true;
-        $midcom_new = midgardmvc_core_midcom::get_instance();
+        $midcom_new = midgardmvc_core::get_instance();
         $this->assertEquals($midcom_new->newproperty, true);
         unset($this->_core->newproperty);
     }

@@ -36,7 +36,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             require_once 'midgardmvc_core/helpers/spyc.php';
         }
 
-        $_core = midgardmvc_core_midcom::get_instance();
+        $_core = midgardmvc_core::get_instance();
 
         if ($_core->componentloader)
         {
@@ -137,7 +137,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     private function load_snippet($snippet_path)
     {
-        if (!midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection())
+        if (!midgardmvc_core::get_instance()->dispatcher->get_midgard_connection())
         {
             return array();
         }
@@ -209,7 +209,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     
     private function load_objects($object_guid)
     {
-        if (!midgardmvc_core_midcom::get_instance()->dispatcher->get_midgard_connection())
+        if (!midgardmvc_core::get_instance()->dispatcher->get_midgard_connection())
         {
             return array();
         }
@@ -363,7 +363,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 );
             }
             
-            if (!midgardmvc_core_midcom::get_instance()->configuration->get('enable_webdav'))
+            if (!midgardmvc_core::get_instance()->configuration->get('enable_webdav'))
             {
                 // Only allow GET and POST
                 $route['allowed_methods'] = array

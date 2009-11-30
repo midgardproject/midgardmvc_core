@@ -15,12 +15,12 @@ class midgardmvc_core_controllers_authentication
 {
     public function __construct(midgardmvc_core_component_interface $instance)
     {
-        $this->configuration = midgardmvc_core_midcom::get_instance()->configuration;
+        $this->configuration = midgardmvc_core::get_instance()->configuration;
     }
     
     public function get_logout(array $args)
     {
-        midgardmvc_core_midcom::get_instance()->authentication->logout();
+        midgardmvc_core::get_instance()->authentication->logout();
         header('location: /');
         exit();
     }
@@ -28,11 +28,11 @@ class midgardmvc_core_controllers_authentication
     public function get_login(array $args)
     {   
         $exception_data = array();
-        $exception_data['message'] = midgardmvc_core_midcom::get_instance()->i18n->get
+        $exception_data['message'] = midgardmvc_core::get_instance()->i18n->get
         (
             'please enter your username and password', 'midgardmvc_core'
         );
-        midgardmvc_core_midcom::get_instance()->context->midgardmvc_core_exceptionhandler = $exception_data;
+        midgardmvc_core::get_instance()->context->midgardmvc_core_exceptionhandler = $exception_data;
     }
 
     public function post_login(array $args)
@@ -41,9 +41,9 @@ class midgardmvc_core_controllers_authentication
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
         {
-            if (midgardmvc_core_midcom::get_instance()->authentication->login($_POST['username'], $_POST['password']))
+            if (midgardmvc_core::get_instance()->authentication->login($_POST['username'], $_POST['password']))
             {
-                midgardmvc_core_midcom::get_instance()->head->relocate('/');
+                midgardmvc_core::get_instance()->head->relocate('/');
             }
         }
         $this->get_login($args);

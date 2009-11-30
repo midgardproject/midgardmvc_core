@@ -382,7 +382,7 @@ class midgardmvc_core_helpers_head
         {
             $url = $_SERVER['REQUEST_URI'];
         }
-        midgardmvc_core_midcom::get_instance()->uimessages->store();
+        midgardmvc_core::get_instance()->uimessages->store();
         header("Location: $url");
         exit(0);
     }
