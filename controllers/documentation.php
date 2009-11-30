@@ -15,7 +15,8 @@ class midcom_core_controllers_documentation
 {
     public function __construct(midcom_core_component_interface $instance)
     {
-        $this->configuration = $_MIDCOM->configuration;
+        $this->midgardmvc = midcom_core_midcom::get_instance();
+        $this->configuration = $this->midgardmvc->configuration;
     }
     
     private function prepare_component($component)
@@ -23,7 +24,7 @@ class midcom_core_controllers_documentation
         $this->data['component'] = $component;
         
         if (   $this->data['component'] != 'midcom_core'
-            && !$_MIDCOM->componentloader->load($this->data['component']))
+            && !$this->midgardmvc->componentloader->load($this->data['component']))
         {
             throw new midcom_exception_notfound("Component {$this->data['component']} not found");
         }
@@ -81,7 +82,7 @@ class midcom_core_controllers_documentation
 
     public function get_index(array $args)
     {
-        $_MIDCOM->authorization->require_user();
+        $this->midgardmvc->authorization->require_user();
         $this->prepare_component($args['component'], $this->data);
 
         $this->data['files'] = $this->list_directory(MIDGARDMVC_ROOT . "/{$this->data['component']}/documentation");
@@ -100,7 +101,7 @@ class midcom_core_controllers_documentation
 
     public function get_show(array $args)
     {
-        $_MIDCOM->authorization->require_user();
+        $this->midgardmvc->authorization->require_user();
         $this->prepare_component($args['variable_arguments'][0], $this->data);
         $path = MIDGARDMVC_ROOT . "/{$this->data['component']}/documentation";
         foreach ($args['variable_arguments'] as $key => $argument)
@@ -148,7 +149,7 @@ class midcom_core_controllers_documentation
     
     public function get_routes(array $args)
     {
-        $_MIDCOM->authorization->require_user();
+        $this->midgardmvc->authorization->require_user();
         $this->prepare_component($args['component'], $this->data);
 
         $configuration = new midcom_core_services_configuration_yaml($this->data['component']);
@@ -176,14 +177,14 @@ class midcom_core_controllers_documentation
             
             $this->data['routes'][$route_id]['controller_action'] = "{$route_def['controller']}:{$route_def['action']}";
             
-            $this->data['routes'][$route_id]['controller_url'] = $_MIDCOM->dispatcher->generate_url('midcom_documentation_class', array('class' => $route_def['controller']));
+            $this->data['routes'][$route_id]['controller_url'] = $this->midgardmvc->dispatcher->generate_url('midcom_documentation_class', array('class' => $route_def['controller']));
             $this->data['routes'][$route_id]['controller_url'] .= "#action_{$route_def['action']}";
         }
     }
 
     public function get_class(array $args)
     {
-        $_MIDCOM->authorization->require_user();
+        $this->midgardmvc->authorization->require_user();
 
         $this->data['class'] = $args['class'];
         if (!class_exists($this->data['class']))
