@@ -29,11 +29,6 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         {
             throw new Exception('Midgard 2.x is required for this MidCOM setup.');
         }
-        
-        if (!ini_get('midgard.superglobals_compat'))
-        {
-            throw new Exception('For now you need to set midgard.superglobals_compat=On in your php.ini to run MidCOM3 on Mjolnir');
-        }
 
         $this->request_method = $_SERVER['REQUEST_METHOD'];
 
