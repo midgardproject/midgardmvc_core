@@ -13,12 +13,9 @@
  */
 interface midgardmvc_core_services_configuration
 {
-    /**
-     * Loads the configuration system for a given component
-     *
-     * @param string $component Component to load configuration for
-     */
-    public function __construct($component, midgard_page $folder = null);
+    public function load_component_configuration($component, $prepend = false);
+
+    public function load_object_configuration($object_guid);
 
     /**
      * Retrieve a configuration key

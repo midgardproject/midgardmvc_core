@@ -13,21 +13,14 @@
  */
 class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_services_configuration
 {
-    private $component = '';
     private $components = array();
-    private $globals = array();
-    private $locals = array();
-    private $objects = array();
-    private $merged = array();
+    private $configuration = array();
+    private $midgardmvc = null;
     
     private $use_syck = true;
     
-    public function __construct($component, midgard_page $folder = null)
+    public function __construct()
     {
-        // The original component we're working with
-        $this->component = $component;
-        $this->components[] = $this->component;
-
         // Check for syck extension
         $this->use_syck = extension_loaded('syck');
         if (!$this->use_syck)
@@ -35,73 +28,91 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             // Syck PHP extension is not loaded, include the pure-PHP implementation
             require_once 'midgardmvc_core/helpers/spyc.php';
         }
-
-        if ($component != 'midgardmvc_core')
+    }
+    
+    public function load_component_configuration($component, $prepend = false)
+    {
+        if (isset($this->components[$component]))
         {
-            $_core = midgardmvc_core::get_instance();
-
-            if ($_core->componentloader)
-            {
-                // Midgard MVC framework is running, check for inheritance
-                while (true)
-                {
-                    $component = $_core->componentloader->get_parent($component);
-                    if ($component === null)
-                    {
-                        break;
-                    }
-
-                    $this->components[] = $component;
-                }
-            }
+            return;
         }
 
-        $this->components = array_reverse($this->components);
-       
-        // Start with the global component config from filesystem 
-        $this->load_globals();
-        $this->merged = $this->globals;
-        if (   $component != 'midgardmvc_core'
-            && $_core->configuration->get('services_configuration_database_enabled'))
+        if (is_null($this->midgardmvc))
         {
-            $this->load_locals();
-            if (!empty($this->locals))
-            {
-                $this->merged = self::merge_configs($this->globals, $this->locals);
-            }
+            $this->midgardmvc = midgardmvc_core::get_instance();
+        }
+
+        // Check for component inheritance
+        $components = array
+        (
+            $component,
+        );
+        $this->components[] = $component;
         
-            if ($folder)
+        if (isset($this->midgardmvc->componentloader))
+        {
+            while (true)
             {
-                $this->objects = $this->load_objects($folder->guid);
-                if (!empty($this->objects))
-                {            
-                    $this->merged = self::merge_configs($this->merged, $this->objects);
+                $component = $this->midgardmvc->componentloader->get_parent($component);
+                if ($component === null)
+                {
+                    break;
                 }
+
+                $components[] = $component;
+                $this->components[] = $component;
+            }
+            $components = array_reverse($components);
+        }
+
+        $config = array();
+        foreach ($components as $component)
+        {
+            // Load component default config from filesystem 
+            $component_config = $this->load_file(MIDGARDMVC_ROOT . "/{$component}/configuration/defaults.yml");
+            if (!empty($component_config))
+            {
+                $config = self::merge_configs($config, $component_config);
             }
         }
 
-        if (!is_array($this->merged))
+        if (empty($config))
         {
-            // Safety
-            $this->merged = array();
+            return;
+        }
+       
+        if ($prepend)
+        {
+            $this->configuration = self::merge_configs($config, $this->configuration);
+        }
+        else
+        {
+            $this->configuration = self::merge_configs($this->configuration, $config);
         }
     }
     
     public static function merge_configs(array $base, array $extension)
     {
+        if (empty($base))
+        {
+            // Original was empty, no need to merge
+            return $extension;
+        }
         $merged = $base;
         
         foreach ($extension as $key => $value)
         {
             if (is_array($value)) 
             {
-                if (!isset($merged[$key])) 
+                if (   !isset($merged[$key])
+                    || empty($merged[$key])) 
                 {
-                    $merged[$key] = array();
+                    // Original was empty, no need to merge
+                    $merged[$key] = $value;
+                    continue;
                 }
                 
                 $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
-                continue;
             }
 
             $merged[$key] = $value;
@@ -140,7 +151,12 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     private function load_snippet($snippet_path)
     {
-        if (!midgardmvc_core::get_instance()->dispatcher->get_midgard_connection())
+        if (is_null($this->midgardmvc))
+        {
+            $this->midgardmvc = midgardmvc_core::get_instance();
+        }
+
+        if (!$this->midgardmvc->dispatcher->get_midgard_connection())
         {
             return array();
         }
@@ -162,34 +178,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         return $configuration;
     }
 
-    private function load_globals()
-    {
-        $this->globals = array();
-        foreach ($this->components as $component)
-        {
-            $filename = MIDGARDMVC_ROOT . "/{$component}/configuration/defaults.yml";
-            $components = $this->load_file($filename);
-            if (empty($this->globals))
-            {
-                $this->globals = $components;
-                continue;
-            }
-            if (empty($components))
-            {
-                continue;
-            }
-            $this->globals = self::merge_configs($this->globals, $components);
-        }
-    }
-
-    /**
-      * Return the configuration's component
-      */
-    public function get_component()
-    {
-        return $this->component;
-    }
-    
+    /* 
     private function load_locals()
     {
         $this->locals = array();
@@ -209,12 +198,21 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             $this->locals = self::merge_configs($this->locals, $components);
         }
     }
-    
-    private function load_objects($object_guid)
+    */
+ 
+    /**
+     * Load configuration from a Midgard object
+     */   
+    public function load_object_configuration($object_guid)
     {
-        if (!midgardmvc_core::get_instance()->dispatcher->get_midgard_connection())
+        if (is_null($this->midgardmvc))
         {
-            return array();
+            $this->midgardmvc = midgardmvc_core::get_instance();
+        }
+
+        if (!$this->midgardmvc->dispatcher->get_midgard_connection())
+        {
+            return;
         }
 
         $mc = midgard_parameter::new_collector('parentguid', $object_guid);
@@ -227,13 +225,19 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         $guids = $mc->list_keys();
         foreach ($guids as $guid => $array)
         {
-            $objects = $this->unserialize($mc->get_subkey($guid, 'value'));
-            if (is_array($objects))
+            $config = $this->unserialize($mc->get_subkey($guid, 'value'));
+            if (!is_array($config))
             {
-                return $objects;
+                return;
             }
         }
-        return array();
+        
+        if (empty($config))
+        {
+            return;
+        }
+       
+        $this->configuration = self::merge_configs($this->configuration, $config);
     }
 
     /**
@@ -246,24 +250,24 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      * @return mixed Its value
      * @see midgardmvc_helper_configuration::exists()
      */
-    public function get($key, $subkey=false)
+    public function get($key, $subkey = null)
     {
         if (!$this->exists($key))
         {
-            throw new OutOfBoundsException("Configuration key {$key} does not exist.");
+            throw new OutOfBoundsException("Configuration key '{$key}' does not exist.");
         }
 
-        if ($subkey !== false)
+        if (!is_null($subkey))
         {                      
-            if (! isset($this->merged[$key][$subkey]))
+            if (!isset($this->configuration[$key][$subkey]))
             {
-                throw new OutOfBoundsException("Configuration subkey {$subkey} does not exist within key {$key}.");
+                throw new OutOfBoundsException("Configuration key '{$key}/{$subkey}' does not exist.");
             }
 
-            return $this->merged[$key][$subkey];
+            return $this->configuration[$key][$subkey];
         }
 
-        return $this->merged[$key];
+        return $this->configuration[$key];
     }
 
     public function __get($key)
@@ -276,7 +280,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (   defined('MIDGARDMVC_TEST_RUN')
             && MIDGARDMVC_TEST_RUN)
         {
-            $this->merged[$key] = $value;
+            $this->configuration[$key] = $value;
         }
     }
 
@@ -288,7 +292,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function exists($key)
     {
-        return array_key_exists($key, $this->merged);
+        return array_key_exists($key, $this->configuration);
     }
 
     public function __isset($key)
@@ -328,7 +332,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         return syck_dump($configuration);
     }
     
-        /**
+    /**
      * Normalizes routes configuration to include needed data
      *
      * @param array $route routes configuration
@@ -336,6 +340,11 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function normalize_routes($routes)
     {
+        if (is_null($this->midgardmvc))
+        {
+            $this->midgardmvc = midgardmvc_core::get_instance();
+        }
+
         foreach ($routes as $identifier => $route)
         {
             // Handle the required route parameters
@@ -366,7 +375,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 );
             }
             
-            if (!midgardmvc_core::get_instance()->configuration->get('enable_webdav'))
+            if (!$this->midgardmvc->configuration->get('enable_webdav'))
             {
                 // Only allow GET and POST
                 $route['allowed_methods'] = array

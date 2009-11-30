@@ -89,7 +89,8 @@ class midgardmvc_core_component_loader
         }
 
         // Load configuration for the component
-        $configuration = new midgardmvc_core_services_configuration_yaml($component, $folder);
+        $configuration =& midgardmvc_core::get_instance()->configuration;
+        $configuration->load_component_configuration($component);
 
         // Load the interface class
         $this->interfaces[$component] = new $component($configuration, $folder);

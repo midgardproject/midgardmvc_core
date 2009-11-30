@@ -58,6 +58,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      */
     public function load_base_services($dispatcher = 'midgard')
     {
+        $this->configuration->load_component_configuration('midgardmvc_core');
+
         // Load the request dispatcher
         $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$dispatcher}";
         $this->dispatcher = new $dispatcher_implementation();
@@ -241,6 +243,12 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
 
         $this->dispatcher->populate_environment_data();
+        
+        if (isset($this->context->page->guid))
+        {
+            // Load per-folder configuration
+            $this->configuration->load_object_configuration($this->context->page->guid);
+        }
 
         /*
         // Check autoloader cache
@@ -374,7 +382,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         if (is_null(self::$instance))
         {
             // Load the configuration loader and load core config
-            $configuration = new midgardmvc_core_services_configuration_yaml('midgardmvc_core');
+            $configuration = new midgardmvc_core_services_configuration_yaml();
             
             // Pass configuration to the instance
             self::$instance = new midgardmvc_core($configuration);
