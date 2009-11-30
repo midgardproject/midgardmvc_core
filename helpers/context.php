@@ -7,7 +7,7 @@
  */
 
 /**
- * Context data management helper for MidCOM 3
+ * Context data management helper for Midgard MVC
  *
  *
  * @package midgardmvc_core
@@ -29,7 +29,7 @@ class midgardmvc_core_helpers_context
         $context_id = count($this->contexts);
         $this->contexts[$context_id] = array
         (
-            // TODO: Convert to 'application/xhtml+xml' as soon as MidCOM 3 javascripts are compatible with it
+            // TODO: Convert to 'application/xhtml+xml' as soon as Midgard MVC javascripts are compatible with it
             'mimetype'             => 'text/html', 
             'template_engine'      => 'tal',
             'template_entry_point' => 'ROOT',
@@ -76,7 +76,7 @@ class midgardmvc_core_helpers_context
 
         if (!isset($this->contexts[$context_id]))
         {
-            throw new OutOfBoundsException("MidCOM context {$context_id} not found.");
+            throw new OutOfBoundsException("Midgard MVC context {$context_id} not found.");
         }
         
         return $this->contexts[$context_id];
@@ -98,12 +98,12 @@ class midgardmvc_core_helpers_context
         
         if (!isset($this->contexts[$context_id]))
         {
-            throw new OutOfBoundsException("MidCOM context {$context_id} not found.");
+            throw new OutOfBoundsException("Midgard MVC context {$context_id} not found.");
         }
         
         if (!isset($this->contexts[$context_id][$key]))
         {
-            throw new OutOfBoundsException("MidCOM context key '{$key}' in context {$context_id} not found.");
+            throw new OutOfBoundsException("Midgard MVC context key '{$key}' in context {$context_id} not found.");
         }
         
         return $this->contexts[$context_id][$key];
@@ -125,7 +125,7 @@ class midgardmvc_core_helpers_context
         
         if (!isset($this->contexts[$context_id]))
         {
-            throw new OutOfBoundsException("MidCOM context {$context_id} not found.");
+            throw new OutOfBoundsException("Midgard MVC context {$context_id} not found.");
         }
         
         $this->contexts[$context_id][$key] = $value;

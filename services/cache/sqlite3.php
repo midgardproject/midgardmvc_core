@@ -87,7 +87,7 @@ class midgardmvc_core_services_cache_sqlite3 extends midgardmvc_core_services_ca
     {
         if (!isset(midgardmvc_core::get_instance()->context->host))
         {
-            return 'MidCOM';
+            return 'MidgardMVC';
         }
         return midgardmvc_core::get_instance()->context->host->name;
     }

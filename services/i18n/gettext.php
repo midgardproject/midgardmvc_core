@@ -6,13 +6,14 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
+require_once('PHPTAL.php'); // FIXME: Better place required
+require_once 'PHPTAL/GetTextTranslator.php'; // FIXME: Better place required
+
 /**
- * HTTP Basic authentication service for MidCOM
+ * Gettext localization service for Midgard MVC
  *
  * @package midgardmvc_core
  */
-require_once('PHPTAL.php'); // FIXME: Better place required
-require_once 'PHPTAL/GetTextTranslator.php'; // FIXME: Better place required
 class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_i18n
 {
     /**
@@ -26,7 +27,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
      
     public function __construct()
     {
-        // Adding MidCOM core messages to the translation domains
+        // Adding Midgard MVC core messages to the translation domains
         bindtextdomain('midgardmvc_core', MIDGARDMVC_ROOT . '/midgardmvc_core/locale/');
         
         try 

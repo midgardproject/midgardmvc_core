@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM cache management controller
+ * Midgard MVC cache management controller
  *
  * @package midgardmvc_core
  */

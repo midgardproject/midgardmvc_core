@@ -7,7 +7,7 @@
  */
 
 /**
- * HTTP Basic authentication service for MidCOM
+ * HTTP Basic authentication service for Midgard MVC
  *
  * @package midgardmvc_core
  */
@@ -37,7 +37,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
     }
 
     /**
-     * Refresh MidCOM internal authentication change information based on authentication state of Midgard Connection
+     * Refresh Midgard MVC internal authentication change information based on authentication state of Midgard Connection
      */
     public function on_auth_changed()
     {

@@ -9,7 +9,7 @@
 /**
  * Content caching module
  *
- * Provides a way to cache a page produced by MidCOM.
+ * Provides a way to cache a page produced by Midgard MVC.
  *
  *
  * @package midgardmvc_core

@@ -7,7 +7,7 @@
  */
 
 /**
- * YAML-based configuration implementation for MidCOM 3
+ * YAML-based configuration implementation for Midgard MVC
  *
  * @package midgardmvc_core
  */
@@ -42,7 +42,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
             if ($_core->componentloader)
             {
-                // MidCOM framework is running, check for inheritance
+                // Midgard MVC framework is running, check for inheritance
                 while (true)
                 {
                     $component = $_core->componentloader->get_parent($component);

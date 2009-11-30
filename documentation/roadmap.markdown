@@ -1,4 +1,4 @@
-MidCOM 3 Roadmap
+Midgard MVC Roadmap
 ================
 
 # 3.0.0alpha1 - July 2008

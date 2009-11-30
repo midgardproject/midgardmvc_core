@@ -7,7 +7,7 @@
  */
 
 /**
- * Dispatcher for MidCOM 3
+ * Dispatcher for Midgard MVC
  *
  * Dispatcher is the heart of the component architecture. It is responsible for mapping requests to components
  * and their specific controllers and calling those.

@@ -7,7 +7,7 @@
  */
 
 /**
- * Authentication interface for MidCOM 3
+ * Authentication interface for Midgard MVC
  *
  * @package midgardmvc_core
  */

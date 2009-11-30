@@ -5,16 +5,16 @@
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  *
- * MidgardRootFile for running MidCOM 3 under Apache
+ * MidgardRootFile for running Midgard MVC under Apache and Midgard 8.09
  */
-// If code-compat is defined we use that, otherwise we load MidCOM 3
+// If code-compat is defined we use that, otherwise we load Midgard MVC
 if (mgd_is_element_loaded('code-compat'))
 {
     ?><(code-compat)><?php
 }
 else
 {
-    // Note: your MidCOM base directory has to be in PHP include_path
+    // Note: your Midgard MVC base directory has to be in PHP include_path
     require('midgardmvc_core/framework.php');
     $midgardmvc = midgardmvc_core::get_instance('midgard');
 }
@@ -30,13 +30,13 @@ if (mgd_is_element_loaded('code-init'))
 elseif (isset($midgardmvc))
 {
     // Call the controller if available
-    midgardmvc_core::get_instance()->process();
+    $midgardmvc->process();
 }
 
 if (isset($midgardmvc))
 {
     // Serve the request
-    midgardmvc_core::get_instance()->serve();
+    $midgardmvc->serve();
 }
 else
 {

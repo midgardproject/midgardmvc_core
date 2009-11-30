@@ -7,7 +7,7 @@
  */
 
 /**
- * Basic attachment helpers for MidCOM 3
+ * Basic attachment helpers for Midgard MVC
  *
  * Class provides some basic helpers for everyday attachments usage like getting the attachment serving uri
  * or it provides methods for caching attachment to some internal or external storage
@@ -26,7 +26,7 @@ interface midgardmvc_core_attachment
     
     /**
       * Returns the URL where the attachment is found. If attachment's permission for EVERYONE:READ is false
-      * then the MidCOM's internal attachment serving URI should be returned.
+      * then the Midgard MVC internal attachment serving URI should be returned.
       */
     public static function get_url(midgard_attachment &$attachment);
 
@@ -95,7 +95,7 @@ class midgardmvc_core_helpers_attachment implements midgardmvc_core_attachment
         {
             return midgardmvc_core::get_instance()->configuration->attachment_cache_url . $attachment->location;
         }
-        else // if cache is not enabled or anonymous read is not allowed serving attachment through MidCOM
+        else // if cache is not enabled or anonymous read is not allowed serving attachment through Midgard MVC
         {
             return '/mgd:serveattachment/' . $attachment->guid . '/';
         }

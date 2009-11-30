@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM 3 component loader
+ * Midgard MVC component loader
  *
  * @package midgardmvc_core
  */

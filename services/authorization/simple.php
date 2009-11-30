@@ -7,7 +7,7 @@
  */
 
 /**
- * Simple authorization interface for MidCOM 3. Unauthenticated users are given read access,
+ * Simple authorization interface for Midgard MVC. Unauthenticated users are given read access,
  * and authenticated users write access.
  *
  * @package midgardmvc_core

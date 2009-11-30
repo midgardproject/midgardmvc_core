@@ -9,7 +9,7 @@
 /**
  * Autoload caching module
  *
- * Provides a way to cache lists of files for a MidCOM execution for the autoloader to use.
+ * Provides a way to cache lists of files for a Midgard MVC execution for the autoloader to use.
  *
  * @package midgardmvc_core
  */

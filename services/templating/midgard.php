@@ -7,7 +7,7 @@
  */
 
 /**
- * Midgard-based templating interface for MidCOM 3
+ * Midgard-based templating interface for Midgard MVC
  *
  * @package midgardmvc_core
  */
@@ -21,34 +21,34 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
     private $gettext_translator = array();
     
-    private $midcom = null;
+    private $midgardmvc = null;
 
     public function __construct()
     {
         $this->stacks[0] = array();
         
-        $this->midcom = midgardmvc_core::get_instance();
+        $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
     public function get_cache_identifier()
     {
-        if (!isset($this->midcom->context->host))
+        if (!isset($this->midgardmvc->context->host))
         {
-            return "CLI-{$this->midcom->context->component}-{$this->midcom->context->style_id}-" . $this->midcom->context->get_current_context() . 
-                "-{$this->midcom->context->route_id}-{$this->midcom->context->template_entry_point}-{$this->midcom->context->content_entry_point}";
+            return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        if (!isset($this->midcom->context->page))
+        if (!isset($this->midgardmvc->context->page))
         {
-            return "{$this->midcom->context->host->id}-{$this->midcom->context->component}-{$this->midcom->context->style_id}-" . $this->midcom->context->get_current_context() . 
-                "-{$this->midcom->context->route_id}-{$this->midcom->context->template_entry_point}-{$this->midcom->context->content_entry_point}";
+            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        if (isset($this->midcom->context->route_id))
+        if (isset($this->midgardmvc->context->route_id))
         {
-            return "{$this->midcom->context->host->id}-{$this->midcom->context->page->id}-{$this->midcom->context->style_id}-" . $this->midcom->context->get_current_context() . 
-                "-{$this->midcom->context->route_id}-{$this->midcom->context->template_entry_point}-{$this->midcom->context->content_entry_point}";
+            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        return "{$this->midcom->context->host->id}-{$this->midcom->context->page->id}-{$this->midcom->context->style_id}-" . $this->midcom->context->get_current_context() . 
-            "-{$this->midcom->context->template_entry_point}-{$this->midcom->context->content_entry_point}";
+        return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+            "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
     }
 
     public function append_directory($directory)
@@ -57,51 +57,51 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         {
             throw new Exception("Template directory {$directory} not found.");
         }
-        $stack = $this->midcom->context->get_current_context();
+        $stack = $this->midgardmvc->context->get_current_context();
         if (!isset($this->stacks[$stack]))
         {
             $this->stacks[$stack] = array();
         }
         $this->stacks[$stack][$directory] = 'directory';
         
-        if (   isset($this->midcom->context->subtemplate)
-            && $this->midcom->context->subtemplate
-            && file_exists("{$directory}/{$this->midcom->context->subtemplate}"))
+        if (   isset($this->midgardmvc->context->subtemplate)
+            && $this->midgardmvc->context->subtemplate
+            && file_exists("{$directory}/{$this->midgardmvc->context->subtemplate}"))
         {
-            $this->stacks[$stack]["{$directory}/{$this->midcom->context->subtemplate}"] = 'directory';
+            $this->stacks[$stack]["{$directory}/{$this->midgardmvc->context->subtemplate}"] = 'directory';
         }
     }
     
     public function append_style($style_id)
     {
-        if (!$this->midcom->configuration->services_templating_database_enabled)
+        if (!$this->midgardmvc->configuration->services_templating_database_enabled)
         {
             return;
         }
-        $stack = $this->midcom->context->get_current_context();
+        $stack = $this->midgardmvc->context->get_current_context();
         if (!isset($this->stacks[$stack]))
         {
             $this->stacks[$stack] = array();
         }
         $this->stacks[$stack]["st:{$style_id}"] = 'style'; 
         
-        // TODO: $this->midcom->context->subtemplate support (look up child style)
+        // TODO: $this->midgardmvc->context->subtemplate support (look up child style)
     }
     
     public function append_page($page_id)
     {
-        if (!$this->midcom->configuration->services_templating_database_enabled)
+        if (!$this->midgardmvc->configuration->services_templating_database_enabled)
         {
             return;
         }
-        if ($page_id != $this->midcom->context->page->id)
+        if ($page_id != $this->midgardmvc->context->page->id)
         {
             // Register page to template cache        
             $page = new midgard_page($page_id);
-            $this->midcom->cache->template->register($this->get_cache_identifier(), array($page->guid));
+            $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($page->guid));
         }
 
-        $stack = $this->midcom->context->get_current_context();
+        $stack = $this->midgardmvc->context->get_current_context();
         if (!isset($this->stacks[$stack]))
         {
             $this->stacks[$stack] = array();
@@ -125,7 +125,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         foreach ($keys as $value => $array)
         {
             // Register element to template cache
-            $this->midcom->cache->template->register($this->get_cache_identifier(), array($mc->get_subkey($value, 'guid')));
+            $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($mc->get_subkey($value, 'guid')));
 
             return $value;
         }
@@ -165,7 +165,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
                 foreach ($keys as $value => $array)
                 {
                     // Register element to template cache
-                    $this->midcom->cache->template->register($this->get_cache_identifier(), array($mc->get_subkey($value, 'guid')));
+                    $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($mc->get_subkey($value, 'guid')));
 
                     return $value;
                 }
@@ -190,10 +190,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             $element = $element[1];
         }
         
-        $stack = $this->midcom->context->get_current_context();
+        $stack = $this->midgardmvc->context->get_current_context();
         if (!isset($this->stacks[$stack]))
         {
-            throw new OutOfBoundsException("MidCOM style stack {$stack} not found.");
+            throw new OutOfBoundsException("Midgard MVC style stack {$stack} not found.");
         }
         
         if (!isset($this->stack_elements[$stack]))
@@ -203,7 +203,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         
         if ($element == 'content')
         {
-            $element = $this->midcom->context->content_entry_point;
+            $element = $this->midgardmvc->context->content_entry_point;
         }
         
         if (isset($this->stack_elements[$stack][$element]))
@@ -232,9 +232,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             if (   $element_content
                 && !in_array($element, $this->elements_shown))
             {
-                if ($this->midcom->firephp)
+                if ($this->midgardmvc->firephp)
                 {
-                    $this->midcom->firephp->log("Included template '{$element}' from {$type} {$identifier}");
+                    $this->midgardmvc->firephp->log("Included template '{$element}' from {$type} {$identifier}");
                 }
 
                 $this->elements_shown[] = $element;
@@ -246,7 +246,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
         
-        //throw new OutOfBoundsException("Element {$element} not found in MidCOM style stack.");
+        //throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack.");
     }
 
     /**
@@ -259,7 +259,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      * Here is an example of using dynamic calls inside a TAL template, in this case loading three latest news:
      * 
      * <code>
-     * <tal:block tal:define="latest_news php:MIDCOM.templating.dynamic_call('net_nemein_news', 'latest', array('number' => 3))">
+     * <tal:block tal:define="latest_news php:midgardmvc.templating.dynamic_call('net_nemein_news', 'latest', array('number' => 3))">
      *     <ul tal:condition="latest_news/news">
      *         <li tal:repeat="article latest_news/news">
      *             <a href="#" tal:attributes="href article/url" tal:content="article/title">Headline</a>
@@ -283,7 +283,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         
         if ($switch_context)
         {
-            $this->midcom->context->create();
+            $this->midgardmvc->context->create();
         }
 
         $page = null;
@@ -313,38 +313,38 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $this->dispatcher->populate_environment_data();
 
         // Run process injector for this context too
-        $this->midcom->componentloader->inject_process();
+        $this->midgardmvc->componentloader->inject_process();
 
         // Set up initial templating stack
-        if (   $this->midcom->configuration->services_templating_components
-            && is_array($this->midcom->configuration->services_templating_components))
+        if (   $this->midgardmvc->configuration->services_templating_components
+            && is_array($this->midgardmvc->configuration->services_templating_components))
         {
-            foreach ($this->midcom->configuration->services_templating_components as $templating_component)
+            foreach ($this->midgardmvc->configuration->services_templating_components as $templating_component)
             {
-                $this->midcom->templating->append_directory(MIDGARDMVC_ROOT . "/{$templating_component}/templates");
+                $this->midgardmvc->templating->append_directory(MIDGARDMVC_ROOT . "/{$templating_component}/templates");
             }
         }
 
         // Then initialize the component, so it also goes to template stack
         $this->dispatcher->initialize($component_name);
 
-        if (   $this->midcom->configuration->services_templating_database_enabled
-            && isset($this->midcom->context->style_id))
+        if (   $this->midgardmvc->configuration->services_templating_database_enabled
+            && isset($this->midgardmvc->context->style_id))
         {
             // And finally append style and page to template stack
-            $this->midcom->templating->append_style($this->midcom->context->style_id);    
+            $this->midgardmvc->templating->append_style($this->midgardmvc->context->style_id);    
             if ($page)
             {
-                $this->midcom->templating->append_page($this->midcom->context->page->id);
+                $this->midgardmvc->templating->append_page($this->midgardmvc->context->page->id);
             }
         }
         
-        if (!$this->midcom->context->component_instance->configuration->exists('routes'))
+        if (!$this->midgardmvc->context->component_instance->configuration->exists('routes'))
         {
             throw new Exception("Component {$component_name} has no routes defined");
         }
         
-        $routes = $this->midcom->context->component_instance->configuration->get('routes');
+        $routes = $this->midgardmvc->context->component_instance->configuration->get('routes');
         if (!isset($routes[$route_id]))
         {
             throw new Exception("Component {$component_name} has no route {$route_id}");
@@ -353,11 +353,11 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $this->dispatcher->set_route($route_id, $arguments);
         $this->dispatcher->dispatch();
         
-        $data = $this->midcom->context->$component_name;
+        $data = $this->midgardmvc->context->$component_name;
 
         if ($switch_context)
         {        
-            $this->midcom->context->delete();
+            $this->midgardmvc->context->delete();
         }
         
         return $data;
@@ -373,7 +373,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      * In a TAL template dynamic load can be used in the following way:
      *
      * <code>
-     * <div class="news" tal:content="structure php:MIDCOM.templating.dynamic_load('/newsfolder', 'latest', array('number' => 4))"></div>
+     * <div class="news" tal:content="structure php:midgardmvc.templating.dynamic_load('/newsfolder', 'latest', array('number' => 4))"></div>
      * </code>
      *
      * @param string $component_name Component name or page GUID
@@ -383,7 +383,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      */
     public function dynamic_load($component_name, $route_id, array $arguments)
     {
-        $this->midcom->context->create();
+        $this->midgardmvc->context->create();
         $data = $this->dynamic_call($component_name, $route_id, $arguments, false);
 
         $this->template('content_entry_point');
@@ -393,8 +393,8 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
          * Gettext is not context safe. Here we return the "original" textdomain
          * because in dynamic call the new component may change it
          */
-        $this->midcom->context->delete();
-        $this->midcom->i18n->set_translation_domain($this->midcom->context->component);
+        $this->midgardmvc->context->delete();
+        $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component);
     }
 
     /**
@@ -402,33 +402,33 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      */    
     public function template($element_identifier = 'template_entry_point')
     {
-        if ($this->midcom->componentloader)
+        if ($this->midgardmvc->componentloader)
         {
             // Let injectors do their work
-            $this->midcom->componentloader->inject_template();
+            $this->midgardmvc->componentloader->inject_template();
         }
 
         // Check if we have the element in cache already
-        if (   !$this->midcom->configuration->development_mode
-            && $this->midcom->cache->template->check($this->get_cache_identifier()))
+        if (   !$this->midgardmvc->configuration->development_mode
+            && $this->midgardmvc->cache->template->check($this->get_cache_identifier()))
         {
             return;
         }
 
         // Register current page to cache
-        if (isset($this->midcom->context->page))
+        if (isset($this->midgardmvc->context->page))
         {
-            $this->midcom->cache->template->register($this->get_cache_identifier(), array($this->midcom->context->page->guid));
+            $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($this->midgardmvc->context->page->guid));
         }
         else
         {
-            $this->midcom->cache->template->register($this->get_cache_identifier(), array($this->midcom->context->component));
+            $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($this->midgardmvc->context->component));
         }
 
-        $element = $this->get_element($this->midcom->context->$element_identifier);
+        $element = $this->get_element($this->midgardmvc->context->$element_identifier);
         
         // Template cache didn't have this template, collect it
-        $this->midcom->cache->template->put($this->get_cache_identifier(), $element);
+        $this->midgardmvc->cache->template->put($this->get_cache_identifier(), $element);
     }
     
     /**
@@ -438,9 +438,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      */
     public function display()
     {
-        $data =& $this->midcom->context->get();
+        $data =& $this->midgardmvc->context->get();
 
-        $template_file = $this->midcom->cache->template->get($this->get_cache_identifier());
+        $template_file = $this->midgardmvc->cache->template->get($this->get_cache_identifier());
         $content = file_get_contents($template_file);
 
         switch ($data['template_engine'])
@@ -453,19 +453,19 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
                 break;
         }
 
-        if ($this->midcom->context->cache_enabled)
+        if ($this->midgardmvc->context->cache_enabled)
         {
             ob_start();
         }
         
-        $filters = $this->midcom->configuration->get('output_filters');
+        $filters = $this->midgardmvc->configuration->get('output_filters');
         if ($filters)
         {
             foreach ($filters as $filter)
             {
                 foreach ($filter as $component => $method)
                 {
-                    $instance = $this->midcom->componentloader->load($component);
+                    $instance = $this->midgardmvc->componentloader->load($component);
                     if (!$instance)
                     {
                         continue;
@@ -477,32 +477,32 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         echo $content;
         
-        if (   $this->midcom->context->get_current_context() == 0
-            && $this->midcom->context->mimetype == 'text/html')
+        if (   $this->midgardmvc->context->get_current_context() == 0
+            && $this->midgardmvc->context->mimetype == 'text/html')
         {
             // We're in main request, and output is HTML, so it is OK to inject some HTML to it
-            if ($this->midcom->configuration->get('enable_included_list'))
+            if ($this->midgardmvc->configuration->get('enable_included_list'))
             {
                 $included = get_included_files();
-                $this->midcom->log('midgardmvc_services_templating::display', count($included) . " included files", 'info');
+                $this->midgardmvc->log('midgardmvc_services_templating::display', count($included) . " included files", 'info');
                 foreach ($included as $filename)
                 {
-                    $this->midcom->log('midgardmvc_services_templating::display::included', $filename, 'debug');
+                    $this->midgardmvc->log('midgardmvc_services_templating::display::included', $filename, 'debug');
                 }
             }
         }
         
-        if ($this->midcom->context->cache_enabled)
+        if ($this->midgardmvc->context->cache_enabled)
         {
             // Store the contents to content cache and display them
-            $this->midcom->cache->content->put($this->midcom->context->cache_request_identifier, ob_get_contents());
+            $this->midgardmvc->cache->content->put($this->midgardmvc->context->cache_request_identifier, ob_get_contents());
             ob_end_flush();
         }
 
-        if ($this->midcom->configuration->enable_uimessages)
+        if ($this->midgardmvc->configuration->enable_uimessages)
         {
-            ///TODO: Connect this to some signal that tells the MidCOM execution has ended.
-            $this->midcom->uimessages->store();
+            ///TODO: Connect this to some signal that tells the Midgard MVC execution has ended.
+            $this->midgardmvc->uimessages->store();
         }
     }
 
@@ -520,16 +520,19 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $tal = new PHPTAL($this->get_cache_identifier());
         
         $tal->uimessages = false;
-        if ($this->midcom->configuration->enable_uimessages)
+        if ($this->midgardmvc->configuration->enable_uimessages)
         {
-            if (   $this->midcom->uimessages->has_messages()
-                && $this->midcom->uimessages->can_view())
+            if (   $this->midgardmvc->uimessages->has_messages()
+                && $this->midgardmvc->uimessages->can_view())
             {
-                $tal->uimessages = $this->midcom->uimessages->render();
+                $tal->uimessages = $this->midgardmvc->uimessages->render();
             }
         }
 
-        $tal->MIDCOM = $this->midcom;
+        $tal->midgardmvc = $this->midgardmvc;
+        
+        // FIXME: Remove this once Qaiku has upgraded
+        $tal->MIDCOM = $this->midgardmvc;
         
         foreach ($data as $key => $value)
         {
@@ -538,7 +541,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         $tal->setSource($content);
 
-        $translator =& $this->midcom->i18n->set_translation_domain($this->midcom->context->component);
+        $translator =& $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component);
         $tal->setTranslator($translator);  
     
         try

@@ -7,9 +7,7 @@
  */
 
 /**
- * Component interface definition for MidCOM 3
- *
- * The defines the structure of component instance interface class
+ * Component interface baseclass for Midgard MVC
  *
  * @package midgardmvc_core
  */

@@ -7,7 +7,7 @@
  */
 
 /**
- * Head includes helper for MidCOM 3
+ * Head includes helper for Midgard MVC
  *
  *
  * @package midgardmvc_core
@@ -77,7 +77,7 @@ class midgardmvc_core_helpers_head
     /**
      * Register JavaScript snippets to jQuery states.
      *
-     * This allows MidCOM components to register JavaScript code
+     * This allows Midgard MVC components to register JavaScript code
      * to the jQuery states.
      * Possible ready states: document.ready
      *
@@ -290,7 +290,7 @@ class midgardmvc_core_helpers_head
      *
      * Place the method within the <head> section of your page.
      *
-     * This allows MidCOM components to register HEAD elements
+     * This allows Midgard MVC components to register HEAD elements
      * during page processing. The site style code can then query this queued-up code
      * at anytime it likes. The queue-up SHOULD be done during the code-init phase,
      * while the print_elements output SHOULD be included in the HTML HEAD area and

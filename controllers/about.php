@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM "About Midgard CMS" controller
+ * Midgard MVC "About Midgard CMS" controller
  *
  * @package midgardmvc_core
  */

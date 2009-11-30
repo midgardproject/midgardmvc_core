@@ -7,7 +7,7 @@
  */
 
 /**
- * Cache interface for MidCOM 3
+ * Cache interface for Midgard MVC
  *
  * @package midgardmvc_core
  */

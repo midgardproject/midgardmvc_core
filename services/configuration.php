@@ -7,7 +7,7 @@
  */
 
 /**
- * Configuration interface for MidCOM 3
+ * Configuration interface for Midgard MVC
  *
  * @package midgardmvc_core
  */

@@ -14,7 +14,7 @@ $_SERVER['PATH_INFO'] = midgardmvc_core::get_instance()->context->uri;
 $_SERVER['SCRIPT_NAME'] = midgardmvc_core::get_instance()->context->prefix;
 
 /**
- * WebDAV server for MidCOM 3
+ * WebDAV server for Midgard MVC
  *
  * @package midgardmvc_core
  */
@@ -443,7 +443,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
     }
 
     /**
-     * Handle HTTP Basic authentication using MidCOM's authentication service
+     * Handle HTTP Basic authentication using Midgard MVC authentication service
      *
      * @access private
      * @param  string  HTTP Authentication type (Basic, Digest, ...)

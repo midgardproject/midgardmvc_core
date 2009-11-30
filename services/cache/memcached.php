@@ -32,7 +32,7 @@ class midgardmvc_core_services_cache_memcached extends midgardmvc_core_services_
         
         if (!isset(midgardmvc_core::get_instance()->context->host))
         {
-            $this->name = 'MidCOM';
+            $this->name = 'MidgardMVC';
         }
         else
         {

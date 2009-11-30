@@ -7,7 +7,7 @@
  */
 
 /**
- * Metadata helper for MidCOM 3
+ * Metadata helper for Midgard MVC
  *
  *
  * @package midgardmvc_core

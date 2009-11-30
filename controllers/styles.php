@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM Style and Element WebDAV management controller
+ * Midgard MVC Style and Element WebDAV management controller
  *
  * @package midgardmvc_core
  */

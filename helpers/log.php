@@ -7,7 +7,7 @@
  */
 
 /**
- * Log file writing helper for MidCOM 3
+ * Log file writing helper for Midgard MVC
  *
  * NOTE: This will be deprecated as soon as the midgard_error methods are backported to Ragnaroek.
  *
@@ -17,7 +17,7 @@ class midgardmvc_core_helpers_log
 {
     private $log_file = '';
     
-    function __construct($log_name = 'midcom')
+    function __construct($log_name = 'midgardmvc')
     {
         if (!extension_loaded('midgard'))
         {

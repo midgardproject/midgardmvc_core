@@ -7,7 +7,7 @@
  */
 
 /**
- * Manual dispatcher for MidCOM 3
+ * Manual dispatcher for Midgard MVC
  *
  * Dispatches requested route and controller of components.
  *

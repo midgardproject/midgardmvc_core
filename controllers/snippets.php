@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM Snippet and SnippetDir WebDAV management controller
+ * Midgard MVC Snippet and SnippetDir WebDAV management controller
  *
  * @package midgardmvc_core
  */

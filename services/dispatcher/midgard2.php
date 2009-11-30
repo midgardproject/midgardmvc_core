@@ -7,7 +7,7 @@
  */
 
 /**
- * Midgard2 dispatcher for MidCOM 3
+ * Midgard2 dispatcher for Midgard MVC
  *
  * Dispatches Midgard HTTP requests to components.
  *
@@ -27,7 +27,7 @@ class midgardmvc_core_services_dispatcher_midgard2 extends midgardmvc_core_servi
     {
         if (!extension_loaded('midgard2'))
         {
-            throw new Exception('Midgard 2.x is required for this MidCOM setup.');
+            throw new Exception('Midgard 2.x is required for this Midgard MVC setup.');
         }
 
         $this->request_method = $_SERVER['REQUEST_METHOD'];

@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM documentation helper
+ * Midgard MVC documentation helper
  *
  * @package midgardmvc_core
  */

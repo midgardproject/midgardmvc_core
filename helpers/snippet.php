@@ -7,7 +7,7 @@
  */
 
 /**
- * Head includes helper for MidCOM 3
+ * Head includes helper for Midgard MVC
  *
  *
  * @package midgardmvc_core

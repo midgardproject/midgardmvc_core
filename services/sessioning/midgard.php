@@ -7,10 +7,10 @@
  */
 
 /**
- * Base singleton class of the MidCOM sessioning service.
+ * Base singleton class of the Midgard MVC sessioning service.
  *
- * This is a singleton class, that is accessible through the MidCOM Service
- * infrastructure. It manages session data of MidCOM driven applications.
+ * This is a singleton class, that is accessible through the Midgard MVC Service
+ * infrastructure. It manages session data of Midgard MVC driven applications.
  *
  * This sessioning interface will always work with copies, never with references
  * to work around a couple of bugs mentioned in the details below.
@@ -23,7 +23,7 @@
  * If you store class instances within a session, which is perfectly safe in
  * general, there are known problems due to the fact, that a class declaration
  * has to be available before it can be deserialized. As PHP sessioning does this
- * deserialization automatically, this might fail with MidCOM, where the sequence
+ * deserialization automatically, this might fail with Midgard MVC, where the sequence
  * in which the code gets loaded and the sessioning gets started up is actually
  * undefined. To get around this problems, the sessioning system stores not the
  * actual data in the sessioning array, but a serialized string of the data, which
@@ -64,7 +64,7 @@ class midgardmvc_core_services_sessioning_midgard
 
         if ($started)
         {
-            throw new Exception("MidCOM Sessioning has already been started, it must not be started twice. Aborting");
+            throw new Exception("Midgard MVC Sessioning has already been started, it must not be started twice. Aborting");
         }
         
         $started = true;

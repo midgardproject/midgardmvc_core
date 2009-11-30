@@ -7,7 +7,7 @@
  */
 
 /**
- * Variant handling helper for MidCOM 3
+ * Variant handling helper for Midgard MVC
  *
  * @package midgardmvc_core
  */
@@ -168,7 +168,7 @@ class midgardmvc_core_helpers_variants
                 $this->object = $value;
                 break;
             default:
-                throw new OutOfBoundsException("MidCOM variant handler is unable to utilize {$attribute}.");
+                throw new OutOfBoundsException("Midgard MVC variant handler is unable to utilize {$attribute}.");
         }
     }
 }

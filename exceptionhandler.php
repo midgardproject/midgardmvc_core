@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM 3 exception handler
+ * Midgard MVC exception handler
  *
  * @package midgardmvc_core
  */
@@ -32,11 +32,11 @@ class midgardmvc_core_exceptionhandler
         $message = strip_tags($exception->getMessage());
         $message = str_replace("\n", ' ', $message);
 
-        $midcom = midgardmvc_core::get_instance();
-        $midcom->log($message_type, $message, 'warn');
-        if ($midcom->firephp)
+        $midgardmvc = midgardmvc_core::get_instance();
+        $midgardmvc->log($message_type, $message, 'warn');
+        if ($midgardmvc->firephp)
         {
-            $midcom->firephp->error($exception);
+            $midgardmvc->firephp->error($exception);
         }
 
         if (headers_sent())
@@ -44,7 +44,7 @@ class midgardmvc_core_exceptionhandler
             die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
         }
 
-        header("X-MidCOM-Error: {$message}");
+        header("X-MidgardMVC-Error: {$message}");
 
         $header = self::header_by_code($http_code);
 
@@ -60,34 +60,34 @@ class midgardmvc_core_exceptionhandler
 
             $data['trace'] = false;
 
-            if (!$midcom)
+            if (!$midgardmvc)
             {
                 return;
             }
 
-            if ($midcom->configuration && $midcom->configuration->enable_exception_trace)
+            if ($midgardmvc->configuration && $midgardmvc->configuration->enable_exception_trace)
             {
                 $data['trace'] = $exception->getTrace();
             }
 
             try
             {
-                if (!$midcom->context)
+                if (!$midgardmvc->context)
                 {
                     throw new Exception();
                 }
 
-                $midcom->context->set_item('midgardmvc_core_exceptionhandler', $data);
-                $midcom->context->set_item('template_entry_point', 'midcom-show-error');
-                $midcom->context->set_item('cache_enabled', false);
+                $midgardmvc->context->set_item('midgardmvc_core_exceptionhandler', $data);
+                $midgardmvc->context->set_item('template_entry_point', 'midcom-show-error');
+                $midgardmvc->context->set_item('cache_enabled', false);
 
-                if (!$midcom->templating)
+                if (!$midgardmvc->templating)
                 {
                     throw new Exception();
                 }
 
-                $midcom->templating->template();
-                $midcom->templating->display();
+                $midgardmvc->templating->template();
+                $midgardmvc->templating->display();
             }
             catch (Exception $e)
             {
@@ -130,7 +130,7 @@ class midgardmvc_core_exceptionhandler
 }
 
 /**
- * MidCOM 3 "not found" exception
+ * Midgard MVC "not found" exception
  *
  * @package midgardmvc_core
  */
@@ -144,7 +144,7 @@ class midgardmvc_exception_notfound extends Exception
 }
 
 /**
- * MidCOM 3 "unauthorized" exception
+ * Midgard MVC "unauthorized" exception
  *
  * @package midgardmvc_core
  */
@@ -158,7 +158,7 @@ class midgardmvc_exception_unauthorized extends Exception
 }
 
 /**
- * MidCOM 3 generic HTTP error exception
+ * Midgard MVC generic HTTP error exception
  *
  * @package midgardmvc_core
  */

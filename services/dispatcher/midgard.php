@@ -7,7 +7,7 @@
  */
 
 /**
- * Midgard dispatcher for MidCOM 3
+ * Midgard dispatcher for Midgard MVC
  *
  * Dispatches Midgard HTTP requests to components.
  *
@@ -43,7 +43,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         
         if (!extension_loaded('midgard'))
         {
-            throw new Exception('Midgard 1.x is required for this MidCOM setup.');
+            throw new Exception('Midgard 1.x is required for this Midgard MVC setup.');
         }
 
         $arg_string = substr($_MIDGARD['uri'], strlen($_MIDGARD['self']));
@@ -153,7 +153,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         $_core->context->component_instance = $_core->componentloader->load($this->component_name, $_core->context->page);
         if ($component == 'midgardmvc_core')
         {
-            // MidCOM core templates are already appended
+            // Midgard MVC core templates are already appended
             return;
         }
         $_core->templating->append_directory($_core->componentloader->component_to_filepath($_core->context->component) . '/templates');

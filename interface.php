@@ -7,7 +7,7 @@
  */
 
 /**
- * MidCOM interface class
+ * Midgard MVC interface class
  *
  * @package midgardmvc_core
  */
@@ -49,12 +49,12 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         $this->configuration = $configuration;
         
-        // Register autoloader so we get all MidCOM classes loaded automatically
+        // Register autoloader so we get all Midgard MVC classes loaded automatically
         spl_autoload_register(array($this, 'autoload'));
     }
     
     /**
-     * Load all basic services needed for MidCOM usage. This includes configuration, authorization and the component loader.
+     * Load all basic services needed for Midgard MVC usage. This includes configuration, authorization and the component loader.
      */
     public function load_base_services($dispatcher = 'midgard')
     {
@@ -272,7 +272,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             array
             (
                 'name' => 'generator',
-                'content' => "Midgard/" . mgd_version() . " MidCOM/{$this->componentloader->manifests['midgardmvc_core']['version']} PHP/" . phpversion()
+                'content' => "Midgard/" . mgd_version() . " MidgardMVC/{$this->componentloader->manifests['midgardmvc_core']['version']} PHP/" . phpversion()
             )
         );
 
@@ -349,14 +349,14 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         // Prepate the templates
         $this->templating->template();
 
-        // Read contents from the output buffer and pass to MidCOM rendering
+        // Read contents from the output buffer and pass to Midgard MVC rendering
         $this->templating->display();
         
         $this->cache->autoload->store($this->context->uri, $this->autoloaded_files);
     }
 
     /**
-     * Access to the MidCOM instance
+     * Access to the Midgard MVC instance
      */
     public static function get_instance($dispatcher = null)
     {

@@ -7,7 +7,7 @@
  */
 
 /**
- * Templating interface for MidCOM 3
+ * Templating interface for Midgard MVC
  *
  * @package midgardmvc_core
  */

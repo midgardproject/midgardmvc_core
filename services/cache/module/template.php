@@ -9,7 +9,7 @@
 /**
  * Template caching module
  *
- * Provides a way to cache all elements collected by the MidCOM templating service to a file.
+ * Provides a way to cache all elements collected by the Midgard MVC templating service to a file.
  *
  * @package midgardmvc_core
  */
