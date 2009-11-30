@@ -36,6 +36,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         {
             return;
         }
+        $this->components[$component] = true;
 
         if (is_null($this->midgardmvc))
         {
@@ -47,7 +48,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         (
             $component,
         );
-        $this->components[] = $component;
+
         
         if (isset($this->midgardmvc->componentloader))
         {
@@ -60,7 +61,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 }
 
                 $components[] = $component;
-                $this->components[] = $component;
+                $this->components[$component] = true;
             }
             $components = array_reverse($components);
         }
