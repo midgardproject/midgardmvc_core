@@ -14,7 +14,7 @@ require_once(dirname(__FILE__) . '/../../../tests/testcase.php');
 class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_testcase
 {
     public function setUp()
-    {        
+    {
         $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
         $this->testConfiguration = syck_load(file_get_contents($path));
         parent::setUp();
@@ -27,6 +27,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $this->assertEquals($this->_core->configuration->get($key), $this->testConfiguration[$key]);
         }
     }
+
     public function test_magic_getter()
     {
         foreach($this->testConfiguration as $key => $conf)
@@ -34,6 +35,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $this->assertEquals($this->_core->configuration->$key, $this->testConfiguration[$key]);
         }
     }
+
     public function test_exists()
     {
         foreach($this->testConfiguration as $key => $conf)
@@ -41,6 +43,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $this->assertTrue($this->_core->configuration->exists($key));
         }
     }
+
     public function test_isset()
     {
         foreach($this->testConfiguration as $key => $conf)
@@ -48,6 +51,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $this->assertTrue( isset($this->_core->configuration->$key));
         }
     }
+
     public function test_unserialize()
     {
         $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
@@ -62,6 +66,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $this->assertTrue(false);
         }
     }
+
     public function test_serialization()
     {
         $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
@@ -78,5 +83,27 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $this->assertTrue(false);
         }
     }
+
+    public function test_merge_configs()
+    {
+        // flat
+        $base = array('foo' => 'bar', 'baz' => 'bar');
+        $extension = array('foo' => 'test', 'other' => 'test');
+
+        $result = midgardmvc_core_services_configuration_yaml::merge_configs($base, $extension);
+        $this->assertEquals(
+            array('foo' => 'test', 'baz' => 'bar', 'other' => 'test'),
+            $result
+        );
+
+        // 1-level
+        $base = array('foo' => array('foo' => 'bar', 'baz' => 'bar'), 'baz' => '', 'more' => array());
+        $extension = array('foo' => array('foo' => 'test', 'other' => 'test'), 'baz' => 'test', 'more' => array('foo' => 'test'));
+
+        $result = midgardmvc_core_services_configuration_yaml::merge_configs($base, $extension);
+        $this->assertEquals(
+            array('foo' => array('foo' => 'test', 'baz' => 'bar', 'other' => 'test'), 'baz' => 'test', 'more' => array('foo' => 'test')),
+            $result
+        );
+    }
 }
-?>
