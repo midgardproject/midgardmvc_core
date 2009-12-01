@@ -322,7 +322,7 @@ class midgardmvc_core_component_loader
             $this->load($component);
 
             // Instantiate the injector class
-            $injector = new $injector_class();
+            $injector = new $injector_class($this->_core->configuration);
             
             // Inject
             $injector->$injector_method();
