@@ -160,18 +160,18 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function get_routes()
     {
-        $this->midgardmvc->context->core_routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->configuration->get('routes'));
         $this->midgardmvc->context->component_routes = array();
 
         if (   !isset($this->midgardmvc->context->component_instance)
             || !$this->midgardmvc->context->component_instance)
         {
+            $this->midgardmvc->context->core_routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->configuration->get('routes'));
             return $this->midgardmvc->context->core_routes;
         }
 
         $this->midgardmvc->context->component_routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->context->component_instance->configuration->get('routes'));
         
-        return array_merge($this->midgardmvc->context->component_routes, $this->midgardmvc->context->core_routes);
+        return $this->midgardmvc->context->component_routes;
     }
 
 

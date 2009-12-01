@@ -128,10 +128,9 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     
     public function get_routes()
     {
-        $core_routes = $this->_core->configuration->get('routes');
         $component_routes = $this->_core->context->component_instance->configuration->get('routes');
         
-        return array_merge($core_routes, $component_routes);
+        return $component_routes;
     }
     
     public function set_page(midgard_page $page)
