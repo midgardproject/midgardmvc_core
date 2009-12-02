@@ -288,14 +288,18 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         $page = null;
 
-        if (mgd_is_guid($component_name))
+        if (   is_object($component_name)
+            && is_a($component_name, 'midgard_page'))
+        {
+            $page = $component_name;
+        }
+        elseif (mgd_is_guid($component_name))
         {
             $page = new midgard_page($component_name);
         }
         elseif (strpos($component_name, '/') !== false)
         {
-            $page = new midgard_page();
-            $page->get_by_path($component_name);
+            $page = $this->dispatcher->resolve_page($component_name);
         }
         
         if ($page)

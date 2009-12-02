@@ -49,6 +49,16 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             $this->_core->context->host = $host;
             $this->_core->context->root = $host->root;
             $this->_core->context->style_id = $this->_core->context->host->style;
+            $this->_core->context->prefix = $host->prefix;
+        }
+        
+        if ($this->_core->context->get_current_context() != 0)
+        {
+            // This is a subrequest, copy some context data from context 0
+            $this->_core->context->prefix = $this->_core->context->get_item('prefix', 0);
+            $this->_core->context->root = $this->_core->context->get_item('root', 0);
+            $this->_core->context->webdav_request = $this->_core->context->get_item('webdav_request', 0);
+            $this->_core->context->style_id = $this->_core->context->get_item('style_id', 0);
         }
 
         $this->_core->context->cache_enabled = $this->_core->configuration->services_cache_configuration['enabled'];
@@ -59,7 +69,13 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             return;
         }
            
-        $this->_core->context->uri = $this->get_page_prefix();        
+        $this->_core->context->self = $this->get_page_prefix();
+        $this->_core->context->uri = $this->_core->context->self;
+        foreach ($this->argv as $arg)
+        {
+            $this->_core->context->uri .= "{$arg}/";
+        }
+              
         $this->_core->context->component = $this->page->component;
         $this->_core->context->page = $this->page;
         
@@ -68,7 +84,6 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             $this->_core->context->style_id = $this->page->style;
         }
         
-        $this->_core->context->prefix = $this->get_page_prefix();
         $this->_core->templating->append_page($this->page->id);
     }
 
@@ -147,23 +162,31 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         
         $this->page_id = $parent_id;
         $path = explode('/', trim($path));
-        foreach ($path as $p)
+        foreach ($path as $i => $p)
         {
             if (strlen(trim($p)) == 0)
-            {                
+            {
+                unset($path[$i]);          
                 continue;
             }
             $qb = new midgard_query_builder('midgard_page');
             $qb->add_constraint('up', '=', $parent_id);
             $qb->add_constraint('name', '=', $p);
             $res = $qb->execute();
-            if(count($res) != 1)
+            if (count($res) != 1)
             {
                 break;            
             }
             $parent_id = $res[0]->id;
             $temp = substr($temp, 1 + strlen($p));
             $page = $res[0];
+            unset($path[$i]);
+        }
+
+        $this->argv = array();
+        foreach ($path as $p)
+        {
+            $this->argv[] = $p;
         }
 
         if (strlen($temp) < 2)
@@ -180,36 +203,10 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         {
             throw new Exception("No page set for the manual dispatcher");
         }
-        
-        if (!isset($_MIDGARD['host']))
-        {
-            return null;
-        }
-    
-        if (isset ($_MIDGARD['prefix']))
-        {
-            $prefix = "{$_MIDGARD['prefix']}/";
-        }
-        else
-        {
-            $prefix = '';
-        }
 
-        $host_mc = midgard_host::new_collector('id', $_MIDGARD['host']);
-        $host_mc->set_key_property('root');
-        $host_mc->execute();
-        $roots = $host_mc->list_keys();
-        if (!$roots)
-        {
-            throw new Exception("Failed to load root page data for host");
-        }
-        $root_id = null;
-        foreach ($roots as $root => $array)
-        {
-            $root_id = $root;
-            break;
-        }
+        $prefix = $this->_core->context->prefix;
         
+        $root_id = $this->_core->context->root;
         if ($this->page->id == $root_id)
         {
             return $prefix;
@@ -316,6 +313,138 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         {
             $this->_core->context->content_entry_point = $selected_route_configuration['content_entry_point'];
         }
+    }
+
+    /**
+     * Tries to match one route from an array of route definitions
+     * associated with route_id route_ids
+     *
+     * The array should look something like this:
+     * array
+     * (
+     *     '/view/{guid:article_id}/' => 'view',
+     *     '/?articleid={int:article_id}' => 'view',
+     *     '/foo/bar' => 'someroute_id',
+     *     '/latest/{string:category}/{int:number}' => 'categorylatest',
+     * )
+     * The route parts are automatically normalized to end with trailing slash
+     * if they don't contain GET arguments
+     *
+     * @param array $routes map of routes to route_ids
+     * @return boolean indicating if a route could be matched or not
+     */
+    public function route_matches($routes)
+    {
+        // make a normalized string of $argv
+        $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $this->argv) . '/');
+
+        $this->action_arguments = array();
+        
+//        foreach ($routes as $route => $route_id)
+        foreach ($routes as $r)
+        {
+            $route = $r['route'];
+            $route_id = $r['route_id'];
+            
+            $this->action_arguments[$route_id] = array();
+            
+            // Reset variables
+            list ($route_path, $route_get, $route_args) = $this->_core->configuration->split_route($route);
+            
+            if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
+            {
+                // Simple route (only static arguments)
+                if (   $route_path === $argv_str
+                    && (   !$route_get
+                        || $this->get_matches($route_get, $route))
+                    )
+                {
+                    // echo "DEBUG: simple match route_id:{$route_id}\n";
+                    $this->route_array[] = $route_id;
+                }
+                if ($route_args) // Route @ set
+                {
+                    $path = explode('@', $route_path);
+                    if (preg_match('%' . str_replace('/', '\/', $path[0]) . '/(.*)\/%', $argv_str, $matches))
+                    {
+                        $this->route_array[] = $route_id;
+                        $this->action_arguments[$route_id]['variable_arguments'] = explode('/', $matches[1]);
+                    }
+                }
+                // Did not match, try next route
+                continue;
+            }
+            // "complex" route (with variable arguments)
+            if(preg_match('%@%', $route, $match))
+            {   
+                $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}\@%', '([^/]+?)', $route_path)) . '(.*)%';
+            }
+            else 
+            {
+                $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}%', '([^/]+?)', $route_path)) . '$%';
+            }
+//            echo "DEBUG: route_path_regex:{$route_path_regex} argv_str:{$argv_str}\n";
+            if (!preg_match($route_path_regex, $argv_str, $route_path_regex_matches))
+            {
+                // Does not match, NEXT!
+                continue;
+            }
+            if (   $route_get
+                && !$this->get_matches($route_get, $route))
+            {
+                // We have GET part that could not be matched, NEXT!
+                continue;
+            }
+
+            // We have a complete match, setup route_id arguments and return
+            $this->route_array[] = $route_id;
+            // Map variable arguments
+
+            foreach ($route_path_matches[1] as $index => $varname)
+            {
+                $variable_parts = explode(':', $varname);
+                if(count($variable_parts) == 1)
+                {
+                    $type_hint = '';
+                }
+                else
+                {
+                    $type_hint = $variable_parts[0];
+                }
+                                
+                // Strip type hints from variable names
+                $varname = preg_replace('/^.+:/', '', $varname);
+
+                if ($type_hint == 'token')
+                {
+                    // Tokenize the argument to handle resource typing
+                    $this->action_arguments[$route_id][$varname] = $this->tokenize_argument($route_path_regex_matches[$index + 1]);
+                }
+                else
+                {
+                    $this->action_arguments[$route_id][$varname] = $route_path_regex_matches[$index + 1];
+                }
+                
+                if (preg_match('%@%', $route, $match)) // Route @ set
+                {
+                    $path = explode('@', $route_path);
+                    if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
+                    {
+                        $this->route_array[] = $route_id;
+                        $this->action_arguments[$route_id] = explode('/', $matches[1]);
+                    }
+                }
+                
+            }
+            //return true;
+        }
+
+        // No match
+        if(count($this->route_array) == 0)
+        {
+            return false;
+        }
+        return true;
     }
 
     private function is_core_route($route_id)
