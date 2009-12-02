@@ -141,15 +141,10 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     public function resolve_page($path)
     {
         $temp = trim($path);
+        $page = $this->_core->context->page;
         
-        if (isset($this->_core->context->host))
-        {
-            $parent_id = $this->_core->context->host;
-        }
-        else
-        {
-            $parent_id = 0;
-        }
+        $parent_id = $this->_core->context->root;
+        
         $this->page_id = $parent_id;
         $path = explode('/', trim($path));
         foreach ($path as $p)
