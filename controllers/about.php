@@ -107,8 +107,6 @@ class midgardmvc_core_controllers_about
                 {
                     if (midgard_storage::class_storage_exists($type))
                     {
-                        // FIXME: Skip updates until http://trac.midgard-project.org/ticket/1426 is fixed
-                        continue;
                         midgardmvc_core::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Updating storage for type {$type}", 'debug');
                         if (!midgard_storage::update_class_storage($type))
                         {
