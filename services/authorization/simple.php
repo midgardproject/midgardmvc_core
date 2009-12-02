@@ -23,6 +23,7 @@ class midgardmvc_core_services_authorization_simple implements midgardmvc_core_s
     public function __construct()
     {
         $this->_core = midgardmvc_core::get_instance();
+        $this->_authentication = $this->_core->authentication;
 
         $mgdschemas = $this->_core->dispatcher->get_mgdschema_classes();
         foreach ($mgdschemas as $mgdschema)
