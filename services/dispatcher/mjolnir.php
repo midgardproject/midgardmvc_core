@@ -15,7 +15,6 @@
  */
 class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
-    private $_page_guid = '4a2f5298c09611de9dcf75343667cef6cef6'; // FIXME: set from config
     private $_root_page = null;
     private $_prefix = '/';
     private $_pages = array();
@@ -48,7 +47,9 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
             }
         }
 
-        $this->_root_page = new midgard_page($this->_page_guid);
+        $this->midgardmvc = midgardmvc_core::get_instance();
+
+        $this->_root_page = new midgard_page($this->midgardmvc->configuration->midgardmvc_root_page);
         if (!$this->_root_page->guid)
         {
             $this->_root_page = new midgard_page();
@@ -86,8 +87,6 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
                 $this->argv[] = $argument;
             }
         }
-        
-        $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
     private function get_subpage($parent, $child_name)
