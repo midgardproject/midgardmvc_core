@@ -106,4 +106,61 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             $result
         );
     }
+    
+    public function test_merge_config_routes()
+    {
+        $base = array
+        (
+            'foo' => 1,
+            'routes' => array
+            (
+                'one' => array(),
+                'two' => array(),
+            ),
+        );
+        
+        $extension = array
+        (
+            'bar' => 1,
+            'routes' => array
+            (
+                'three' => array(),
+                'four' => array(),
+            ),
+        );   
+        
+        $result = midgardmvc_core_services_configuration_yaml::merge_configs($base, $extension);
+        
+        foreach ($result as $key => $val)
+        {
+            if ($val == 'foo')
+            {
+                $this->assertEquals($key, 0);
+                continue;
+            }
+
+            if ($val == 'bar')
+            {
+                $this->assertEquals($key, 2);
+                continue;
+            }
+
+            if ($val == 'routes')
+            {
+                foreach ($val as $key2 => $val2)
+                {
+                    if ($key == 'three')
+                    {
+                        $this->assertEquals($key2, 0);
+                        continue;
+                    }
+                    
+                    if ($key == 'one')
+                    {
+                        $this->assertEquals($key2, 2);
+                    }
+                }
+            }
+        }
+    }
 }

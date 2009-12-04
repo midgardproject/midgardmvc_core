@@ -113,6 +113,12 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                     continue;
                 }
                 
+                if ($key == 'routes')
+                {
+                    // Routes are prepended to ensure component and injector routes are run before core ones
+                    $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($value, $merged[$key]);
+                    continue;
+                }
                 $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
                 continue;
             }
