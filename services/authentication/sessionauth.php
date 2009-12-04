@@ -182,24 +182,24 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
                 $this->session_cookie->delete_login_session_cookie();          
                 return false;
             }
+            
+            return true;
         }
-        else
+
+        // Use Midgard 9.09 authentication API
+        try
         {
-            // Use Midgard 9.09 authentication API
-            try
+            $user = new midgard_user($this->prepare_tokens($username, $password));
+            if ($user->login())
             {
-                $user = new midgard_user($this->prepare_tokens($username, $password));
-                if ($user->login())
-                {
-                    $this->user = $user;
-                }
+                $this->user = $user;
             }
-            catch (Exception $e)
-            {
-                midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
-                $this->session_cookie->delete_login_session_cookie(); 
-                return false;
-            }
+        }
+        catch (Exception $e)
+        {
+            midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
+            $this->session_cookie->delete_login_session_cookie(); 
+            return false;
         }
         
         return true;

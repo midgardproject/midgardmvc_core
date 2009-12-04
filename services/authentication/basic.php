@@ -25,7 +25,8 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         }
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        // FIXME: Add when #1478 is fixed
+        //midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -77,15 +78,35 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
 
     public function login($username, $password)
     {
-        if (!$this->sitegroup)
+        if (method_exists('midgard_connection', 'get_sitegroup'))
         {
-            // In Midgard2 we need current SG name for authentication
-            $this->sitegroup = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
+            // Midgard 8.09 or 9.03 authentication API with sitegroups
+            if (!$this->sitegroup)
+            {
+                // In Midgard2 we need current SG name for authentication
+                $this->sitegroup = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
+            }
+        
+            $this->user = midgard_user::auth($username, $password, $this->sitegroup);
+        
+            if (!$this->user)
+            {
+                midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
+                return false;
+            }
+            return true;
         }
-        
-        $this->user = midgard_user::auth($username, $password, $this->sitegroup);
-        
-        if (!$this->user)
+
+        // Use Midgard 9.09 authentication API
+        try
+        {
+            $user = new midgard_user($this->prepare_tokens($username, $password));
+            if ($user->login())
+            {
+                $this->user = $user;
+            }
+        }
+        catch (Exception $e)
         {
             midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
             return false;
@@ -93,7 +114,39 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         
         return true;
     }
-    
+
+
+    private function prepare_tokens($username, $password)
+    {
+        $auth_type = midgardmvc_core::get_instance()->configuration->get('services_authentication_authtype');
+        $login_tokens = array
+        (
+            'login' => $username,
+            'authtype' => $auth_type,
+        );
+        switch ($auth_type)
+        {
+            case 'Plaintext':
+                // Compare plaintext to plaintext
+                $login_tokens['password'] = $password;
+                break;
+            case 'SHA1':
+                $login_tokens['password'] = sha1($password);
+                break;
+            case 'SHA256':
+                $login_tokens['password'] = hash('sha256', $password);
+                break;
+            case 'MD5':
+                $login_tokens['password'] = md5($password);
+                break;
+            default:
+                throw new midgardmvc_exception_httperror('Unsupported authentication type attempted', 500);
+        }
+        // TODO: Support other types
+        
+        return $login_tokens;
+    }
+
     public function logout()
     {
         // TODO: Can this be implemented for Basic auth?
