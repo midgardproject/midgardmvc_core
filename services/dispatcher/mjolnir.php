@@ -16,7 +16,6 @@
 class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
     private $_root_page = null;
-    private $_prefix = '/';
     private $_pages = array();
 
     /**
@@ -30,9 +29,9 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         }
 
         $this->request_method = $_SERVER['REQUEST_METHOD'];
-
+        
+        // Populate GET params
         $url_components = parse_url("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
-
         if (!empty($url_components['query']))
         {
             $query_items = explode('&', $url_components['query']);
@@ -55,52 +54,11 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
             $this->_root_page = new midgard_page();
             $this->_root_page->get_by_path('/midcom_root');
         }
-        $current_page = $this->_root_page;
-        $this->_pages[] = $this->_root_page;
-        $no_more_pages = false;
-
-        // removing leading slash, or first element after exploding would be empty
-        $_argv = explode('/', substr($url_components['path'], 1));
-        if (count($_argv) > 0 and $_argv[count($_argv) - 1] == '')
-        {
-            array_pop($_argv);
-        }
         
-        foreach ($_argv as $argument)
-        {
-            if (false === $no_more_pages)
-            {
-                $_child = $this->get_subpage($current_page, $argument);
-                if (null === $_child)
-                {
-                    $no_more_pages = true;
-                    $this->argv[] = $argument;
-                    continue;
-                }
-
-                $this->_pages[] = $_child;
-                //$this->_prefix .= "/{$argument}";
-                $current_page = $_child;
-            }
-            else
-            {
-                $this->argv[] = $argument;
-            }
-        }
-    }
-
-    private function get_subpage($parent, $child_name)
-    {
-        $q = new midgard_query_builder('midgard_page');
-        $q->add_constraint('up', '=', $parent->id);
-        $q->add_constraint('name', '=', $child_name);
-        $res = $q->execute();
-
-        if (count($res) == 0)
-        {
-            return null;
-        }
-        return $res[0];
+        $this->request = new midgardmvc_core_helpers_request();
+        $this->request->set_root_page($this->_root_page);
+        $this->page = $this->request->resolve_page($url_components['path']);
+        $this->argv = $this->request->argv;
     }
     
     /**
@@ -108,35 +66,24 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
      */
     public function populate_environment_data()
     {
-        $prefix = $this->_prefix;
-        $uri = "{$this->_prefix}/";
-
         $_core = midgardmvc_core::get_instance();
 
-        $_core->context->style_id = 0;
+        $_core->context->style_id = $this->request->style_id;
         $_core->context->root = $this->_root_page->id;
-
-        foreach ($this->_pages as $page)
+        $_core->context->component = $this->page->component;
+        
+        $_core->context->uri = $this->request->path;
+        if (!empty($this->argv))
         {
-            if ($page->id != $this->_root_page->id)
-            {
-                $prefix .= "{$page->name}/";
-            }
-            $current_page = $page;
-
-            if ($current_page->style) {
-                $_core->context->style_id = $current_page->style;
-            }
+            $_core->context->uri .= implode('/', $this->argv) . '/';
         }
 
-        $_core->context->component = $current_page->component;
-        $_core->context->uri = $prefix . implode('/', $this->argv) . '/';
-        $_core->context->self = $prefix;
-        $_core->context->page = $current_page;
-        $_core->context->prefix = $this->_prefix;
+        $_core->context->self = $this->request->path;
+        $_core->context->page = $this->page;
+        $_core->context->prefix = '/';
         $_core->context->argv = $this->argv;
         $_core->context->request_method = $this->request_method;
-
+        
         $_core->context->webdav_request = false;
         if (   $_core->configuration->get('enable_webdav')
             && (   $this->request_method != 'GET'

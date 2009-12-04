@@ -155,45 +155,9 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
 
     public function resolve_page($path)
     {
-        $temp = trim($path);
-        $page = $this->_core->context->page;
-        
-        $parent_id = $this->_core->context->root;
-        
-        $this->page_id = $parent_id;
-        $path = explode('/', trim($path));
-        foreach ($path as $i => $p)
-        {
-            if (strlen(trim($p)) == 0)
-            {
-                unset($path[$i]);          
-                continue;
-            }
-            $qb = new midgard_query_builder('midgard_page');
-            $qb->add_constraint('up', '=', $parent_id);
-            $qb->add_constraint('name', '=', $p);
-            $res = $qb->execute();
-            if (count($res) != 1)
-            {
-                break;            
-            }
-            $parent_id = $res[0]->id;
-            $temp = substr($temp, 1 + strlen($p));
-            $page = $res[0];
-            unset($path[$i]);
-        }
-
-        $this->argv = array();
-        foreach ($path as $p)
-        {
-            $this->argv[] = $p;
-        }
-
-        if (strlen($temp) < 2)
-        {
-            $this->path = '/';
-        }
-        
+        $req = new midgardmvc_core_helpers_request();
+        $page = $req->resolve_page($path);
+        $this->argv = $req->argv;
         return $page;
     }
 
