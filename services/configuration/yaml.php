@@ -120,6 +120,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                     continue;
                 }
                 $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
+                
                 continue;
             }
             $merged[$key] = $value;

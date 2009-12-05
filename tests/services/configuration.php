@@ -115,7 +115,10 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             'routes' => array
             (
                 'one' => array(),
-                'two' => array(),
+                'two' => array
+                (
+                    'val' => false
+                ),
             ),
         );
         
@@ -126,41 +129,51 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             (
                 'three' => array(),
                 'four' => array(),
+                'two' => array
+                (
+                    'val' => true
+                ),
             ),
         );   
         
         $result = midgardmvc_core_services_configuration_yaml::merge_configs($base, $extension);
         
+        $i = 0;
         foreach ($result as $key => $val)
         {
-            if ($val == 'foo')
+            if ($key == 'foo')
             {
-                $this->assertEquals($key, 0);
-                continue;
+                $this->assertEquals($i, 0);
             }
 
-            if ($val == 'bar')
+            if ($key == 'bar')
             {
-                $this->assertEquals($key, 2);
-                continue;
+                $this->assertEquals($i, 2);
             }
 
-            if ($val == 'routes')
+            if ($key == 'routes')
             {
+                $ii = 0;
                 foreach ($val as $key2 => $val2)
                 {
-                    if ($key == 'three')
+                    if ($key2 == 'three')
                     {
-                        $this->assertEquals($key2, 0);
-                        continue;
+                        $this->assertEquals($ii, 0);
                     }
                     
-                    if ($key == 'one')
+                    if ($key2 == 'one')
                     {
-                        $this->assertEquals($key2, 2);
+                        $this->assertEquals($ii, 2);
                     }
+                    
+                    if ($key2 == 'two')
+                    {
+                        $this->assertTrue($val2['val']);
+                    }
+                    $ii++;
                 }
             }
+            $i++;
         }
     }
 }
