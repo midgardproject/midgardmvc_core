@@ -115,8 +115,17 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 
                 if ($key == 'routes')
                 {
+                    // Reverse the initial array to ensure correct order of merging
+                    $merged[$key] = array_reverse($merged[$key], true);
+
+                    // Reverse the extended array to ensure correct order of merging
+                    $value = array_reverse($value, true);
+                    
                     // Routes are prepended to ensure component and injector routes are run before core ones
-                    $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($value, $merged[$key]);
+                    $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
+
+                    // Reverse the resulting array to ensure correct order of merging
+                    $merged[$key] = array_reverse($merged[$key], true);
                     continue;
                 }
                 $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
