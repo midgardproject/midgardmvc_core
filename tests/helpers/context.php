@@ -80,5 +80,12 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_tests_testcase
         $this->_core->context->delete();
     }
 
+    public function test_inherited_values()
+    {
+        $this->_core->context->root = 5;
+        $this->_core->context->create();
+        $this->assertEquals($this->_core->context->root, 5);
+        $this->_core->context->delete();
+    }
 }
 ?>

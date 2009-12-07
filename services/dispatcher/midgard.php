@@ -749,7 +749,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             }
         }
 
-        $root_id = $this->midgardmvc->context->root->id;
+        $root_id = $this->midgardmvc->context->root;
         if ($context->page->id == $root_id)
         {
             // We're requesting prefix for the root page

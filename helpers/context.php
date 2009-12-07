@@ -36,6 +36,16 @@ class midgardmvc_core_helpers_context
             'content_entry_point'  => 'content',
             'component'            => 'midgardmvc_core'
         );
+        
+        if ($context_id > 0)
+        {
+            if (isset($this->contexts[0]['root']))
+            {
+                // Creating a new request context, copy some values from ctx 0
+                $this->contexts[$context_id]['root'] = $this->contexts[0]['root'];
+            }
+        }
+        
         $this->current_context = $context_id;
     }
     
