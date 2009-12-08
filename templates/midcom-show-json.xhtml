@@ -6,7 +6,10 @@ if (isset($core->dispatcher->get['callback']))
     header('Content-type: text/javascript');
     echo "{$core->dispatcher->get['callback']}(";
 }
+$original_locale = setlocale(LC_NUMERIC, '0');
+setlocale(LC_NUMERIC, 'C');
 echo json_encode($core->context->get_item($core->context->component));
+setlocale(LC_NUMERIC, $original_locale);
 if (isset($core->dispatcher->get['callback']))
 {
     echo ");";
