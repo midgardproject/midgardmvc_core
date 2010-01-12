@@ -46,8 +46,6 @@ class midgardmvc_core_helpers_context
             }
         }
         
-        midgardmvc_core::get_instance()->configuration->create_context($context_id);
-        
         $this->current_context = $context_id;
     }
     

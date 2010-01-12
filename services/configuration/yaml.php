@@ -32,20 +32,21 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             require_once 'midgardmvc_core/helpers/spyc.php';
         }
     }
-    
-    public function create_context($context)
-    {
-        // Copy context 0 configuration as basis
-        $this->configuration[$context] = $this->configuration[0];
-    }
-    
+
     private function get_current_context()
     {
         if (!isset($this->midgardmvc->context))
         {
             return 0;
         }
-        return $this->midgardmvc->context->get_current_context();
+        
+        $context = $this->midgardmvc->context->get_current_context();
+        if (!isset($this->configuration[$context]))
+        {
+            // Copy context 0 configuration as basis
+            $this->configuration[$context] = $this->configuration[0];
+        }
+        return $context;
     }
     
     public function load_component_configuration($component, $prepend = false)
