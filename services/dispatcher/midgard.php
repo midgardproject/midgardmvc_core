@@ -393,8 +393,9 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     {
         if (is_null($page))
         {
-            if (   is_null($component)
-                || $component == $this->midgardmvc->context->page->component)
+            if (   isset($this->midgardmvc->context->page)
+                && (   is_null($component)
+                    || $component == $this->midgardmvc->context->page->component))
             {
                 $page = $this->midgardmvc->context->page;
             }
