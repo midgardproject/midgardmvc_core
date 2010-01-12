@@ -391,20 +391,27 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function generate_url($route_id, array $args, midgard_page $page = null, $component = null)
     {
-        if (   is_null($page)
-            && !is_null($component))
+        if (is_null($page))
         {
-            // Find a page matching the requested component
-            $qb = new midgard_query_builder('midgard_page');
-            $qb->add_constraint('component', '=', $component);
-            $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root);
-            $qb->set_limit(1);
-            $pages = $qb->execute();
-            if (empty($pages))
+            if (   is_null($component)
+                || $component == $this->midgardmvc->context->page->component)
             {
-                throw new OutOfBoundsException("No page matching component {$component} found");
+                $page = $this->midgardmvc->context->page;
             }
-            $page = $pages[0];
+            else
+            {
+                // Find a page matching the requested component
+                $qb = new midgard_query_builder('midgard_page');
+                $qb->add_constraint('component', '=', $component);
+                $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root);
+                $qb->set_limit(1);
+                $pages = $qb->execute();
+                if (empty($pages))
+                {
+                    throw new OutOfBoundsException("No page matching component {$component} found");
+                }
+                $page = $pages[0];
+            }
         }
 
         if (!is_null($page))
