@@ -58,34 +58,32 @@ class midgardmvc_core_component_loader
             return false;
         }
         
-        if (   isset($this->interfaces[$component])
-            && $this->tried_to_load[$component])
+        if (   !isset($this->interfaces[$component])
+            || !$this->tried_to_load[$component])
         {
-            // We have already loaded the component
-            return $this->interfaces[$component];
-        }
-        
-        $component_directory = $this->component_to_filepath($component);
-        if (!is_dir($component_directory))
-        {        
-            // No component directory
-            $this->tried_to_load[$component] = false;
+            // We haven't loaded the component yet, do directory checks      
+            $component_directory = $this->component_to_filepath($component);
+            if (!is_dir($component_directory))
+            {        
+                // No component directory
+                $this->tried_to_load[$component] = false;
 
-            throw new OutOfRangeException("Component {$component} directory not found.");
-        }  
-        $component_interface_file = "{$component_directory}/interface.php";
-        if (! file_exists($component_interface_file))
-        {
-            // No interface class
-            // TODO: Should we default to some baseclass?
-            $this->tried_to_load[$component] = false;
-            
-            throw new OutOfRangeException("Component {$component} interface class file not found.");
-        }
+                throw new OutOfRangeException("Component {$component} directory not found.");
+            }  
+            $component_interface_file = "{$component_directory}/interface.php";
+            if (! file_exists($component_interface_file))
+            {
+                // No interface class
+                // TODO: Should we default to some baseclass?
+                $this->tried_to_load[$component] = false;
+                
+                throw new OutOfRangeException("Component {$component} interface class file not found.");
+            }
         
-        if (! class_exists($component))
-        {
-            require($component_interface_file);
+            if (! class_exists($component))
+            {
+                require($component_interface_file);
+            }
         }
 
         // Load configuration for the component

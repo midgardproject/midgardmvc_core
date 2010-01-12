@@ -23,7 +23,6 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     protected $route_id = false;
     protected $action_arguments = array();
     protected $route_arguments = array();
-    protected $core_routes = array();
     protected $component_routes = array();
     protected $route_definitions = null;
     protected $exceptions_stack = array();
@@ -160,17 +159,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function get_routes()
     {
-        $this->midgardmvc->context->component_routes = array();
-
-        if (   !isset($this->midgardmvc->context->component_instance)
-            || !$this->midgardmvc->context->component_instance)
-        {
-            $this->midgardmvc->context->core_routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->configuration->get('routes'));
-            return $this->midgardmvc->context->core_routes;
-        }
-
         $this->midgardmvc->context->component_routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->context->component_instance->configuration->get('routes'));
-        
         return $this->midgardmvc->context->component_routes;
     }
 
@@ -391,28 +380,20 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function generate_url($route_id, array $args, midgard_page $page = null, $component = null)
     {
-        if (is_null($page))
+        if (   is_null($page)
+            && !is_null($component))
         {
-            if (   isset($this->midgardmvc->context->page)
-                && (   is_null($component)
-                    || $component == $this->midgardmvc->context->page->component))
+            // Find a page matching the requested component
+            $qb = new midgard_query_builder('midgard_page');
+            $qb->add_constraint('component', '=', $component);
+            $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root);
+            $qb->set_limit(1);
+            $pages = $qb->execute();
+            if (empty($pages))
             {
-                $page = $this->midgardmvc->context->page;
+                throw new OutOfBoundsException("No page matching component {$component} found");
             }
-            else
-            {
-                // Find a page matching the requested component
-                $qb = new midgard_query_builder('midgard_page');
-                $qb->add_constraint('component', '=', $component);
-                $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root);
-                $qb->set_limit(1);
-                $pages = $qb->execute();
-                if (empty($pages))
-                {
-                    throw new OutOfBoundsException("No page matching component {$component} found");
-                }
-                $page = $pages[0];
-            }
+            $page = $pages[0];
         }
 
         if (!is_null($page))
