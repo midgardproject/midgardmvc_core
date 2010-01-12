@@ -37,6 +37,8 @@ class midgardmvc_core_helpers_request
      */
     public $path = '/';
 
+    private $path_for_page = array();
+
     /**
      * URL parameters after page has been resolved
      */
@@ -101,6 +103,8 @@ class midgardmvc_core_helpers_request
             $this->path .= $page->name . '/';
             array_shift($this->argv);
         }
+        
+        $this->path_for_page[$page->id] = $this->path;
 
         return $page;
     }
@@ -122,6 +126,32 @@ class midgardmvc_core_helpers_request
     {
         $this->page = $page;
         
+        if (!isset($this->path_for_page[$page->id]))
+        {
+            if ($page->id == $this->root_page->id)
+            {
+                $path = '/';
+            }
+            else
+            {
+                $parent_page = $page;
+                $path = "{$page->name}/";
+                while (true)
+                {
+                    $parent_page = $parent_page->get_parent();
+                    if (   !$parent_page
+                        || $parent_page->up == 0
+                        || $parent_page->id == $this->root_page->id)
+                    {
+                        $path = "/{$path}";
+                        break;
+                    }
+                    $path = "{$parent_page->name}/{$path}";
+                }
+            }
+            $this->path_for_page[$page->id] = $path;
+        }
+        $this->path = $this->path_for_page[$page->id];
         if ($page->style)
         {
             $this->style_id = $page->style;
