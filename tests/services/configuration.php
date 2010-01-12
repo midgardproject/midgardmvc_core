@@ -137,7 +137,6 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
         );   
         
         $result = midgardmvc_core_services_configuration_yaml::merge_configs($base, $extension);
-        
         $i = 0;
         foreach ($result as $key => $val)
         {
@@ -154,29 +153,30 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
             if ($key == 'routes')
             {
                 $ii = 0;
-                foreach ($val as $key2 => $val2)
+                foreach ($val as $route_id => $route_definition)
                 {
-                    if ($key2 == 'three')
+                    if ($route_id == 'three')
                     {
                         $this->assertEquals($ii, 0, 'Route "three" should be first route in array');
                     }
 
-                    if ($key2 == 'four')
+                    if ($route_id == 'four')
                     {
                         $this->assertEquals($ii, 1, 'Route "four" should be second route in array');
                     }
  
-                    if ($key2 == 'one')
+                    if ($route_id == 'two')
                     {
-                        $this->assertEquals($ii, 2, 'Route "one" should be third route in array ' . serialize($val));
-                    }
-                    
-                    if ($key2 == 'two')
-                    {
-                        $this->assertEquals($ii, 3, 'Route "two" should be third route in array');
+                        $this->assertEquals($ii, 2, 'Route "two" should be third route in array');
 
-                        $this->assertTrue($val2['val'], '"val" of route "two" should come from the extended configuration, not the base one');
+                        $this->assertTrue($route_definition['val'], '"val" of route "two" should come from the extended configuration, not the base one');
                     }
+ 
+                    if ($route_id == 'one')
+                    {
+                        $this->assertEquals($ii, 3, 'Route "one" should be fourth route in array ' . serialize($val));
+                    }
+                   
                     $ii++;
                 }
             }
