@@ -170,7 +170,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
                 break;
         }
 
-        if ($this->firephp)
+        if (   $this->firephp
+            && !headers_sent())
         {
             $this->firephp->$firephp_loglevel("{$prefix}: {$message}");
         }

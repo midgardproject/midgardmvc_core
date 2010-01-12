@@ -71,10 +71,6 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
            
         $this->_core->context->self = $this->get_page_prefix();
         $this->_core->context->uri = $this->_core->context->self;
-        foreach ($this->argv as $arg)
-        {
-            $this->_core->context->uri .= "{$arg}/";
-        }
               
         $this->_core->context->component = $this->page->component;
         $this->_core->context->page = $this->page;
