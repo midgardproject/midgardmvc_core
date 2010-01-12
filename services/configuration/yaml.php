@@ -14,7 +14,10 @@
 class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_services_configuration
 {
     private $components = array();
-    private $configuration = array();
+    private $configuration = array
+    (
+        0 => array()
+    );
     private $midgardmvc = null;
     
     private $use_syck = true;
@@ -28,6 +31,21 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             // Syck PHP extension is not loaded, include the pure-PHP implementation
             require_once 'midgardmvc_core/helpers/spyc.php';
         }
+    }
+    
+    public function create_context($context)
+    {
+        // Copy context 0 configuration as basis
+        $this->configuration[$context] = $this->configuration[0];
+    }
+    
+    private function get_current_context()
+    {
+        if (!isset($this->midgardmvc->context))
+        {
+            return 0;
+        }
+        return $this->midgardmvc->context->get_current_context();
     }
     
     public function load_component_configuration($component, $prepend = false)
@@ -84,11 +102,11 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
        
         if ($prepend)
         {
-            $this->configuration = self::merge_configs($config, $this->configuration);
+            $this->configuration[$this->get_current_context()] = self::merge_configs($config, $this->configuration[$this->get_current_context()]);
         }
         else
         {
-            $this->configuration = self::merge_configs($this->configuration, $config);
+            $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $config);
         }
     }
     
@@ -262,7 +280,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             return;
         }
        
-        $this->configuration = self::merge_configs($this->configuration, $config);
+        $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $config);
     }
 
     /**
@@ -284,15 +302,15 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
         if (!is_null($subkey))
         {                      
-            if (!isset($this->configuration[$key][$subkey]))
+            if (!isset($this->configuration[$this->get_current_context()][$key][$subkey]))
             {
                 throw new OutOfBoundsException("Configuration key '{$key}/{$subkey}' does not exist.");
             }
 
-            return $this->configuration[$key][$subkey];
+            return $this->configuration[$this->get_current_context()][$key][$subkey];
         }
 
-        return $this->configuration[$key];
+        return $this->configuration[$this->get_current_context()][$key];
     }
 
     public function __get($key)
@@ -305,7 +323,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (   defined('MIDGARDMVC_TEST_RUN')
             && MIDGARDMVC_TEST_RUN)
         {
-            $this->configuration[$key] = $value;
+            $this->configuration[$this->get_current_context()][$key] = $value;
         }
     }
 
@@ -317,7 +335,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function exists($key)
     {
-        return array_key_exists($key, $this->configuration);
+        return array_key_exists($key, $this->configuration[$this->get_current_context()]);
     }
 
     public function __isset($key)
