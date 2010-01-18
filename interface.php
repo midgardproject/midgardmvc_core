@@ -241,7 +241,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
 
-        $this->dispatcher->populate_environment_data();
+        $request = $this->dispatcher->get_request();
+        $this->dispatcher->populate_environment_data($request);
         
         if (isset($this->context->page->guid))
         {

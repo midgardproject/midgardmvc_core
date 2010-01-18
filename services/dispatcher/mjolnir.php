@@ -28,24 +28,6 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
             throw new Exception('Midgard 2.x is required for this Midgard MVC setup.');
         }
 
-        $this->request_method = $_SERVER['REQUEST_METHOD'];
-        
-        // Populate GET params
-        $url_components = parse_url("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
-        if (!empty($url_components['query']))
-        {
-            $query_items = explode('&', $url_components['query']);
-            foreach ($query_items as $query_item)
-            {
-                $query_pair = explode('=', $query_item);
-                if (count($query_pair) != 2)
-                {
-                    break;
-                }
-                $this->get[$query_pair[0]] = urldecode($query_pair[1]);
-            }
-        }
-
         $this->midgardmvc = midgardmvc_core::get_instance();
 
         $this->_root_page = new midgard_page($this->midgardmvc->configuration->midgardmvc_root_page);
@@ -54,35 +36,60 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
             $this->_root_page = new midgard_page();
             $this->_root_page->get_by_path('/midcom_root');
         }
+    }
+    
+    /**
+     * Parse request URL into components and return a corresponding MVC request object
+     *
+     * @return midgardmvc_core_helpers_request
+     */
+    public function get_request()
+    {
+        $request = new midgardmvc_core_helpers_request();
+        $request->set_root_page($this->_root_page);
+        $request->set_method($_SERVER['REQUEST_METHOD']);
         
-        $this->request = new midgardmvc_core_helpers_request();
-        $this->request->set_root_page($this->_root_page);
-        $this->page = $this->request->resolve_page($url_components['path']);
-        $this->argv = $this->request->argv;
+        // Parse URL into components (Mjolnir doesn't do this for us)
+        $url_components = parse_url("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+
+        // Handle GET parameters
+        if (!empty($url_components['query']))
+        {
+            $get_params = array();
+            $query_items = explode('&', $url_components['query']);
+            foreach ($query_items as $query_item)
+            {
+                $query_pair = explode('=', $query_item);
+                if (count($query_pair) != 2)
+                {
+                    break;
+                }
+                $get_params[$query_pair[0]] = urldecode($query_pair[1]);
+            }
+            $request->set_query($get_params);
+        }
+        
+        $request->resolve_page($url_components['path']);
+
+        return $request;
     }
     
     /**
      * Pull data from currently loaded page into the context.
      */
-    public function populate_environment_data()
+    public function populate_environment_data(midgardmvc_core_helpers_request $request)
     {
         $_core = midgardmvc_core::get_instance();
-
-        $_core->context->style_id = $this->request->style_id;
+        $_core->context->style_id = $request->style_id;
         $_core->context->root = $this->_root_page->id;
-        $_core->context->component = $this->page->component;
+        $_core->context->component = $request->get_component();
         
-        $_core->context->uri = $this->request->path;
-        if (!empty($this->argv))
-        {
-            $_core->context->uri .= implode('/', $this->argv) . '/';
-        }
-
-        $_core->context->self = $this->request->path;
-        $_core->context->page = $this->page;
-        $_core->context->prefix = '/';
-        $_core->context->argv = $this->argv;
-        $_core->context->request_method = $this->request_method;
+        $_core->context->uri = $request->path;
+        $_core->context->self = $request->path;
+        $_core->context->page = $request->get_page();
+        $_core->context->prefix = $request->get_prefix();
+        $_core->context->argv = $request->get_argv();
+        $_core->context->request_method = $request->get_method();
         
         $_core->context->webdav_request = false;
         if (   $_core->configuration->get('enable_webdav')

@@ -17,8 +17,10 @@
 interface midgardmvc_core_services_dispatcher
 {
     public function __construct();
-    
-    public function populate_environment_data();
+
+    public function get_request();
+
+    public function populate_environment_data(midgardmvc_core_helpers_request $request);
     
     public function generate_request_identifier();
     

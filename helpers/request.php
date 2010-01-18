@@ -14,6 +14,16 @@
 class midgardmvc_core_helpers_request
 {
     /**
+     * HTTP verb used with request
+     */
+    private $method = 'get';
+
+    /**
+     * HTTP query parameters used with request
+     */
+    private $query = array();
+
+    /**
      * The root page to be used with the request
      *
      * @var midgard_page
@@ -37,6 +47,10 @@ class midgardmvc_core_helpers_request
      */
     public $path = '/';
 
+    private $prefix = '/';
+    
+    private $component = 'midgardmvc_core';
+
     private $path_for_page = array();
 
     /**
@@ -46,14 +60,12 @@ class midgardmvc_core_helpers_request
 
     public function __construct()
     {
-        $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
     /**
      * Match an URL path to a page. Remaining path arguments are stored to argv
      *
      * @param $path URL path
-     * @return midgard_page
      */
     public function resolve_page($path)
     {
@@ -76,7 +88,8 @@ class midgardmvc_core_helpers_request
         if ($path == '')
         {
             $this->argv = array();
-            return $page;
+            $this->set_page($page);
+            return;
         }
         
         $path = explode('/', $path);
@@ -105,8 +118,7 @@ class midgardmvc_core_helpers_request
         }
         
         $this->path_for_page[$page->id] = $this->path;
-
-        return $page;
+        $this->set_page($page);
     }
 
     /**
@@ -126,6 +138,11 @@ class midgardmvc_core_helpers_request
     {
         $this->page = $page;
         
+        if ($page->component)
+        {
+            $this->component = $page->component;
+        }
+
         if (!isset($this->path_for_page[$page->id]))
         {
             if ($page->id == $this->root_page->id)
@@ -156,5 +173,55 @@ class midgardmvc_core_helpers_request
         {
             $this->style_id = $page->style;
         }
+    }
+
+    public function get_page()
+    {
+        return $this->page;
+    }
+
+    public function get_component()
+    {
+        return $this->component;
+    }
+
+    public function set_argv(array $argv)
+    {
+        $this->argv = $argv;
+    }
+    
+    public function get_argv()
+    {
+        return $this->argv;
+    }
+    
+    public function set_method($method)
+    {
+        $this->method = $method;
+    }
+    
+    public function get_method()
+    {
+        return $this->method;
+    }
+    
+    public function set_query(array $get_params)
+    {
+        $this->query = $get_params;
+    }
+    
+    public function get_query()
+    {
+        return $this->query;
+    }
+
+    public function set_prefix($prefix)
+    {
+        $this->prefix = $prefix;
+    }
+    
+    public function get_prefix()
+    {
+        return $this->prefix;
     }
 }
