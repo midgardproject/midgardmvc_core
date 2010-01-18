@@ -34,7 +34,7 @@ class midgardmvc_core_helpers_context
             'template_engine'      => 'tal',
             'template_entry_point' => 'ROOT',
             'content_entry_point'  => 'content',
-            'component'            => 'midgardmvc_core'
+            'component'            => 'midgardmvc_core',
         );
         
         if ($context_id > 0)
