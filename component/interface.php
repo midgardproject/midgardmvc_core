@@ -15,7 +15,7 @@
  */
 interface midgardmvc_core_component_interface
 {
-    public function __construct(midgardmvc_core_services_configuration $configuration, midgard_page $folder = null);
+    public function __construct();
     
     public function initialize();
     

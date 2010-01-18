@@ -50,7 +50,7 @@ class midgardmvc_core_component_loader
         return true;
     }
     
-    public function load($component, midgard_page $folder = null)
+    public function load($component)
     {
         if (! $this->can_load($component))
         {
@@ -87,11 +87,10 @@ class midgardmvc_core_component_loader
         }
 
         // Load configuration for the component
-        $configuration =& midgardmvc_core::get_instance()->configuration;
-        $configuration->load_component_configuration($component);
+        midgardmvc_core::get_instance()->configuration->load_component($component);
 
         // Load the interface class
-        $this->interfaces[$component] = new $component($configuration, $folder);
+        $this->interfaces[$component] = new $component();
         
         if ($this->_core->head->jsmidgardmvc_enabled)
         {

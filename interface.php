@@ -45,10 +45,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     
     private static $instance = null;
 
-    public function __construct(midgardmvc_core_services_configuration $configuration, midgard_page $folder = null)
+    public function __construct()
     {
-        $this->configuration = $configuration;
-        
         // Register autoloader so we get all Midgard MVC classes loaded automatically
         spl_autoload_register(array($this, 'autoload'));
     }
@@ -58,17 +56,18 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      */
     public function load_base_services($dispatcher = 'midgard')
     {
-        $this->configuration->load_component_configuration('midgardmvc_core');
+        // Load the context helper and initialize first context
+        $this->context = new midgardmvc_core_helpers_context();
+
+        $this->configuration = new midgardmvc_core_services_configuration_yaml();
+        $this->configuration->load_component('midgardmvc_core');
 
         // Load the request dispatcher
         $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$dispatcher}";
         $this->dispatcher = new $dispatcher_implementation();
 
-        // Load the context helper
-        $this->context = new midgardmvc_core_helpers_context();
-
         // Load the head helper
-        $this->head = new midgardmvc_core_helpers_head($this->configuration);
+        $this->head = new midgardmvc_core_helpers_head();
         
         if ($this->configuration->development_mode)
         {
@@ -238,7 +237,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     public function process()
     {
         $this->context->create();
-        
         date_default_timezone_set($this->configuration->get('default_timezone'));
         
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
@@ -248,7 +246,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         if (isset($this->context->page->guid))
         {
             // Load per-folder configuration
-            $this->configuration->load_object_configuration($this->context->page->guid);
+            $this->configuration->load_instance($this->context->component, $this->context->page);
         }
 
         /*
@@ -382,11 +380,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
         if (is_null(self::$instance))
         {
-            // Load the configuration loader and load core config
-            $configuration = new midgardmvc_core_services_configuration_yaml();
-            
-            // Pass configuration to the instance
-            self::$instance = new midgardmvc_core($configuration);
+            // Load instance
+            self::$instance = new midgardmvc_core();
             if (is_null($dispatcher))
             {
                 self::$instance->load_base_services();

@@ -35,9 +35,9 @@ class midgardmvc_core_helpers_head
     public $jquery_enabled = false;    
     public $jsmidgardmvc_enabled = false;
     
-    public function __construct(&$configuration)
+    public function __construct()
     {
-        $this->configuration = $configuration;
+        $this->configuration = midgardmvc_core::get_instance()->configuration;
         if ($this->configuration->enable_jquery_framework)
         {
             $this->enable_jquery();

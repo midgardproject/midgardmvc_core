@@ -13,9 +13,9 @@
  */
 interface midgardmvc_core_services_configuration
 {
-    public function load_component_configuration($component, $prepend = false);
-
-    public function load_object_configuration($object_guid);
+    public function load_component($component, $prepend = false);
+    
+    public function load_instance($component, midgard_page $folder);
 
     /**
      * Retrieve a configuration key

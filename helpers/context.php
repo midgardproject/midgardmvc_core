@@ -20,7 +20,7 @@ class midgardmvc_core_helpers_context
     public function __construct()
     {
     }
-    
+
     /**
      * Create and prepare a new component context.
      */
