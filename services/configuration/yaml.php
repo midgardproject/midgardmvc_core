@@ -34,7 +34,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         }
     }
 
-    private function get_cache_indentifier()
+    private function get_cache_identifier()
     {
         if (   !isset($this->midgardmvc->context)
             || !isset($this->midgardmvc->context->component))
@@ -111,11 +111,11 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
        
         if ($prepend)
         {
-            $this->configuration[$this->get_cache_indentifier()] = self::merge_configs($config, $this->configuration[$this->get_cache_indentifier()]);
+            $this->configuration[$this->get_cache_identifier()] = self::merge_configs($config, $this->configuration[$this->get_cache_identifier()]);
         }
         else
         {
-            $this->configuration[$this->get_cache_indentifier()] = self::merge_configs($this->configuration[$this->get_cache_indentifier()], $config);
+            $this->configuration[$this->get_cache_identifier()] = self::merge_configs($this->configuration[$this->get_cache_identifier()], $config);
         }
     }
     
@@ -289,7 +289,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             return;
         }
        
-        $this->configuration[$this->get_cache_indentifier()] = self::merge_configs($this->configuration[$this->get_cache_indentifier()], $config);
+        $this->configuration[$this->get_cache_identifier()] = self::merge_configs($this->configuration[$this->get_cache_identifier()], $config);
     }
 
     /**
@@ -311,15 +311,15 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
         if (!is_null($subkey))
         {                      
-            if (!isset($this->configuration[$this->get_cache_indentifier()][$key][$subkey]))
+            if (!isset($this->configuration[$this->get_cache_identifier()][$key][$subkey]))
             {
                 throw new OutOfBoundsException("Configuration key '{$key}/{$subkey}' does not exist.");
             }
 
-            return $this->configuration[$this->get_cache_indentifier()][$key][$subkey];
+            return $this->configuration[$this->get_cache_identifier()][$key][$subkey];
         }
 
-        return $this->configuration[$this->get_cache_indentifier()][$key];
+        return $this->configuration[$this->get_cache_identifier()][$key];
     }
 
     public function __get($key)
@@ -332,7 +332,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (   defined('MIDGARDMVC_TEST_RUN')
             && MIDGARDMVC_TEST_RUN)
         {
-            $this->configuration[$this->get_cache_indentifier()][$key] = $value;
+            $this->configuration[$this->get_cache_identifier()][$key] = $value;
         }
     }
 
@@ -344,7 +344,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function exists($key)
     {
-        return array_key_exists($key, $this->configuration[$this->get_cache_indentifier()]);
+        return array_key_exists($key, $this->configuration[$this->get_cache_identifier()]);
     }
 
     public function __isset($key)
