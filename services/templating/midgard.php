@@ -451,9 +451,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         {
             case 'tal':
                 $content = $this->display_tal($content, $data);
-                
                 break;
             default:
+                // TODO: Support for other templating engines like Smarty or plain PHP
                 break;
         }
 
@@ -481,21 +481,6 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         echo $content;
         
-        if (   $this->midgardmvc->context->get_current_context() == 0
-            && $this->midgardmvc->context->mimetype == 'text/html')
-        {
-            // We're in main request, and output is HTML, so it is OK to inject some HTML to it
-            if ($this->midgardmvc->configuration->get('enable_included_list'))
-            {
-                $included = get_included_files();
-                $this->midgardmvc->log('midgardmvc_services_templating::display', count($included) . " included files", 'info');
-                foreach ($included as $filename)
-                {
-                    $this->midgardmvc->log('midgardmvc_services_templating::display::included', $filename, 'debug');
-                }
-            }
-        }
-        
         if ($this->midgardmvc->context->cache_enabled)
         {
             // Store the contents to content cache and display them
@@ -505,7 +490,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         if ($this->midgardmvc->configuration->enable_uimessages)
         {
-            ///TODO: Connect this to some signal that tells the Midgard MVC execution has ended.
+            // TODO: Connect this to some signal that tells the Midgard MVC execution has ended.
             $this->midgardmvc->uimessages->store();
         }
     }
