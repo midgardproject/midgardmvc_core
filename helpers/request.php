@@ -138,7 +138,7 @@ class midgardmvc_core_helpers_request
                 $path = "{$page->name}/";
                 while (true)
                 {
-                    $parent_page = $parent_page->get_parent();
+                    $parent_page = new midgard_page($parent_page->up);
                     if (   !$parent_page
                         || $parent_page->up == 0
                         || $parent_page->id == $this->root_page->id)
