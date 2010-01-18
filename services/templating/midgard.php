@@ -447,15 +447,11 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $template_file = $this->midgardmvc->cache->template->get($this->get_cache_identifier());
         $content = file_get_contents($template_file);
 
-        switch ($data['template_engine'])
+        if ($data['template_engine'] == 'tal')
         {
-            case 'tal':
-                $content = $this->display_tal($content, $data);
-                break;
-            default:
-                // TODO: Support for other templating engines like Smarty or plain PHP
-                break;
+            $content = $this->display_tal($content, $data);
         }
+        // TODO: Support for other templating engines like Smarty or plain PHP
 
         if ($this->midgardmvc->context->cache_enabled)
         {
