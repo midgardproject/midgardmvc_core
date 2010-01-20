@@ -34,8 +34,16 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
     {
         if (!isset($this->midgardmvc->context->host))
         {
-            return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+            if (isset($this->midgardmvc->context->template_cache_prefix))
+            {
+                return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+            }
+            else
+            {
+                return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+            }
         }
         if (!isset($this->midgardmvc->context->page))
         {
