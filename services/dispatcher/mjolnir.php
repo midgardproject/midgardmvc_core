@@ -15,8 +15,12 @@
  */
 class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
+    /**
+     * Root page used for this Midgard MVC site
+     *
+     * @var midgard_page
+     */
     private $_root_page = null;
-    private $_pages = array();
 
     /**
      * Read the request configuration and parse the URL
@@ -72,34 +76,6 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         $request->resolve_page($url_components['path']);
 
         return $request;
-    }
-    
-    /**
-     * Pull data from currently loaded page into the context.
-     */
-    public function populate_environment_data(midgardmvc_core_helpers_request $request)
-    {
-        $_core = midgardmvc_core::get_instance();
-        $_core->context->style_id = $request->style_id;
-        $_core->context->root = $this->_root_page->id;
-        $_core->context->component = $request->get_component();
-        
-        $_core->context->uri = $request->path;
-        $_core->context->self = $request->path;
-        $_core->context->page = $request->get_page();
-        $_core->context->prefix = $request->get_prefix();
-        $_core->context->argv = $request->get_argv();
-        $_core->context->request_method = $request->get_method();
-        
-        $_core->context->webdav_request = false;
-        if (   $_core->configuration->get('enable_webdav')
-            && (   $this->request_method != 'GET'
-                && $this->request_method != 'POST')
-            )
-        {
-            // Serve this request with the full HTTP_WebDAV_Server
-            $_core->context->webdav_request = true;
-        }
     }
 
     public function get_midgard_connection()

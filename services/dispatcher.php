@@ -19,14 +19,10 @@ interface midgardmvc_core_services_dispatcher
     public function __construct();
 
     public function get_request();
-
-    public function populate_environment_data(midgardmvc_core_helpers_request $request);
-    
-    public function generate_request_identifier();
     
     public function get_routes();
     
-    public function initialize($component);
+    public function initialize(midgardmvc_core_helpers_request $request);
     
     public function dispatch();    
     

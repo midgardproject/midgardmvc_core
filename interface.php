@@ -241,8 +241,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
 
+        // Let dispatcher populate request with the page and other information used
         $request = $this->dispatcher->get_request();
-        $this->dispatcher->populate_environment_data($request);
+        $request->populate_context();
         
         if (isset($this->context->page->guid))
         {
@@ -250,16 +251,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             $this->configuration->load_instance($this->context->component, $this->context->page);
         }
 
-        /*
-        // Check autoloader cache
-        if ($this->cache->autoload->check($this->context->uri))
-        {
-            $this->cache->autoload->load($this->context->uri);
-        }
-        $this->track_autoloaded_files = true;
-        */
-
-        $this->log('Midgard MVC', "Serving {$this->dispatcher->request_method} {$this->context->uri} at " . gmdate('r'), 'info');
+        $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$this->context->uri} at " . gmdate('r'), 'info');
 
         // Let injectors do their work
         $this->componentloader = new midgardmvc_core_component_loader();
@@ -269,7 +261,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->load_service('cache');
         if (self::$instance->context->cache_enabled)
         {
-            $this->dispatcher->generate_request_identifier();
+            $request->generate_identifier();
             $this->cache->register_object($this->context->page);
             $this->cache->content->check($this->context->cache_request_identifier);
         }
@@ -284,20 +276,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             )
         );
 
-        // Load component
-        try
-        {
-            $component = $this->context->get_item('component');
-        }
-        catch (Exception $e)
-        {
-            return;
-        }
-        if (!$component)
-        {
-            $component = 'midgardmvc_core';
-        }
-
         if ($this->configuration->enable_attachment_cache)
         {
             $classname = $this->configuration->attachment_handler;
@@ -305,27 +283,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             $handler->connect_to_signals();
         }
 
-        // Set up initial templating stack
-        if (   $this->configuration->services_templating_components
-            && is_array($this->configuration->services_templating_components))
-        {
-            foreach ($this->configuration->services_templating_components as $templating_component)
-            {
-                self::$instance->templating->append_directory(MIDGARDMVC_ROOT . "/{$templating_component}/templates");
-            }
-        }
-
         // Then initialize the component, so it also goes to template stack
-        $this->dispatcher->initialize($component);
-
-        if (   $this->configuration->services_templating_database_enabled
-            && isset($this->context->style_id))
-        {
-            // And finally append style and page to template stack
-            self::$instance->templating->append_style($this->context->style_id);
-            self::$instance->templating->append_page($this->context->page->id);
-        }
-
+        $this->dispatcher->initialize($request);
         try
         {
             $this->dispatcher->dispatch();

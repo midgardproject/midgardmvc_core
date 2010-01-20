@@ -16,8 +16,6 @@
 class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
     public $get = array();
-    public $component_name = '';
-    public $request_method = 'GET';
     protected $route_array = array();
     protected $route_id = false;
     protected $action_arguments = array();
@@ -79,93 +77,12 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         return $request;
     }
 
-    /**
-     * Pull data from currently loaded page into the context.
-     */
-    public function populate_environment_data(midgardmvc_core_helpers_request $request)
-    {
-        // Style handling
-        $style_id = $_MIDGARD['style'];
-        if ($request->style_id)
-        {
-            $style_id = $request->style_id;
-        }
-
-        $this->midgardmvc->context->page = $request->page;
-        $this->midgardmvc->context->style_id = $style_id;
-        $this->midgardmvc->context->prefix = $_MIDGARD['self'];
-        $this->midgardmvc->context->uri = $request->path;
-        $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->request_method = $request->get_method();
-        
-        $this->midgardmvc->context->webdav_request = false;
-        if (   $this->midgardmvc->configuration->get('enable_webdav')
-            && (   $this->midgardmvc->context->request_method != 'GET'
-                && $this->midgardmvc->context->request_method != 'POST')
-            )
-        {
-            // Serve this request with the full HTTP_WebDAV_Server
-            $this->midgardmvc->context->webdav_request = true;
-        }
-        
-        $host = new midgard_host();
-        $host->get_by_id($_MIDGARD['host']);
-        $this->midgardmvc->context->host = $host;   
-        $this->midgardmvc->context->root = $host->root;
-    }
-
-    /**
-     * Generate a valid cache identifier for a context of the current request
-     */
-    public function generate_request_identifier()
-    {
-        if (isset($this->midgardmvc->context->cache_request_identifier))
-        {
-            // An injector has generated this already, let it be
-            return;
-        }
-
-        $identifier_source  = "URI={$this->midgardmvc->context->uri}";
-        $identifier_source .= ";COMP={$this->midgardmvc->context->component}";
-        
-        // TODO: Check language settings
-        $identifier_source .= ';LANG=ALL';
-        
-        switch ($this->midgardmvc->context->cache_strategy)
-        {
-            case 'public':
-                // Shared cache for everybody
-                $identifier_source .= ';USER=EVERYONE';
-                break;
-            default:
-                // Per-user cache
-                if ($this->midgardmvc->authentication->is_user())
-                {
-                    $user = $this->midgardmvc->authentication->get_person();
-                    $identifier_source .= ";USER={$user->username}";
-                }
-                else
-                {
-                    $identifier_source .= ';USER=ANONYMOUS';
-                }
-                break;
-        }
-
-        $this->midgardmvc->context->cache_request_identifier = md5($identifier_source);
-    }
-
-    public function initialize($component)
+    public function initialize(midgardmvc_core_helpers_request $request)
     {
         // In main Midgard request we dispatch the component in connection to a page
-        $this->component_name = $component;
-        $this->midgardmvc->context->component = $component;
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->component_name, $this->midgardmvc->context->page);
-        if ($component == 'midgardmvc_core')
-        {
-            // Midgard MVC core templates are already appended
-            return;
-        }
-        $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($this->midgardmvc->context->component) . '/templates');
+        $this->midgardmvc->context->component = $request->get_component();
+        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component, $this->midgardmvc->context->page);
+        $this->midgardmvc->templating->prepare_stack($request);
     }
     
     /**
@@ -173,7 +90,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function get_routes()
     {
-        $this->midgardmvc->context->component_routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->configuration->get('routes'));
+        $this->midgardmvc->context->component_routes = $this->midgardmvc->configuration->normalize_routes();;
         return $this->midgardmvc->context->component_routes;
     }
 
@@ -183,10 +100,10 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function dispatch()
     {
-        $this->route_definitions = $this->get_routes();
+        $route_definitions = $this->get_routes();
 
         $route_id_map = array();
-        foreach ($this->route_definitions as $route_id => $route_configuration)
+        foreach ($route_definitions as $route_id => $route_configuration)
         {
             if (   isset($route_configuration['root_only'])
                 && $route_configuration['root_only'])
@@ -219,7 +136,8 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             try
             {   
                 $success_flag = true; // before trying route it's marked success
-                $this->dispatch_route($route);
+                $this->midgardmvc->context->route_id = $route;
+                $this->dispatch_route($route_definitions[$route]);
             }
             catch (Exception $e)
             {
@@ -266,26 +184,23 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         }
     }
     
-    private function dispatch_route($route)
+    private function dispatch_route(array $route)
     {
-        $this->route_id = $route;
-        $this->midgardmvc->context->route_id = $this->route_id;
-        $selected_route_configuration = $this->route_definitions[$this->route_id];
-
         // Inform client of allowed HTTP methods
-        header('Allow: ' . implode(', ', $selected_route_configuration['allowed_methods']));
+        header('Allow: ' . implode(', ', $route['allowed_methods']));
 
         // Initialize controller
-        $controller_class = $selected_route_configuration['controller'];
+        $controller_class = $route['controller'];
         $controller = new $controller_class($this->midgardmvc->context->component_instance);
         $controller->dispatcher = $this;
     
         // Define the action method for the route_id
-        $action_method = strtolower($this->midgardmvc->context->request_method) . "_{$selected_route_configuration['action']}";
-        if ($this->midgardmvc->context->request_method == 'HEAD')
+        $request_method = strtolower($this->midgardmvc->context->request_method);
+        $action_method = "{$request_method}_{$route['action']}";
+        if ($request_method == 'head')
         {
             // HEAD is like GET but returns no data
-            $action_method = "get_{$selected_route_configuration['action']}";
+            $action_method = "get_{$route['action']}";
         }
 
         // Run the route and set appropriate data
@@ -294,49 +209,48 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         {
             if (!method_exists($controller, $action_method))
             {
-                if (   $this->midgardmvc->context->request_method == 'GET'
-                    || $this->midgardmvc->context->request_method == 'POST'
-                    || $this->midgardmvc->context->request_method == 'HEAD')
+                switch ($request_method)
                 {
-                    // Fallback for the legacy "action_XX" method names that had the action_x($route_id, &$data, $args) signature
-                    // TODO: Remove when components are ready for it
-                    $action_method = "action_{$selected_route_configuration['action']}";
-                    if (!method_exists($controller, $action_method))
-                    {
-                        throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} action {$selected_route_configuration['action']} not found", 405);
-                    }
-                    $controller->$action_method($this->route_id, $data, $this->action_arguments[$this->route_id]);
-                }                    
-                else
-                {
-                    throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} not allowed", 405);
+                    case 'get':
+                    case 'post':
+                    case 'head':
+                        // Fallback for the legacy "action_XX" method names that had the action_x($route_id, &$data, $args) signature
+                        // TODO: Remove when components are ready for it
+                        $action_method = "action_{$route['action']}";
+                        if (!method_exists($controller, $action_method))
+                        {
+                            throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} action {$route['action']} not found", 405);
+                        }
+                        $controller->$action_method($this->route_id, $data, $this->action_arguments[$this->midgardmvc->context->route_id]);
+                        break;
+                    default:
+                        throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} method not allowed", 405);
                 }
             }
             else
             {
                 $controller->data =& $data;
-                $controller->$action_method($this->action_arguments[$this->route_id]);
+                $controller->$action_method($this->action_arguments[$this->midgardmvc->context->route_id]);
             }
         }
         catch (Exception $e)
         {
             // Read controller's returned data to context before carrying on with exception handling
-            $this->data_to_context($selected_route_configuration, $data);
+            $this->data_to_context($route, $data);
             throw $e;
         }
 
         if ($this->midgardmvc->firephp)
         {
             $this->midgardmvc->firephp->group("Route " . get_class($controller) . "::{$action_method}");
-
+            $this->midgardmvc->firephp->log($route, 'With configuration');
             //FIXME: enable when #1489 is fixed
             // $this->midgardmvc->firephp->dump('Returned', $data);
-            $this->midgardmvc->firephp->log($selected_route_configuration, 'With configuration');
             $this->midgardmvc->firephp->log(array_keys($data), 'Returned keys');
             $this->midgardmvc->firephp->groupEnd();
         }
 
-        $this->data_to_context($selected_route_configuration, $data);
+        $this->data_to_context($route, $data);
     }
     
     private function is_core_route($route_id)
@@ -455,7 +369,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
 
         if (preg_match_all('%\{$(.+?)\}%', $link, $link_matches))
         {
-            throw new UnexpectedValueException("Missing arguments matching route '{$route_id}' of {$this->component_name}: " . implode(', ', $link_remaining_args));
+            throw new UnexpectedValueException("Missing arguments matching route '{$route_id}' of {$this->midgardmvc->core->component}: " . implode(', ', $link_remaining_args));
         }
     
         if (!is_null($page))
@@ -467,7 +381,6 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
 
         return preg_replace('%/{2,}%', '/', $this->midgardmvc->context->prefix . $link);
     }
-
 
     /**
      * Tries to match one route from an array of route definitions
@@ -487,7 +400,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      * @param array $routes map of routes to route_ids
      * @return boolean indicating if a route could be matched or not
      */
-    public function route_matches($routes)
+    public function route_matches(array $routes)
     {
         // make a normalized string of $argv
         $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $this->midgardmvc->context->argv) . '/');

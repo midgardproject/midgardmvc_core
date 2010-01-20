@@ -77,7 +77,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
             $variant = new midgardmvc_core_helpers_variants();
             $variant->datamanager = $this->data['datamanager'];
             $variant->object = $this->data['object'];
-            echo $variant->handle($args['variant'], $this->dispatcher->request_method);
+            echo $variant->handle($args['variant'], midgardmvc_core::get_instance()->context->request_method);
             die();
         }
     }

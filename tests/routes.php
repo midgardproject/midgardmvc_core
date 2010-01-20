@@ -14,15 +14,9 @@ require_once(dirname(__FILE__) . '/../../tests/testcase.php');
 class midgardmvc_core_tests_routes extends midgardmvc_tests_testcase
 {
     
-    public function testDispatchAll()
+    public function test_dispatch_all()
     {
         return;
-        if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
-        {
-            echo __FUNCTION__ . "\n";
-            echo "Loading all components and their routes\n\n";
-        }
-        
         // Go through the installed components
         foreach (midgardmvc_core::get_instance()->componentloader->manifests as $component_name => $manifest)
         {
@@ -30,14 +24,13 @@ class midgardmvc_core_tests_routes extends midgardmvc_tests_testcase
             midgardmvc_core::get_instance()->context->create();
             try
             {
-                midgardmvc_core::get_instance()->dispatcher->initialize($component_name);
+                $request = new midgardmvc_core_helpers_request();
+                $request->set_component($component_name);
+                midgardmvc_core::get_instance()->dispatcher->initialize($request);
             }
             catch (Exception $e)
             {
-                if (MIDGARDMVC_TESTS_ENABLE_OUTPUT)
-                {
-                    echo "Skipping {$component_name}: component failed to load\n";
-                }
+                echo "Skipping {$component_name}: component failed to load: " . $e->getMessage() . "\n";
                 midgardmvc_core::get_instance()->context->delete();
                 continue;
             }

@@ -393,11 +393,16 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      * @param array $route routes configuration
      * @return array normalized routes configuration
      */
-    public function normalize_routes($routes)
+    public function normalize_routes($routes = null)
     {
         if (is_null($this->midgardmvc))
         {
             $this->midgardmvc = midgardmvc_core::get_instance();
+        }
+
+        if (is_null($routes))
+        {
+            $routes = $this->get('routes');
         }
 
         foreach ($routes as $identifier => $route)

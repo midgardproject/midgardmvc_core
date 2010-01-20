@@ -59,6 +59,36 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
     }
 
+    public function prepare_stack(midgardmvc_core_helpers_request $request)
+    {
+        // Set up initial templating stack
+        if (   $this->midgardmvc->configuration->services_templating_components
+            && is_array($this->midgardmvc->configuration->services_templating_components))
+        {
+            foreach ($this->midgardmvc->configuration->services_templating_components as $templating_component)
+            {
+                $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($templating_component) . '/templates');
+            }
+        }
+
+        // Add current component to templating stack
+        if (!in_array($request->get_component(), $this->midgardmvc->configuration->services_templating_components))
+        {
+            $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($this->midgardmvc->context->component) . '/templates');
+        }
+
+        if ($this->midgardmvc->configuration->services_templating_database_enabled)
+        {
+            // Add style and page to templating stack
+            if (   isset($this->midgardmvc->context->style_id)
+                && $this->midgardmvc->context->style_id)
+            {
+                $this->midgardmvc->templating->append_style($this->midgardmvc->context->style_id);
+            }
+            $this->midgardmvc->templating->append_page($this->midgardmvc->context->page->id);
+        }
+    }
+
     public function append_directory($directory)
     {
         if (!file_exists($directory))
@@ -294,72 +324,34 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             $this->midgardmvc->context->create();
         }
 
-        $page = null;
+        $request = new midgardmvc_core_helpers_request();
 
         if (   is_object($component_name)
             && is_a($component_name, 'midgard_page'))
         {
-            $page = $component_name;
+            $request->set_page($component_name);
         }
         elseif (mgd_is_guid($component_name))
         {
-            $page = new midgard_page($component_name);
+            $request->set_page(new midgard_page($component_name));
         }
         elseif (strpos($component_name, '/') !== false)
         {
-            $page = $this->dispatcher->resolve_page($component_name);
+            $request->resolve_page($component_name);
         }
         
-        if ($page)
-        {
-            $component_name = $page->component;
-            
-            if (!$component_name)
-            {
-                throw new Exception("Page {$page->guid} has no component defined");
-            }
-            
-            $this->dispatcher->set_page($page);
-        }
-
-        $this->dispatcher->populate_environment_data();
+        $request->populate_context();
 
         // Run process injector for this context too
         $this->midgardmvc->componentloader->inject_process();
 
-        // Set up initial templating stack
-        if (   $this->midgardmvc->configuration->services_templating_components
-            && is_array($this->midgardmvc->configuration->services_templating_components))
-        {
-            foreach ($this->midgardmvc->configuration->services_templating_components as $templating_component)
-            {
-                $this->midgardmvc->templating->append_directory(MIDGARDMVC_ROOT . "/{$templating_component}/templates");
-            }
-        }
-
         // Then initialize the component, so it also goes to template stack
-        $this->dispatcher->initialize($component_name);
+        $this->dispatcher->initialize($request);
 
-        if (   $this->midgardmvc->configuration->services_templating_database_enabled
-            && isset($this->midgardmvc->context->style_id))
-        {
-            // And finally append style and page to template stack
-            $this->midgardmvc->templating->append_style($this->midgardmvc->context->style_id);    
-            if ($page)
-            {
-                $this->midgardmvc->templating->append_page($this->midgardmvc->context->page->id);
-            }
-        }
-        
-        if (!$this->midgardmvc->context->component_instance->configuration->exists('routes'))
-        {
-            throw new Exception("Component {$component_name} has no routes defined");
-        }
-        
-        $routes = $this->midgardmvc->context->component_instance->configuration->get('routes');
+        $routes = $this->midgardmvc->configuration->normalize_routes();
         if (!isset($routes[$route_id]))
         {
-            throw new Exception("Component {$component_name} has no route {$route_id}");
+            throw new Exception("Route {$route_id} not defined");
         }
 
         $this->dispatcher->set_route($route_id, $arguments);

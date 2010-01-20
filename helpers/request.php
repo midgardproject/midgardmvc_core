@@ -180,6 +180,11 @@ class midgardmvc_core_helpers_request
         return $this->page;
     }
 
+    public function set_component($component)
+    {
+        $this->component = $component;
+    }
+
     public function get_component()
     {
         return $this->component;
@@ -223,5 +228,74 @@ class midgardmvc_core_helpers_request
     public function get_prefix()
     {
         return $this->prefix;
+    }
+
+    /**
+     * Generate a valid cache identifier for a context of the current request
+     */
+    public function generate_identifier()
+    {
+        $_core = midgardmvc_core::get_instance();
+        if (isset($_core->context->cache_request_identifier))
+        {
+            // An injector has generated this already, let it be
+            return;
+        }
+
+        $identifier_source  = "URI={$_core->context->uri}";
+        $identifier_source .= ";COMP={$_core->context->component}";
+        
+        // TODO: Check language settings
+        $identifier_source .= ';LANG=ALL';
+        
+        switch ($_core->context->cache_strategy)
+        {
+            case 'public':
+                // Shared cache for everybody
+                $identifier_source .= ';USER=EVERYONE';
+                break;
+            default:
+                // Per-user cache
+                if ($_core->authentication->is_user())
+                {
+                    $user = $_core->authentication->get_person();
+                    $identifier_source .= ";USER={$user->username}";
+                }
+                else
+                {
+                    $identifier_source .= ';USER=ANONYMOUS';
+                }
+                break;
+        }
+
+        $_core->context->cache_request_identifier = md5($identifier_source);
+    }
+
+    /**
+     * Populate request information info the Midgard MVC context
+     */
+    public function populate_context()
+    {
+        $_core = midgardmvc_core::get_instance();
+        $_core->context->style_id = $this->style_id;
+        $_core->context->root = $this->root_page->id;
+        $_core->context->component = $this->component;
+        
+        $_core->context->uri = $this->path;
+        $_core->context->self = $this->path;
+        $_core->context->page = $this->page;
+        $_core->context->prefix = $this->prefix;
+        $_core->context->argv = $this->argv;
+        $_core->context->request_method = $this->method;
+        
+        $_core->context->webdav_request = false;
+        if (   $_core->configuration->get('enable_webdav')
+            && (   $this->method != 'GET'
+                && $this->method != 'POST')
+            )
+        {
+            // Serve this request with the full HTTP_WebDAV_Server
+            $_core->context->webdav_request = true;
+        }
     }
 }

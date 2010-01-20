@@ -192,7 +192,6 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
         // Then enter another context
         midgardmvc_core::get_instance()->context->create();
         $new_value = midgardmvc_core::get_instance()->configuration->get('log_level');
-        var_dump(midgardmvc_core::get_instance()->configuration);
         midgardmvc_core::get_instance()->context->delete();
         
         $this->assertEquals($initial_value, $new_value);
