@@ -60,6 +60,11 @@ class midgardmvc_core_helpers_request
 
     public function __construct()
     {
+        // Populate defaults from context        
+        if (isset(midgardmvc_core::get_instance()->context->root))
+        {
+            $this->root_page = midgardmvc_core::get_instance()->context->root;
+        }
     }
 
     /**
