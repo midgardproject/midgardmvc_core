@@ -332,8 +332,9 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         if (!is_null($page))
         {
             $this->midgardmvc->context->create();
-            $this->set_page($page);
-            $this->initialize($this->midgardmvc->context->page->component);
+            $request = new midgardmvc_core_helpers_request();
+            $request->set_page($page);
+            $this->initialize($request);
         }
 
         $route_definitions = $this->get_routes();
