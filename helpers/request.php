@@ -60,10 +60,9 @@ class midgardmvc_core_helpers_request
 
     public function __construct()
     {
-        // Populate defaults from context        
-        if (isset(midgardmvc_core::get_instance()->context->root))
+        if (isset(midgardmvc_core::get_instance()->context->root_page))
         {
-            $this->root_page = midgardmvc_core::get_instance()->context->root;
+            $this->set_root_page(midgardmvc_core::get_instance()->context->root_page);
         }
     }
 
@@ -148,7 +147,8 @@ class midgardmvc_core_helpers_request
             $this->component = $page->component;
         }
 
-        if (!isset($this->path_for_page[$page->id]))
+        if (   !isset($this->path_for_page[$page->id])
+            && $this->root_page)
         {
             if ($page->id == $this->root_page->id)
             {
@@ -172,8 +172,8 @@ class midgardmvc_core_helpers_request
                 }
             }
             $this->path_for_page[$page->id] = $path;
+            $this->path = $this->path_for_page[$page->id];
         }
-        $this->path = $this->path_for_page[$page->id];
         if ($page->style)
         {
             $this->style_id = $page->style;
@@ -284,6 +284,7 @@ class midgardmvc_core_helpers_request
         $_core = midgardmvc_core::get_instance();
         $_core->context->style_id = $this->style_id;
         $_core->context->root = $this->root_page->id;
+        $_core->context->root_page = $this->root_page;
         $_core->context->component = $this->component;
         
         $_core->context->uri = $this->path;

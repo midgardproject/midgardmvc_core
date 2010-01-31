@@ -20,7 +20,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
 
     public function __construct()
     {
-        $this->_core = midgardmvc_core::get_instance();
+        $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
     /**
@@ -38,7 +38,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     {
         // In main Midgard request we dispatch the component in connection to a page
         $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component, $this->midgardmvc->context->page);
+        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component);
         $this->midgardmvc->templating->prepare_stack($request);
     }
     
@@ -51,7 +51,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     
     public function set_route($route_id, array $arguments)
     {
-        $this->_core->context->route_id = $route_id;
+        $this->midgardmvc->context->route_id = $route_id;
         $this->action_arguments = $arguments;
     }
 
@@ -62,20 +62,20 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     {
         $route_definitions = $this->get_routes();
 
-        $selected_route_configuration = $route_definitions[$this->route_id];
+        $selected_route_configuration = $route_definitions[$this->midgardmvc->context->route_id];
 
         $controller_class = $selected_route_configuration['controller'];
-        $controller = new $controller_class($this->_core->context->component_instance);
+        $controller = new $controller_class($this->midgardmvc->context->component_instance);
         
         // Define the action method for the route_id
-        $action_method = strtolower($this->request_method) . "_{$selected_route_configuration['action']}";
+        $action_method = strtolower($this->midgardmvc->context->request_method) . "_{$selected_route_configuration['action']}";
 
         $data = array();
         if (!method_exists($controller, $action_method))
         {
-            if (   $this->request_method == 'GET'
-                || $this->request_method == 'POST'
-                || $this->request_method == 'HEAD')
+            if (   $this->midgardmvc->context->request_method == 'get'
+                || $this->midgardmvc->context->request_method == 'post'
+                || $this->midgardmvc->context->request_method == 'head')
             {
                 // Sometimes GET-only routes are dynamic_loaded on pages where we do a POST, we need to support that
                 $action_method = "get_{$selected_route_configuration['action']}";
@@ -88,7 +88,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
                     {
                         throw new midgardmvc_exception_notfound("Action {$selected_route_configuration['action']} not found");
                     }
-                    $controller->$action_method($this->route_id, $data, $this->action_arguments);
+                    $controller->$action_method($this->midgardmvc->context->route_id, $data, $this->action_arguments);
                 }
                 else
                 {
@@ -97,7 +97,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             }
             else
             {
-                throw new midgardmvc_exception_httperror("{$this->request_method} not allowed", 405);
+                throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} not allowed", 405);
             }
         }
         else
@@ -106,29 +106,45 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             $controller->$action_method($this->action_arguments);
         }
 
-        if ($this->is_core_route($this->route_id))
+        if ($this->is_core_route($this->midgardmvc->context->route_id))
         {
             $component_name = 'midgardmvc_core';
         }
         else
         {
-            $component_name = $this->component_name;
+            $component_name = $this->midgardmvc->context->component;
         }
-        $this->_core->context->set_item($component_name, $data);
+        $this->midgardmvc->context->set_item($component_name, $data);
         
         // Set other context data from route
         if (isset($selected_route_configuration['mimetype']))
         {
-            $this->_core->context->mimetype = $selected_route_configuration['mimetype'];
+            $this->midgardmvc->context->mimetype = $selected_route_configuration['mimetype'];
         }
         if (isset($selected_route_configuration['template_entry_point']))
         {
-            $this->_core->context->template_entry_point = $selected_route_configuration['template_entry_point'];
+            $this->midgardmvc->context->template_entry_point = $selected_route_configuration['template_entry_point'];
         }
         if (isset($selected_route_configuration['content_entry_point']))
         {
-            $this->_core->context->content_entry_point = $selected_route_configuration['content_entry_point'];
+            $this->midgardmvc->context->content_entry_point = $selected_route_configuration['content_entry_point'];
         }
+    }
+
+    private function is_core_route($route_id)
+    {
+        $context = $this->midgardmvc->context;
+
+        if (!isset($context->component_routes))
+        {
+            return false;
+        }
+        if (isset($context->component_routes[$route_id]))
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     /**

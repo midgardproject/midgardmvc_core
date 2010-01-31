@@ -74,10 +74,11 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         );
         if (isset($this->midgardmvc->componentloader))
         {
+            $parent_component = $component;
             while (true)
             {
-                $parent_component = $this->midgardmvc->componentloader->get_parent($component);
-                if ($parent_component === null)
+                $parent_component = $this->midgardmvc->componentloader->get_parent($parent_component);
+                if (!$parent_component)
                 {
                     break;
                 }

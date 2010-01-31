@@ -39,10 +39,18 @@ class midgardmvc_core_helpers_context
         
         if ($context_id > 0)
         {
+            // Creating a new request context, copy some values from ctx 0
             if (isset($this->contexts[0]['root']))
             {
-                // Creating a new request context, copy some values from ctx 0
                 $this->contexts[$context_id]['root'] = $this->contexts[0]['root'];
+            }
+            if (isset($this->contexts[0]['root_page']))
+            {
+                $this->contexts[$context_id]['root_page'] = $this->contexts[0]['root_page'];
+            }
+            if (isset($this->contexts[0]['cache_enabled']))
+            {
+                $this->contexts[$context_id]['cache_enabled'] = $this->contexts[0]['cache_enabled'];
             }
         }
         

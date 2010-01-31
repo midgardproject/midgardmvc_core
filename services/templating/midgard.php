@@ -85,7 +85,11 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             {
                 $this->midgardmvc->templating->append_style($this->midgardmvc->context->style_id);
             }
-            $this->midgardmvc->templating->append_page($this->midgardmvc->context->page->id);
+            if (   isset($this->midgardmvc->context->page)
+                && $this->midgardmvc->context->page)
+            {
+                $this->midgardmvc->templating->append_page($this->midgardmvc->context->page->id);
+            }
         }
     }
 
@@ -339,6 +343,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         {
             $request->resolve_page($component_name);
         }
+        else
+        {
+            $request->set_component($component_name);
+        }
         
         $request->populate_context();
 
@@ -351,7 +359,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $routes = $this->midgardmvc->configuration->normalize_routes();
         if (!isset($routes[$route_id]))
         {
-            throw new Exception("Route {$route_id} not defined");
+            throw new Exception("Route {$route_id} not defined for component {$component_name}");
         }
 
         $this->dispatcher->set_route($route_id, $arguments);

@@ -273,7 +273,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     {
         $context = $this->midgardmvc->context;
 
-        if ($this->is_core_route($this->route_id))
+        if ($this->is_core_route($context->route_id))
         {
             $component_name = 'midgardmvc_core';
         }
@@ -334,6 +334,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             $this->midgardmvc->context->create();
             $request = new midgardmvc_core_helpers_request();
             $request->set_page($page);
+            $request->populate_context();
             $this->initialize($request);
         }
 
