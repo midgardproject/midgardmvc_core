@@ -376,7 +376,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     
         if (!is_null($page))
         {
-            $url = preg_replace('%/{2,}%', '/', $this->midgardmvc->context->prefix . $link);
+            $url = preg_replace('%/{2,}%', '/', $this->midgardmvc->context->uri . $link);
             $this->midgardmvc->context->delete();
             return $url;
         }
