@@ -79,11 +79,9 @@ class midgardmvc_core_component_loader
                 
                 throw new OutOfRangeException("Component {$component} interface class file not found.");
             }
-        
-            if (! class_exists($component))
-            {
-                require($component_interface_file);
-            }
+
+            require($component_interface_file);
+            
         }
 
         // Load configuration for the component

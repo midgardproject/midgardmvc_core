@@ -90,7 +90,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function get_routes()
     {
-        $this->midgardmvc->context->component_routes = $this->midgardmvc->configuration->normalize_routes();;
+        $this->midgardmvc->context->component_routes = $this->midgardmvc->configuration->normalize_routes();
         return $this->midgardmvc->context->component_routes;
     }
 
@@ -221,7 +221,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                         {
                             throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} action {$route['action']} not found", 405);
                         }
-                        $controller->$action_method($this->route_id, $data, $this->action_arguments[$this->midgardmvc->context->route_id]);
+                        $controller->$action_method($this->midgardmvc->context->route_id, $data, $this->action_arguments[$this->midgardmvc->context->route_id]);
                         break;
                     default:
                         throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} method not allowed", 405);
@@ -341,7 +341,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         $route_definitions = $this->get_routes();
         if (!isset($route_definitions[$route_id]))
         {
-            throw new OutOfBoundsException("route_id '{$route_id}' not found in routes configuration");
+            throw new OutOfBoundsException("route_id '{$route_id}' not found in routes configuration in context " . $this->midgardmvc->context->get_current_context());
         }
         $route = $route_definitions[$route_id]['route'];
         $link = $route;
@@ -381,7 +381,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             return $url;
         }
 
-        return preg_replace('%/{2,}%', '/', $this->midgardmvc->context->prefix . $link);
+        return preg_replace('%/{2,}%', '/', $this->midgardmvc->context->uri . $link);
     }
 
     /**

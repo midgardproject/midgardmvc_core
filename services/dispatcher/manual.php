@@ -88,6 +88,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
                     {
                         throw new midgardmvc_exception_notfound("Action {$selected_route_configuration['action']} not found");
                     }
+
                     $controller->$action_method($this->midgardmvc->context->route_id, $data, $this->action_arguments);
                 }
                 else

@@ -355,8 +355,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         // Then initialize the component, so it also goes to template stack
         $this->dispatcher->initialize($request);
-
+        
         $routes = $this->midgardmvc->configuration->normalize_routes();
+        $component_name = $this->midgardmvc->context->component;
+
         if (!isset($routes[$route_id]))
         {
             throw new Exception("Route {$route_id} not defined for component {$component_name}");

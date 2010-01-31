@@ -403,6 +403,11 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
         if (is_null($routes))
         {
+            if (isset($this->midgardmvc->context->component_routes))
+            {
+                // We already have normalized routes for this context
+                return $this->midgardmvc->context->component_routes;
+            }
             $routes = $this->get('routes');
         }
 
