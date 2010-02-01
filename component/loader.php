@@ -53,6 +53,12 @@ class midgardmvc_core_component_loader
     public function load($component)
     {
         static $loaded_interfaces = array();
+        
+        if ($component == 'midgardmvc_core')
+        {
+            return midgardmvc_core::get_instance();
+        }
+        
         if (! $this->can_load($component))
         {
             $this->tried_to_load[$component] = false;
