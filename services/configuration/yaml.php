@@ -413,6 +413,15 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
         foreach ($routes as $identifier => $route)
         {
+            if (   isset($route['root_only'])
+                && $route['root_only']
+                && isset($this->midgardmvc->context->page)
+                && $this->midgardmvc->context->page->id != $this->midgardmvc->context->root_page->id)
+            {
+                // Drop root-only routes from subpages
+                continue;
+            }
+            
             // Handle the required route parameters
             if (!isset($route['controller']))
             {
@@ -468,10 +477,9 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 $route['content_entry_point'] = 'content';
             }
 
-            $routes[$identifier] = $route;
+            $normalized_routes[$identifier] = $route;
         }
-        
-        return $routes;
+        return $normalized_routes;
     }
     /**
      * Normalizes given route definition ready for parsing

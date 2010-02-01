@@ -105,16 +105,6 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         $route_id_map = array();
         foreach ($route_definitions as $route_id => $route_configuration)
         {
-            if (   isset($route_configuration['root_only'])
-                && $route_configuration['root_only'])
-            {
-                // This route is to be run only with the root page
-                if ($this->midgardmvc->context->page->id != $this->midgardmvc->context->root_page->id)
-                {
-                    // We're not in root page, skip
-                    continue;
-                }
-            }
             $route_id_map[] = array
             (
                 'route' => $route_configuration['route'],
