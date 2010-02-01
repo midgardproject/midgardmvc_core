@@ -52,6 +52,7 @@ class midgardmvc_core_component_loader
     
     public function load($component)
     {
+        static $loaded_interfaces = array();
         if (! $this->can_load($component))
         {
             $this->tried_to_load[$component] = false;
@@ -80,8 +81,11 @@ class midgardmvc_core_component_loader
                 throw new OutOfRangeException("Component {$component} interface class file not found.");
             }
 
-            require($component_interface_file);
-            
+            if (!isset($loaded_interfaces[$component]))
+            {
+                require($component_interface_file);
+            }
+            $loaded_interfaces[$component] = true;
         }
 
         // Load configuration for the component
