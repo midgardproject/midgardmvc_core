@@ -283,7 +283,6 @@ class midgardmvc_core_helpers_request
     {
         $_core = midgardmvc_core::get_instance();
         $_core->context->style_id = $this->style_id;
-        $_core->context->root = $this->root_page->id;
         $_core->context->root_page = $this->root_page;
         $_core->context->component = $this->component;
         

@@ -109,7 +109,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                 && $route_configuration['root_only'])
             {
                 // This route is to be run only with the root page
-                if ($this->midgardmvc->context->page->id != $this->midgardmvc->context->root)
+                if ($this->midgardmvc->context->page->id != $this->midgardmvc->context->root_page->id)
                 {
                     // We're not in root page, skip
                     continue;
@@ -317,7 +317,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                 // Find a page matching the requested component
                 $qb = new midgard_query_builder('midgard_page');
                 $qb->add_constraint('component', '=', $component);
-                $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root);
+                $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root_page->id);
                 $qb->set_limit(1);
                 $pages = $qb->execute();
                 if (empty($pages))
@@ -672,7 +672,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             }
         }
 
-        $root_id = $this->midgardmvc->context->root;
+        $root_id = $this->midgardmvc->context->root_page->id;
         if ($context->page->id == $root_id)
         {
             // We're requesting prefix for the root page

@@ -77,10 +77,10 @@ class midgardmvc_core_tests_component_loader extends midgardmvc_tests_testcase
 
     public function test_can_load_component()
     {
-        $this->assertTrue($this->loader->can_load('midgardmvc_core'));
+        $this->assertTrue($this->loader->can_load('midgardmvc_helper_xsspreventer'));
         
         // Run it a second time to test caching
-        $this->assertTrue($this->loader->can_load('midgardmvc_core'));
+        $this->assertTrue($this->loader->can_load('midgardmvc_helper_xsspreventer'));
     }
 
     public function test_can_load_unknown_component()
@@ -90,11 +90,11 @@ class midgardmvc_core_tests_component_loader extends midgardmvc_tests_testcase
 
     public function test_load_component()
     {
-        $interface = $this->loader->load('midgardmvc_core');
+        $interface = $this->loader->load('midgardmvc_helper_xsspreventer');
         $this->assertTrue(is_a($interface, 'midgardmvc_core_component_interface'));
         
         // Run it a second time to test caching
-        $interface = $this->loader->load('midgardmvc_core');
+        $interface = $this->loader->load('midgardmvc_helper_xsspreventer');
         $this->assertTrue(is_a($interface, 'midgardmvc_core_component_interface'));
     }
 

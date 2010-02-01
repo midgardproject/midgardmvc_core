@@ -386,12 +386,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         $actions = array();
         
-        /*static $root_page = null;
-        if (is_null($root_page))
-        {
-            $root_page = new midgard_page(midgardmvc_core::get_instance()->context->root);
-        }*/
-        
         $actions['logout'] = array
         (
             'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('logout', array()),

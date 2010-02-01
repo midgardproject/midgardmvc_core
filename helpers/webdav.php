@@ -173,7 +173,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
             );
         }
         
-        if (midgardmvc_core::get_instance()->context->page->id == midgardmvc_core::get_instance()->context->root)
+        if (midgardmvc_core::get_instance()->context->page->id == midgardmvc_core::get_instance()->context->root_page->id)
         {
             // Additional "special" URLs
             $children[] = array
