@@ -113,7 +113,9 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         }
 
         unset($route_configuration, $route_id);
-        if (!$this->route_matches($route_id_map))
+        
+        $matched_routes = $this->get_route_matches($route_id_map);
+        if (!$matched_routes)
         {
             // TODO: Check message
             throw new midgardmvc_exception_notfound('No route matches current URL');
@@ -121,13 +123,13 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         unset($route_id_map);
 
         $success_flag = true; // Flag to tell if route ran successfully
-        foreach ($this->route_array as $route)
+        foreach ($matched_routes as $route_id => $arguments)
         {
             try
             {   
                 $success_flag = true; // before trying route it's marked success
-                $this->midgardmvc->context->route_id = $route;
-                $this->dispatch_route($route_definitions[$route]);
+                $this->midgardmvc->context->route_id = $route_id;
+                $this->dispatch_route($route_definitions[$route_id], $arguments);
             }
             catch (Exception $e)
             {
@@ -174,7 +176,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         }
     }
     
-    private function dispatch_route(array $route)
+    private function dispatch_route(array $route, array $arguments)
     {
         // Inform client of allowed HTTP methods
         header('Allow: ' . implode(', ', $route['allowed_methods']));
@@ -211,7 +213,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                         {
                             throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} action {$route['action']} not found", 405);
                         }
-                        $controller->$action_method($this->midgardmvc->context->route_id, $data, $this->action_arguments[$this->midgardmvc->context->route_id]);
+                        $controller->$action_method($this->midgardmvc->context->route_id, $data, $arguments);
                         break;
                     default:
                         throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} method not allowed", 405);
@@ -220,7 +222,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             else
             {
                 $controller->data =& $data;
-                $controller->$action_method($this->action_arguments[$this->midgardmvc->context->route_id]);
+                $controller->$action_method($arguments);
             }
         }
         catch (Exception $e)
@@ -390,22 +392,19 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      * if they don't contain GET arguments
      *
      * @param array $routes map of routes to route_ids
-     * @return boolean indicating if a route could be matched or not
+     * @return array of matched routes together with their action arguments
      */
-    public function route_matches(array $routes)
+    public function get_route_matches(array $routes)
     {
         // make a normalized string of $argv
         $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $this->midgardmvc->context->argv) . '/');
 
-        $this->action_arguments = array();
+        $matched_routes = array();
         
-//        foreach ($routes as $route => $route_id)
         foreach ($routes as $r)
         {
             $route = $r['route'];
             $route_id = $r['route_id'];
-            
-            $this->action_arguments[$route_id] = array();
             
             // Reset variables
             list ($route_path, $route_get, $route_args) = $this->midgardmvc->configuration->split_route($route);
@@ -419,15 +418,16 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                     )
                 {
                     // echo "DEBUG: simple match route_id:{$route_id}\n";
-                    $this->route_array[] = $route_id;
+                    $matched_routes[$route_id] = array();
                 }
+
                 if ($route_args) // Route @ set
                 {
                     $path = explode('@', $route_path);
                     if (preg_match('%' . str_replace('/', '\/', $path[0]) . '/(.*)\/%', $argv_str, $matches))
                     {
-                        $this->route_array[] = $route_id;
-                        $this->action_arguments[$route_id]['variable_arguments'] = explode('/', $matches[1]);
+                        $matched_routes[$route_id] = array();
+                        $matched_routes[$route_id]['variable_arguments'] = explode('/', $matches[1]);
                     }
                 }
                 // Did not match, try next route
@@ -456,13 +456,13 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             }
 
             // We have a complete match, setup route_id arguments and return
-            $this->route_array[] = $route_id;
-            // Map variable arguments
+            $matched_routes[$route_id] = array();
 
+            // Map variable arguments
             foreach ($route_path_matches[1] as $index => $varname)
             {
                 $variable_parts = explode(':', $varname);
-                if(count($variable_parts) == 1)
+                if (count($variable_parts) == 1)
                 {
                     $type_hint = '';
                 }
@@ -477,11 +477,11 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                 if ($type_hint == 'token')
                 {
                     // Tokenize the argument to handle resource typing
-                    $this->action_arguments[$route_id][$varname] = $this->tokenize_argument($route_path_regex_matches[$index + 1]);
+                    $matched_routes[$route_id][$varname] = $this->tokenize_argument($route_path_regex_matches[$index + 1]);
                 }
                 else
                 {
-                    $this->action_arguments[$route_id][$varname] = $route_path_regex_matches[$index + 1];
+                    $matched_routes[$route_id][$varname] = $route_path_regex_matches[$index + 1];
                 }
                 
                 if (preg_match('%@%', $route, $match)) // Route @ set
@@ -489,8 +489,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                     $path = explode('@', $route_path);
                     if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
                     {
-                        $this->route_array[] = $route_id;
-                        $this->action_arguments[$route_id] = explode('/', $matches[1]);
+                        $matched_routes[$route_id] = explode('/', $matches[1]);
                     }
                 }
                 
@@ -498,12 +497,13 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             //return true;
         }
 
-        // No match
-        if(count($this->route_array) == 0)
+        if (count($matched_routes) == 0)
         {
+             // No match
             return false;
         }
-        return true;
+        
+        return $matched_routes;
     }
     
     private function tokenize_argument($argument)

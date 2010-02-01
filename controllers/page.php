@@ -73,6 +73,10 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
 
         if (midgardmvc_core::get_instance()->context->route_id == 'page_variants')
         {
+            if (!isset($args['variant']))
+            {
+                throw new midgardmvc_exception_notfound('No variants set');
+            }
             // Get variant of the page
             $variant = new midgardmvc_core_helpers_variants();
             $variant->datamanager = $this->data['datamanager'];

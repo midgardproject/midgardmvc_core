@@ -291,6 +291,7 @@ class midgardmvc_core_helpers_request
         $_core->context->page = $this->page;
         $_core->context->prefix = $this->prefix;
         $_core->context->argv = $this->argv;
+        $_core->context->query = $this->query;
         $_core->context->request_method = $this->method;
         
         $_core->context->webdav_request = false;
