@@ -411,6 +411,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             $routes = $this->get('routes');
         }
 
+        $normalized_routes = array();
         foreach ($routes as $identifier => $route)
         {
             if (   isset($route['root_only'])
