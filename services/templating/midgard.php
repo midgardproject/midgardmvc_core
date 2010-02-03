@@ -348,6 +348,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             $request->set_component($component_name);
         }
         
+        // Copy HTTP request method of main context to the request
+        $request->set_method($this->midgardmvc->context->get_item('request_method', 0));
+        
         $request->populate_context();
 
         // Run process injector for this context too
@@ -396,7 +399,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      * @return $array data
      */
     public function dynamic_load($component_name, $route_id, array $arguments)
-    {
+    { 
         $this->midgardmvc->context->create();
         $data = $this->dynamic_call($component_name, $route_id, $arguments, false);
 
