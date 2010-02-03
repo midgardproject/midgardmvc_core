@@ -207,7 +207,7 @@ class midgardmvc_core_helpers_request
     
     public function set_method($method)
     {
-        $this->method = $method;
+        $this->method = strtolower($method);
     }
     
     public function get_method()
