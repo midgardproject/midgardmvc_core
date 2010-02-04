@@ -61,6 +61,10 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     public function dispatch()
     {
         $route_definitions = $this->get_routes();
+        if (!isset($route_definitions[$this->midgardmvc->context->route_id]))
+        {
+            throw new Exception("Route {$route_id} not defined for component {$this->midgardmvc->context->component}");
+        }
 
         $selected_route_configuration = $route_definitions[$this->midgardmvc->context->route_id];
 
