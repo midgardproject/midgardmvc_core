@@ -296,8 +296,8 @@ class midgardmvc_core_helpers_request
         
         $_core->context->webdav_request = false;
         if (   $_core->configuration->get('enable_webdav')
-            && (   $this->method != 'GET'
-                && $this->method != 'POST')
+            && (   $this->method != 'get'
+                && $this->method != 'post')
             )
         {
             // Serve this request with the full HTTP_WebDAV_Server

@@ -187,7 +187,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         $controller->dispatcher = $this;
     
         // Define the action method for the route_id
-        $request_method = strtolower($this->midgardmvc->context->request_method);
+        $request_method = $this->midgardmvc->context->request_method;
         $action_method = "{$request_method}_{$route['action']}";
         if ($request_method == 'head')
         {

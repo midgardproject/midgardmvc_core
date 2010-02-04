@@ -96,6 +96,11 @@ class midgardmvc_core_component_loader
 
         // Load configuration for the component
         midgardmvc_core::get_instance()->configuration->load_component($component);
+        
+        if (isset($this->interfaces[$component]))
+        {
+            return $this->interfaces[$component];
+        }
 
         // Load the interface class
         $this->interfaces[$component] = new $component();
