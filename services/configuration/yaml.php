@@ -411,13 +411,21 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             $routes = $this->get('routes');
         }
 
+        $enable_webdav = $this->midgardmvc->configuration->get('enable_webdav');
+
+        $root_page = false;
+        if (   isset($this->midgardmvc->context->page)
+            && $this->midgardmvc->context->page->id == $this->midgardmvc->context->root_page->id)
+        {
+            $root_page = true;
+        }
+
         $normalized_routes = array();
         foreach ($routes as $identifier => $route)
         {
             if (   isset($route['root_only'])
                 && $route['root_only']
-                && isset($this->midgardmvc->context->page)
-                && $this->midgardmvc->context->page->id != $this->midgardmvc->context->root_page->id)
+                && !$root_page)
             {
                 // Drop root-only routes from subpages
                 continue;
@@ -451,7 +459,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 );
             }
             
-            if (!$this->midgardmvc->configuration->get('enable_webdav'))
+            if (!$enable_webdav)
             {
                 // Only allow GET and POST
                 $route['allowed_methods'] = array
