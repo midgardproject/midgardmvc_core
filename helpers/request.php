@@ -118,10 +118,10 @@ class midgardmvc_core_helpers_request
             $temp = substr($temp, 1 + strlen($p));
             $page = $res[0];
             $this->path .= $page->name . '/';
+            $this->path_for_page[$page->id] = $this->path;
             array_shift($this->argv);
         }
-        
-        $this->path_for_page[$page->id] = $this->path;
+
         $this->set_page($page);
     }
 
@@ -131,6 +131,7 @@ class midgardmvc_core_helpers_request
     public function set_root_page(midgard_page $page)
     {
         $this->root_page = $page;
+        $this->path_for_page[$page->id] = '/';
         
         $this->style_id = $page->style;
     }
@@ -160,6 +161,11 @@ class midgardmvc_core_helpers_request
                 $path = "{$page->name}/";
                 while (true)
                 {
+                    if (isset($this->path_for_page[$parent_page->up]))
+                    {
+                        $path = "{$this->path_for_page[$parent_page->up]}{$path}";
+                        break;
+                    }
                     $parent_page = new midgard_page($parent_page->up);
                     if (   !$parent_page
                         || $parent_page->up == 0
