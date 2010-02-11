@@ -64,7 +64,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         
         if (is_null($this->person))
         {
-            $this->person = new midgard_person($this->user->guid);
+            $this->person = new midgard_person($this->user->person);
             midgardmvc_core::get_instance()->cache->register_object($this->person->guid);
         }
         
