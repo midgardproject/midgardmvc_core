@@ -63,8 +63,15 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (isset($this->configuration_for_component[$component]))
         {
             // We have already loaded configuration for this component, keep it
-            $this->configuration[$this->get_current_context()] = $this->configuration_for_component[$component];
-            return;
+            if (empty($this->configuration[$this->get_current_context()]))
+            {
+                $this->configuration[$this->get_current_context()] = $this->configuration_for_component[$component];
+                return;
+            }
+            else
+            {
+                $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $this->configuration_for_component[$component]);
+            }
         }
 
         // Check for component inheritance
