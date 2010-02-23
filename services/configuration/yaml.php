@@ -71,6 +71,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
             else
             {
                 $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $this->configuration_for_component[$component]);
+                return;
             }
         }
 
