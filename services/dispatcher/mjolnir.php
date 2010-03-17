@@ -59,18 +59,9 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         // Handle GET parameters
         if (!empty($url_components['query']))
         {
-            $get_params = array();
-            $query_items = explode('&', $url_components['query']);
-            foreach ($query_items as $query_item)
-            {
-                $query_pair = explode('=', $query_item);
-                if (count($query_pair) != 2)
-                {
-                    break;
-                }
-                $get_params[$query_pair[0]] = urldecode($query_pair[1]);
-            }
-            $request->set_query($get_params);
+            $get_parameters = array();
+            parse_str($url_components['query'], $get_parameters);
+            $request->set_query($get_parameters);
         }
         
         $request->resolve_page($url_components['path']);
