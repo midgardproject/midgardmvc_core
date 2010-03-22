@@ -35,7 +35,8 @@ if (   isset($_SERVER['REQUEST_URI'])
     header("Location: {$_SERVER['REQUEST_URI']}/");
 
     header('Content-type: text/html; charset=utf-8'); // just to be sure, that the browser interprets fallback right
-    echo "301: new location <a href='{$_SERVER['REQUEST_URI']}/'>{$_SERVER['REQUEST_URI']}/</a>";
+    $url_clean = htmlentities($_SERVER['REQUEST_URI']) . '/';
+    echo "301: new location <a href='{$url_clean}'>{$url_clean}</a>";
     exit(0);
 }
 
