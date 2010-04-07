@@ -309,7 +309,10 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
                 // Find a page matching the requested component
                 $qb = new midgard_query_builder('midgard_page');
                 $qb->add_constraint('component', '=', $component);
+                $qb->begin_group('OR');
                 $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root_page->id);
+                $qb->add_constraint('id', '=', $this->midgardmvc->context->root_page->id);
+                $qb->end_group();
                 $qb->set_limit(1);
                 $pages = $qb->execute();
                 if (empty($pages))
