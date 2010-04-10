@@ -157,26 +157,11 @@ routes:
         mimetype: application/json
         allowed_methods:
             - GET
-    comet_messages:
-        controller: midgardmvc_core_controllers_comet
-        action: messages
-        route: /mgd:comet/messages
-        content_entry_point: midcom-comet-messages
     serveattachment:
         controller: midgardmvc_core_controllers_attachment
         action: serve
         route: '/mgd:serveattachment/{$guid}/'
         root_only: true
-    fckeditor_connector:
-        controller: midgardmvc_helper_datamanager_controllers_fckeditor
-        action: connector
-        route: /mgd:fckeditor/
-        allowed_methods:
-            - GET
-            - POST
-        root_only: true
-        template_entry_point: midcom-fckeditor
-        mimetype: text/xml
     login:
         controller: midgardmvc_core_controllers_authentication
         action: login
