@@ -103,6 +103,9 @@ class midgardmvc_core_exceptionhandler
                 echo "    </body>\n";
                 echo "</html>";
             }
+            
+            // Clean up the context
+            $midgardmvc->context->delete();
         }
     }
 

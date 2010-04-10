@@ -402,6 +402,10 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         // Do normal templating
         midgardmvc_core::get_instance()->templating->template();
         midgardmvc_core::get_instance()->templating->display();
+        
+        // Clean up the context
+        $midgardmvc->context->delete();
+
         exit(0);
     }
 

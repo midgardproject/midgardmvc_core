@@ -161,6 +161,8 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
             header('HTTP/1.0 401 Unauthorized');
             // TODO: more fancy 401 output ?
             echo "<h1>Authorization required</h1>\n";
+            // Clean up the context
+            $midgardmvc->context->delete();
             exit();
         }
 

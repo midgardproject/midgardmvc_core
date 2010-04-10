@@ -320,6 +320,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->templating->display();
         
         $this->cache->autoload->store($this->context->uri, $this->autoloaded_files);
+        
+        // Clean up the context
+        $this->context->delete();
     }
 
     /**
