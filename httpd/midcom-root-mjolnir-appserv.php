@@ -1,5 +1,7 @@
 <?php
 
+use MFS\AppServer\Apps\FileServe\FileServe as file_server;
+
 $cfg = new midgard_config();
 $cfg->read_file('appserv.conf', true);
 
@@ -71,17 +73,26 @@ class midgardmvc_appserv_app
     }
 }
 
-$app = new midgardmvc_appserv_app();
-$app = new \MFS\AppServer\Middleware\PHP_Compat\PHP_Compat($app);
+try {
+    $app = new midgardmvc_appserv_app();
+    $app = new \MFS\AppServer\Middleware\PHP_Compat\PHP_Compat($app);
 
-$file_app = new \MFS\AppServer\Apps\FileServe\FileServe(realpath(dirname(__FILE__).'/../static'));
-$file_app2 = new \MFS\AppServer\Apps\FileServe\FileServe(realpath(dirname(__FILE__).'/../../net_nemein_dasboard/static'));
+    $_midcom_root = realpath(dirname(__FILE__).'/../..').'/';
 
-$app = new \MFS\AppServer\Middleware\URLMap\URLMap(array(
-    '/' => $app,
-    '/midcom-static/net_nemein_dasboard' => $file_app2,
-    '/midcom-static/midgardmvc_core' => $file_app,
-));
+    $file_app = new file_server($_midcom_root.'/midgardmvc_core/static');
+    $file_app2 = new file_server(realpath(dirname(__FILE__).'/../../net_nemein_dasboard/static'));
 
-$handler = new \MFS\AppServer\DaemonicHandler('tcp://127.0.0.1:8080', 'HTTP');
-$handler->serve($app);
+    $app = new \MFS\AppServer\Middleware\URLMap\URLMap(array(
+        '/' => $app,
+        '/midcom-static/midgardmvc_core'                => new file_server($_midcom_root.'midgardmvc_core/static'),
+        '/midcom-static/midgardmvc_helper_datamanager'  => new file_server($_midcom_root.'midgardmvc_helper_datamanager/static'),
+        // '/midcom-static/midgardmvc_helper_xsspreventer' => new file_server($_midcom_root.'midgardmvc_helper_xsspreventer/static'),
+        '/midcom-static/net_nemein_dasboard'            => new file_server($_midcom_root.'net_nemein_dasboard/static'),
+        // '/midcom-static/org_openpsa_qbpager'            => new file_server($_midcom_root.'org_openpsa_qbpager/static'),
+    ));
+
+    $handler = new \MFS\AppServer\DaemonicHandler('tcp://127.0.0.1:8080', 'HTTP');
+    $handler->serve($app);
+} catch (Exception $e) {
+    echo $e;
+}
