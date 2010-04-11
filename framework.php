@@ -29,22 +29,25 @@ if (!defined('MIDGARDMVC_TEST_RUN'))
  */
 if (   isset($_SERVER['REQUEST_URI'])
     && !preg_match('%\?|/$|midgardmvc-.+-|/.+\..+$%', $_SERVER['REQUEST_URI']) 
-    && $_SERVER['REQUEST_METHOD'] == 'GET')
+    && $_SERVER['REQUEST_METHOD'] == 'GET'
+    && !class_exists('MFS\AppServer\DaemonicHandler'))
 {
-    midgardmvc_core::get_instance()->dispatcher->header('HTTP/1.0 301 Moved Permanently');
-    midgardmvc_core::get_instance()->dispatcher->header("Location: {$_SERVER['REQUEST_URI']}/");
-
-    midgardmvc_core::get_instance()->dispatcher->header('Content-type: text/html; charset=utf-8'); // just to be sure, that the browser interprets fallback right
+    // Note: Midgard MVC is running under a conventional web server. Under Application Server we cannot use header()
+    header('HTTP/1.0 301 Moved Permanently');
+    header("Location: {$_SERVER['REQUEST_URI']}/");
+    header('Content-type: text/html; charset=utf-8'); // just to be sure, that the browser interprets fallback right
     $url_clean = htmlentities($_SERVER['REQUEST_URI']) . '/';
     echo "301: new location <a href='{$url_clean}'>{$url_clean}</a>";
     exit(0);
 }
 
 if (   isset($_SERVER['REQUEST_URI']) 
-    && function_exists('mgd_version'))
+    && function_exists('mgd_version')
+    && !class_exists('MFS\AppServer\DaemonicHandler'))
 {
     // Advertise the fact that this is a Midgard server
-    midgardmvc_core::get_instance()->dispatcher->header('X-Powered-By: Midgard/' . mgd_version());
+    header('X-Powered-By: Midgard/' . mgd_version());
+    // Note: Midgard MVC is running under a conventional web server. Under Application Server we cannot use header()
 }
 
 // Load the exception handler

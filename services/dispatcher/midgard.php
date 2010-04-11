@@ -81,11 +81,11 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     {
         if ($http_response_code === null)
         {
-            midgardmvc_core::get_instance()->dispatcher->header($string, $replace);
+            header($string, $replace);
         }
         else
         {
-            midgardmvc_core::get_instance()->dispatcher->header($string, $replace, $http_response_code);
+            header($string, $replace, $http_response_code);
         }
     }
 
