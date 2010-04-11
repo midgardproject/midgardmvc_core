@@ -60,6 +60,7 @@ class midgardmvc_core_services_cache_module_content
 
         // Serve the contents and exit
         echo midgardmvc_core::get_instance()->cache->get('content', $identifier);
+        midgardmvc_core::get_instance()->dispatcher->end_request();
         exit(0);
     }
     

@@ -133,7 +133,10 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (isset($this->configuration_for_instance["{$component}_{$folder->guid}"]))
         {
             // We have already loaded configuration for this component, keep it
-            $this->configuration[$this->get_current_context()] = $this->configuration_for_instance["{$component}_{$folder->guid}"];
+            if (!empty($this->configuration_for_instance["{$component}_{$folder->guid}"]))
+            {
+                $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $this->configuration_for_instance["{$component}_{$folder->guid}"]);
+            }
             return;
         }
         

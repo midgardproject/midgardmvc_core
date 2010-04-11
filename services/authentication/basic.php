@@ -157,13 +157,14 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
     {
         if (!isset($_SERVER['PHP_AUTH_USER']))
         {
-            header("WWW-Authenticate: Basic realm=\"Midgard\"");
-            header('HTTP/1.0 401 Unauthorized');
+            $app = midgardmvc_core::get_instance();
+            $app->dispatcher->header("WWW-Authenticate: Basic realm=\"Midgard\"");
+            $app->dispatcher->header('HTTP/1.0 401 Unauthorized');
             // TODO: more fancy 401 output ?
             echo "<h1>Authorization required</h1>\n";
             // Clean up the context
-            $midgardmvc->context->delete();
-            exit();
+            $app->context->delete();
+            $app->dispatcher->end_request();
         }
 
         if (!$this->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']))

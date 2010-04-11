@@ -47,7 +47,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
                 if (stristr($key, 'litmus'))
                 {
                     error_log("Litmus test {$value}");
-                    header("X-Litmus-reply: {$value}");
+                    midgardmvc_core::get_instance()->dispatcher->header("X-Litmus-reply: {$value}");
                 }
             }
         }
@@ -55,7 +55,7 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "\n\n=================================================");
         midgardmvc_core::get_instance()->log(__CLASS__ . '::' . __FUNCTION__, "Serving {$_SERVER['REQUEST_METHOD']} request for {$_SERVER['REQUEST_URI']}");
         
-        header("X-Dav-Method: {$_SERVER['REQUEST_METHOD']}");
+        midgardmvc_core::get_instance()->dispatcher->header("X-Dav-Method: {$_SERVER['REQUEST_METHOD']}");
         
         // let the base class do all the work
         parent::ServeRequest();
@@ -77,16 +77,16 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
     {
         // Microsoft clients default to the Frontpage protocol 
         // unless we tell them to use WebDAV
-        header("MS-Author-Via: DAV");
+        midgardmvc_core::get_instance()->dispatcher->header("MS-Author-Via: DAV");
 
         // tell clients what we found
         $this->http_status("200 OK");
         
         // We support DAV levels 1 & 2
-        // header("DAV: 1, 2"); TODO: Re-enable when we support locks
-        header("DAV: 1, 2");
+        // midgardmvc_core::get_instance()->dispatcher->header("DAV: 1, 2"); TODO: Re-enable when we support locks
+        midgardmvc_core::get_instance()->dispatcher->header("DAV: 1, 2");
         
-        header("Content-length: 0");
+        midgardmvc_core::get_instance()->dispatcher->header("Content-length: 0");
     }
 
     /**

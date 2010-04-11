@@ -219,7 +219,15 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     
         if (is_null($clientip))
         {
-            $clientip = $_SERVER['REMOTE_ADDR'];
+            if (isset($_SERVER['REMOTE_ADDR']))
+            {
+                $clientip = $_SERVER['REMOTE_ADDR'];
+            }
+            else
+            {
+                // No place like home
+                $clientip = '127.0.0.1';
+            }
         }
         
         if (! $this->do_midgard_login($username, $password))
@@ -370,43 +378,45 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     
     public function handle_exception(Exception $exception)
     {
+        $app = midgardmvc_core::get_instance();
+
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
         {
             if ($this->login($_POST['username'], $_POST['password']))
             {
                 // Dispatch again since now we have a user
-                midgardmvc_core::get_instance()->dispatcher->dispatch();
+                $app->dispatcher->dispatch();
                 return;
             }
         }
 
         $log_message = str_replace("\n", ' ', $exception->getMessage());
-        if (isset(midgardmvc_core::get_instance()->context->uri))
+        if (isset($app->context->uri))
         {
-            $uri = midgardmvc_core::get_instance()->context->uri;
+            $uri = $app->context->uri;
             $log_message .= " ($uri)";
         }
-        midgardmvc_core::get_instance()->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warn');
+        $app->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warn');
         
         // Pass some data to the handler
         $data = array();
         $data['message'] = $exception->getMessage();
         $data['exception'] = $exception;
-        midgardmvc_core::get_instance()->context->midgardmvc_core_exceptionhandler = $data;
+        $app->context->midgardmvc_core_exceptionhandler = $data;
         
         // Set entry point and disable cache
-        midgardmvc_core::get_instance()->context->template_entry_point = 'midcom-login-form';
-        midgardmvc_core::get_instance()->context->cache_enabled = false;
+        $app->context->template_entry_point = 'midcom-login-form';
+        $app->context->cache_enabled = false;
         
         // Do normal templating
-        midgardmvc_core::get_instance()->templating->template();
-        midgardmvc_core::get_instance()->templating->display();
+        $app->templating->template();
+        $app->templating->display();
         
         // Clean up the context
-        $midgardmvc->context->delete();
+        $app->context->delete();
 
-        exit(0);
+        $app->dispatcher->end_request();
     }
 
 }

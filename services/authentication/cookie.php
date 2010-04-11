@@ -59,7 +59,7 @@ class midgardmvc_core_services_authentication_cookie
     
     private function set_cookie()
     {
-        setcookie
+        midgardmvc_core::get_instance()->dispatcher->setcookie
         (
             $this->_cookie_id,
             "{$this->session_id}:{$this->user_id}",
@@ -75,7 +75,7 @@ class midgardmvc_core_services_authentication_cookie
     
     private function delete_cookie()
     {
-        setcookie(
+        midgardmvc_core::get_instance()->dispatcher->setcookie(
                     $this->_cookie_id,
                     false,
                     time()-86400,

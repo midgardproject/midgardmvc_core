@@ -77,6 +77,28 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         return $request;
     }
 
+    public function header($string, $replace = true, $http_response_code = null)
+    {
+        if ($http_response_code === null)
+        {
+            midgardmvc_core::get_instance()->dispatcher->header($string, $replace);
+        }
+        else
+        {
+            midgardmvc_core::get_instance()->dispatcher->header($string, $replace, $http_response_code);
+        }
+    }
+
+    public function setcookie($name, $value = '', $expire = 0, $path = '/', $domain = null, $secure = false, $httponly = false)
+    {
+        return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+    }
+
+    public function end_request()
+    {
+        exit();
+    }
+
     public function initialize(midgardmvc_core_helpers_request $request)
     {
         // In main Midgard request we dispatch the component in connection to a page
@@ -133,9 +155,10 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             }
             catch (Exception $e)
             {
-                if (get_class($e) == 'midgardmvc_exception_unauthorized')
+                if (   $e instanceof midgardmvc_exception_unauthorized
+                    || $e instanceof StartNewRequestException)
                 {
-                    // ACL exceptions override anything else
+                    // ACL and App Server exceptions override anything else
                     throw $e;
                 }
                 $this->exceptions_stack[] = $e; // Adding exception to exceptions stack
@@ -179,7 +202,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     private function dispatch_route(array $route, array $arguments)
     {
         // Inform client of allowed HTTP methods
-        header('Allow: ' . implode(', ', $route['allowed_methods']));
+        midgardmvc_core::get_instance()->dispatcher->header('Allow: ' . implode(', ', $route['allowed_methods']));
 
         // Initialize controller
         $controller_class = $route['controller'];

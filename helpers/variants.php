@@ -52,7 +52,7 @@ class midgardmvc_core_helpers_variants
 
         midgardmvc_core::get_instance()->context->mimetype = 'application/neutron+xml';
         midgardmvc_core::get_instance()->context->template_entry_point = 'midcom-show-neutron_introspection';
-        header('Content-Type: ' . midgardmvc_core::get_instance()->context->mimetype);
+        midgardmvc_core::get_instance()->dispatcher->header('Content-Type: ' . midgardmvc_core::get_instance()->context->mimetype);
         
         $xml = simplexml_load_string('<introspection xmlns="http://www.wyona.org/neutron/1.0"></introspection>');
         
@@ -152,7 +152,7 @@ class midgardmvc_core_helpers_variants
                 midgardmvc_core::get_instance()->context->mimetype = 'text/xml';
                 break;
         }
-        header('Content-Type: ' . midgardmvc_core::get_instance()->context->mimetype);
+        midgardmvc_core::get_instance()->dispatcher->header('Content-Type: ' . midgardmvc_core::get_instance()->context->mimetype);
 
         return $this->datamanager->types->$variant_field->$type_field;
     }

@@ -30,7 +30,7 @@ class midgardmvc_core_helpers_comet
 				echo str_pad('', 4096)."\n";
 			break;					
 			case 2:
-				header("Content-type: application/x-dom-event-stream");
+				midgardmvc_core::get_instance()->dispatcher->header("Content-type: application/x-dom-event-stream");
 
 				print "Event: $name\n";
 				print "data: $data\n\n";				

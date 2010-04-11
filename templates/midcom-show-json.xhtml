@@ -3,7 +3,7 @@ $core = midgardmvc_core::get_instance();
 
 if (isset($core->dispatcher->get['callback']))
 {
-    header('Content-type: text/javascript');
+    $core->dispatcher->header('Content-type: text/javascript');
     echo "{$core->dispatcher->get['callback']}(";
 }
 $original_locale = setlocale(LC_NUMERIC, '0');

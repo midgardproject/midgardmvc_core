@@ -131,7 +131,7 @@ class midgardmvc_core_controllers_documentation
                     $mimetype = 'image/png';
                     break;
             }
-            header("Content-type: {$mimetype}");
+            midgardmvc_core::get_instance()->dispatcher->header("Content-type: {$mimetype}");
             readfile($path);
             die();
         }

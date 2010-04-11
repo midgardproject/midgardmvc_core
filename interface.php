@@ -292,10 +292,10 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         catch (midgardmvc_exception_unauthorized $exception)
         {
             // Pass the exception to authentication handler
-            self::$instance->authentication->handle_exception($exception);
+            $this->authentication->handle_exception($exception);
         }
 
-        header('Content-Type: ' . $this->context->mimetype);
+        $this->dispatcher->header('Content-Type: ' . $this->context->mimetype);
     }
     
     /**

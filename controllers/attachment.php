@@ -31,25 +31,25 @@ class midgardmvc_core_controllers_attachment
                 
         if (midgardmvc_core::get_instance()->configuration->enable_attachment_cache)
         {
-            header('Location: ' . midgardmvc_core_helpers_attachment::get_url($att));
-            exit();
+            midgardmvc_core::get_instance()->dispatcher->header('Location: ' . midgardmvc_core_helpers_attachment::get_url($att));
+            midgardmvc_core::get_instance()->dispatcher->end_request();
         }
 
         $blob = new midgard_blob($att);
         
-        header('Content-type: '.$att->mimetype);
+        midgardmvc_core::get_instance()->dispatcher->header('Content-type: '.$att->mimetype);
         /**
           * If X-Sendfile support is enabled just sending correct headers
           */
         if (midgardmvc_core::get_instance()->configuration->enable_xsendfile)
         {
-            header('X-Sendfile: ' . $blob->get_path());
+            midgardmvc_core::get_instance()->dispatcher->header('X-Sendfile: ' . $blob->get_path());
         }
         else
         {
             echo $blob->read_content();
         }
-        exit();
+        midgardmvc_core::get_instance()->dispatcher->end_request();
     }
 }
 ?>

@@ -44,14 +44,14 @@ class midgardmvc_core_exceptionhandler
             die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
         }
 
-        header("X-MidgardMVC-Error: {$message}");
+        midgardmvc_core::get_instance()->dispatcher->header("X-MidgardMVC-Error: {$message}");
 
         $header = self::header_by_code($http_code);
 
-        header($header);
+        midgardmvc_core::get_instance()->dispatcher->header($header);
         if ($http_code != 304)
         {
-            header('Content-Type: text/html; charset=utf-8');
+            midgardmvc_core::get_instance()->dispatcher->header('Content-Type: text/html; charset=utf-8');
             
             $data['header'] = $header;
             $data['message_type'] = $message_type;

@@ -20,7 +20,7 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
      *
      * @var midgard_page
      */
-    private $_root_page = null;
+    protected $_root_page = null;
 
     /**
      * Read the request configuration and parse the URL
@@ -33,7 +33,6 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         }
 
         $this->midgardmvc = midgardmvc_core::get_instance();
-
         $this->_root_page = new midgard_page($this->midgardmvc->configuration->midgardmvc_root_page);
         if (!$this->_root_page->guid)
         {
