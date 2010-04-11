@@ -258,13 +258,14 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->componentloader->inject_process();
 
         // Load the cache service and check for content cache
-        $this->load_service('cache');
+        $this->context->cache_enabled = false;
+        /*$this->load_service('cache');
         if (self::$instance->context->cache_enabled)
         {
             $request->generate_identifier();
             $this->cache->register_object($this->context->page);
             $this->cache->content->check($this->context->cache_request_identifier);
-        }
+        }*/
 
         // Show the world this is Midgard
         $this->head->add_meta
