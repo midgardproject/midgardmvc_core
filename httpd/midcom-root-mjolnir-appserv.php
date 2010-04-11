@@ -2,17 +2,6 @@
 
 use MFS\AppServer\Apps\FileServe\FileServe as file_server;
 
-$cfg = new midgard_config();
-$cfg->read_file('appserv.conf', true);
-
-$cnc = midgard_connection::get_instance();
-$cnc->open_config($cfg);
-
-if (!$cnc->is_connected())
-{
-    throw new Exception("Couldn't connect: ".$cnc->get_error_string());
-}
-
 require 'AppServer/autoload.php';
 require 'midgardmvc_core/framework.php';
 
