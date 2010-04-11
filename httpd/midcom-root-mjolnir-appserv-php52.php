@@ -5,6 +5,8 @@ require 'midgardmvc_core/framework.php';
 
 // hack. making name shorter
 class file_server extends MFS_AppServer_Apps_FileServe {}
+function _as_w($obj) { return array($obj, '__invoke'); }
+
 
 class StartNewRequestException extends RuntimeException {}
 
@@ -65,7 +67,7 @@ class midgardmvc_appserv_app
 
 try {
     $app = new midgardmvc_appserv_app();
-    $app = new MFS_AppServer_Middleware_PHP_Compat($app);
+    $app = new MFS_AppServer_Middleware_PHP_Compat(_as_w($app));
 
     $_midcom_root = realpath(dirname(__FILE__).'/../..').'/';
 
@@ -73,16 +75,16 @@ try {
     $file_app2 = new file_server(realpath(dirname(__FILE__).'/../../net_nemein_dasboard/static'));
 
     $app = new MFS_AppServer_Middleware_URLMap(array(
-        '/' => $app,
-        '/midcom-static/midgardmvc_core'                => new file_server($_midcom_root.'midgardmvc_core/static'),
-        '/midcom-static/midgardmvc_helper_datamanager'  => new file_server($_midcom_root.'midgardmvc_helper_datamanager/static'),
-        // '/midcom-static/midgardmvc_helper_xsspreventer' => new file_server($_midcom_root.'midgardmvc_helper_xsspreventer/static'),
-        '/midcom-static/net_nemein_dasboard'            => new file_server($_midcom_root.'net_nemein_dasboard/static'),
-        // '/midcom-static/org_openpsa_qbpager'            => new file_server($_midcom_root.'org_openpsa_qbpager/static'),
+        '/' => _as_w($app),
+        '/midcom-static/midgardmvc_core'                => _as_w(new file_server($_midcom_root.'midgardmvc_core/static')),
+        '/midcom-static/midgardmvc_helper_datamanager'  => _as_w(new file_server($_midcom_root.'midgardmvc_helper_datamanager/static')),
+        '/midcom-static/net_nemein_dasboard'            => _as_w(new file_server($_midcom_root.'net_nemein_dasboard/static')),
+     // '/midcom-static/midgardmvc_helper_xsspreventer' => _as_w(new file_server($_midcom_root.'midgardmvc_helper_xsspreventer/static')),
+     // '/midcom-static/org_openpsa_qbpager'            => _as_w(new file_server($_midcom_root.'org_openpsa_qbpager/static')),
     ));
 
     $handler = new MFS_AppServer_DaemonicHandler('tcp://127.0.0.1:8080', 'HTTP');
-    $handler->serve($app);
+    $handler->serve(_as_w($app));
 } catch (Exception $e) {
     echo $e;
 }
