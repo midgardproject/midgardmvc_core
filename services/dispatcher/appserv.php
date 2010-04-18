@@ -9,6 +9,10 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
     public function set_request_data($appserver_context)
     {
         $this->appserver_context = $appserver_context;
+
+        // reset
+        $this->headers = array();
+        $this->status = 200;
     }
 
     /**
