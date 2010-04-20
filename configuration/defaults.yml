@@ -49,45 +49,6 @@ routes:
         controller: midgardmvc_core_controllers_page
         action: read
         route: /
-        allowed_methods:
-            - OPTIONS
-            - GET
-            - POST
-            - PROPFIND
-    page_variants:
-        controller: midgardmvc_core_controllers_page
-        action: read
-        route: '/{$token:variant}'
-        allowed_methods:
-            - OPTIONS
-            - GET
-            - PUT
-            - PROPFIND
-    page_update:
-        controller: midgardmvc_core_controllers_page
-        action: update
-        route: /mgd:update
-        content_entry_point: midcom-edit-page
-    page_create:
-        controller: midgardmvc_core_controllers_page
-        action: create
-        route: /mgd:create
-        content_entry_point: midcom-edit-page
-    page_delete:
-        controller: midgardmvc_core_controllers_page
-        action: delete
-        route: /mgd:delete
-        content_entry_point: midcom-delete-page
-#    page_configure:
-#        controller: midgardmvc_core_controllers_configuration
-#        action: configure
-#        route: /mgd:configure
-#        content_entry_point: midcom-configure-page
-#    component_configure:
-#        controller: midgardmvc_core_controllers_configuration
-#        action: configure
-#        route: '/mgd:configure/{$component}/'
-#        content_entry_point: midcom-configure-component
     cache_invalidate:
         controller: midgardmvc_core_controllers_cache
         action: invalidate

@@ -32,7 +32,6 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     {
         $this->object = new midgard_page();
         $this->object->up = midgardmvc_core::get_instance()->context->page->id;
-        $this->object->info = 'active';
     }
     
     public function get_url_read()
@@ -43,77 +42,6 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     public function get_url_update()
     {
         return midgardmvc_core::get_instance()->dispatcher->generate_url('page_update', array());
-    }
-
-    public function get_read(array $args)
-    {
-        parent::get_read($args);
-        
-        // Neutron introspection file
-        midgardmvc_core::get_instance()->head->add_link_head
-        (
-            array
-            (
-                'rel' => 'neutron-introspection',
-                'type' => 'application/neutron+xml',
-                'href' => midgardmvc_core::get_instance()->dispatcher->generate_url
-                (
-                    'page_variants', array
-                    (
-                        'variant' => array
-                        (
-                            'identifier' => 'page',
-                            'variant' => 'neutron-introspection',
-                            'type' => 'xml',
-                        )
-                    )
-                )
-            )
-        );
-
-        if (midgardmvc_core::get_instance()->context->route_id == 'page_variants')
-        {
-            if (!isset($args['variant']))
-            {
-                throw new midgardmvc_exception_notfound('No variants set');
-            }
-            // Get variant of the page
-            $variant = new midgardmvc_core_helpers_variants();
-            $variant->datamanager = $this->data['datamanager'];
-            $variant->object = $this->data['object'];
-            echo $variant->handle($args['variant'], midgardmvc_core::get_instance()->context->request_method);
-            die();
-        }
-    }
-
-    public function post_read(array $args)
-    {
-        $this->get_read($args);
-    }
-
-    public function put_read(array $args)
-    {
-        parent::get_read($args);
-        
-        midgardmvc_core::get_instance()->authorization->require_do('midgard:update', $this->data['object']);
-
-        // Get variant of the page
-        $variant = new midgardmvc_core_helpers_variants();
-        $variant->datamanager = $this->data['datamanager'];
-        $variant->object = $this->data['object'];
-        echo $variant->handle($args['variant'], $this->dispatcher->request_method);
-        die();
-    }
-
-    public function mkcol_read(array $args)
-    {
-        parent::get_read($args);
-
-        // Create subpage
-        midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['object']);
-        $this->prepare_new_object($args);
-        $this->object->name = $args['name']['identifier'];    
-        $this->object->create();
     }
 }
 ?>
