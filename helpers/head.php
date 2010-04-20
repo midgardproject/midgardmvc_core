@@ -49,7 +49,7 @@ class midgardmvc_core_helpers_head
         }
     }
     
-    public function enable_jquery($version = '1.3.2')
+    public function enable_jquery($version = '1.4.2')
     {
         if ($this->jquery_enabled)
         {
@@ -67,7 +67,7 @@ class midgardmvc_core_helpers_head
         else
         {
             // Load from a locally installed PEAR package
-            $url = MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-{$version}.js";
+            $url = MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-{$version}.min.js";
             $this->jquery_inits = "        <script type=\"text/javascript\" src=\"{$url}\"></script>\n";
         }
         

@@ -26,7 +26,7 @@ enable_webdav: true
 enable_benchmark: false
 enable_included_list: false
 enable_jquery_framework: true
-jquery_load_from_google: true
+jquery_load_from_google: false
 enable_js_midcom: false
 enable_uimessages: false
 enable_xsendfile: false
