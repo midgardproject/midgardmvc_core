@@ -231,7 +231,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             // Element is array in the preg_replace_callback case (evaluating element includes)
             $element = $element[1];
         }
-        
+
         $stack = $this->midgardmvc->context->get_current_context();
         if (!isset($this->stacks[$stack]))
         {

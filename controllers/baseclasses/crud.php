@@ -22,6 +22,11 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
      * Datamanager instance
      */
     protected $datamanager = null;
+    
+    /**
+     * Midgard MVC Forms instance
+     */
+    protected $form = null;
 
     public function __construct(midgardmvc_core_component_interface $instance)
     {
@@ -52,29 +57,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
      */    
     abstract public function get_url_update();
     
-    public function load_datamanager($schemadb)
+    public function load_form()
     {
-        // Load the object via Datamanager for configurability
-        midgardmvc_core::get_instance()->componentloader->load('midgardmvc_helper_datamanager');
-        
-        $this->datamanager = new midgardmvc_helper_datamanager_datamanager($schemadb);
-        $this->datamanager->autoset_storage($this->object);
-        
-        $this->data['datamanager'] =& $this->datamanager;
-    }
-    
-    public function load_creation_datamanager($schemadb, $schema_name)
-    {
-        // Load the Datamanager in creation mode for configurability
-        midgardmvc_core::get_instance()->componentloader->load('midgardmvc_helper_datamanager');
-        
-        $this->datamanager = new midgardmvc_helper_datamanager_datamanager($schemadb);
-        
-        // TODO: Refactor all of these to DM itself
-        $this->datamanager->set_schema($schema_name);
-        $this->datamanager->set_storage($this->object);
-        
-        $this->data['datamanager'] =& $this->datamanager;
+        $this->form = midgardmvc_helper_forms_mgdschema::create($this->object);
     }
 
     // TODO: Refactor. There is code duplication with edit
@@ -88,41 +73,30 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->data['object'] =& $this->object;
         $this->data['parent'] = midgardmvc_core::get_instance()->context->page;
         
-        // Prepare the new object that datamanager will eventually create
+        // Prepare the new object that form will eventually create
         $this->prepare_new_object($args);
 
         midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         
-        // Load datamanager in creation mode
-        $this->load_creation_datamanager($this->configuration->get('schemadb'), 'default');
-     
-          // Handle saves through the datamanager
-        $this->data['datamanager_form'] =& $this->datamanager->get_form('simple');
-
-        midgardmvc_core::get_instance()->head->add_link_head
-        (
-            array
-            (
-                'rel'   => 'stylesheet',
-                'type'  => 'text/css',
-                'media' => 'screen',
-                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_helper_datamanager/simple.css',
-            )
-        );
+        $this->load_form();
+        $this->data['form'] =& $this->form;
     }
 
     public function post_create(array $args)
     {
         $this->get_create($args);
-
         try
-        {   
-            $this->data['datamanager_form']->process();
-        }
-        catch (midgardmvc_helper_datamanager_exception_save $e)
         {
-            midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
+            $this->data['form']->process_post();
+            midgardmvc_helper_forms_mgdschema::form_to_object($this->data['form'], $this->object);
+            $this->object->create();
+            
             // TODO: add uimessage of $e->getMessage();
+            midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
+        }
+        catch (midgardmvc_helper_forms_exception_validation $e)
+        {
+            // TODO: UImessage
         }
     }
 
@@ -130,7 +104,6 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     {
         $this->load_object($args);
         $this->data['object'] =& $this->object;
-        $this->load_datamanager($this->configuration->get('schemadb'));
         
         if (midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
         {
@@ -150,23 +123,11 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     public function get_update(array $args)
     {
         $this->load_object($args);
-        $this->load_datamanager($this->configuration->get('schemadb'));
         $this->data['object'] =& $this->object;
         midgardmvc_core::get_instance()->authorization->require_do('midgard:update', $this->object);
         
-        // Handle saves through the datamanager
-        $this->data['datamanager_form'] =& $this->datamanager->get_form('simple');
-        
-        midgardmvc_core::get_instance()->head->add_link_head
-        (
-            array
-            (
-                'rel'   => 'stylesheet',
-                'type'  => 'text/css',
-                'media' => 'screen',
-                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_helper_datamanager/simple.css',
-            )
-        );
+        $this->load_form();
+        $this->data['form'] =& $this->form;
     }
 
     public function post_update(array $args)
@@ -175,40 +136,33 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
 
         try
         {
-            $this->data['datamanager_form']->process();
-        }
-        catch (midgardmvc_helper_datamanager_exception_datamanager $e)
-        {
+            $this->data['form']->process_post();
+            midgardmvc_helper_forms_mgdschema::form_to_object($this->data['form'], $this->object);
+            $this->object->update();
+
             // FIXME: We can remove this once signals work again
             midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
 
             // TODO: add uimessage of $e->getMessage();
             midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
         }
+        catch (midgardmvc_helper_forms_exception_validation $e)
+        {
+            // TODO: UImessage
+        }
     }
         
     public function get_delete(array $args)
     {
         $this->load_object($args);
-        $this->load_datamanager($this->configuration->get('schemadb'));
         $this->data['object'] =& $this->object;
         
         // Make a frozen form for display purposes
-        $this->data['datamanager_form'] =& $this->datamanager->get_form('simple');
-        $this->data['datamanager_form']->freeze();
+        $this->load_form();
+        //$this->form->freeze();
+        $this->data['form'] =& $this->form;
         
         midgardmvc_core::get_instance()->authorization->require_do('midgard:delete', $this->object);
-        
-        midgardmvc_core::get_instance()->head->add_link_head
-        (
-            array
-            (
-                'rel'   => 'stylesheet',
-                'type'  => 'text/css',
-                'media' => 'screen',
-                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_helper_datamanager/simple.css',
-            )
-        );
     }
     
     public function post_delete(array $args)
