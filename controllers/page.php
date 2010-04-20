@@ -41,7 +41,14 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     
     public function get_url_update()
     {
-        return midgardmvc_core::get_instance()->dispatcher->generate_url('page_update', array());
+        return midgardmvc_core::get_instance()->dispatcher->generate_url
+        (
+            'asgard_crud_update', array
+            (
+                'type' => 'midgard_page', 
+                'guid' => $this->object->guid
+            )
+        );
     }
 }
 ?>
