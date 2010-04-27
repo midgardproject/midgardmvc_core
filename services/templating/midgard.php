@@ -87,9 +87,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             foreach ($components as $component)
             {
                 // Walk through the inheritance tree and add all components to stack
-                if (!in_array($request->get_component(), $this->midgardmvc->configuration->services_templating_components))
+                if (!in_array($component, $this->midgardmvc->configuration->services_templating_components))
                 {
-                    $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($this->midgardmvc->context->component) . '/templates');
+                    $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($component) . '/templates');
                 }
             }
         }
