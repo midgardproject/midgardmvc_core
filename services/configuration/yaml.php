@@ -73,8 +73,8 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $this->configuration_for_component[$component]);
                 return;
             }
-        }
-
+        }        
+        
         // Check for component inheritance
         $components = array
         (
@@ -93,20 +93,20 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
                 $components[] = $parent_component;
             }
-        }
+        }        
 
         $config = array();
         foreach ($components as $load_component)
         {
-            if (isset($this->configuration_for_component[$component]))
+            if (isset($this->configuration_for_component[$load_component]))
             {
                 // We already have this component and its parents, no need to traverse further
-                $config = self::merge_configs($this->configuration_for_component[$component], $config);
+                $config = self::merge_configs($this->configuration_for_component[$load_component], $config);
                 break;
             }
             
             // Load component default config from filesystem 
-            $component_config = $this->load_file(MIDGARDMVC_ROOT . "/{$component}/configuration/defaults.yml");
+            $component_config = $this->load_file(MIDGARDMVC_ROOT . "/{$load_component}/configuration/defaults.yml");
             if (!empty($component_config))
             {
                 $config = self::merge_configs($component_config, $config);
