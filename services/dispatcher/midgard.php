@@ -290,14 +290,16 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
 
         if ($this->is_core_route($context->route_id))
         {
-            $component_name = 'midgardmvc_core';
+            $context->set_item('midgardmvc_core', $data);
         }
         else
         {
-            $component_name = $context->component;
+            $components = $this->midgardmvc->componentloader->get_tree($context->component);
+            foreach ($components as $component)
+            {
+                $context->set_item($component, $data);
+            }
         }
-        
-        $context->set_item($component_name, $data);
         
         // Set other context data from route
         if (isset($route_configuration['mimetype']))
