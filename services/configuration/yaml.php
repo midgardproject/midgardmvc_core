@@ -76,25 +76,17 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         }        
         
         // Check for component inheritance
-        $components = array
-        (
-            $component,
-        );
         if (isset($this->midgardmvc->componentloader))
         {
-            $parent_component = $component;
-            while (true)
-            {
-                $parent_component = $this->midgardmvc->componentloader->get_parent($parent_component);
-                if (!$parent_component)
-                {
-                    break;
-                }
-
-                $components[] = $parent_component;
-            }
-        }        
-
+            $components = $this->midgardmvc->componentloader->get_tree($component);
+        }
+        else
+        {
+            $components = array
+            (
+                $component,
+            );
+        }
         $config = array();
         foreach ($components as $load_component)
         {
