@@ -126,6 +126,27 @@ class midgardmvc_core_component_loader
         return $this->manifests[$component]['extends'];
     }
 
+    public function get_tree($component)
+    {
+        $components = array
+        (
+            $component,
+        );
+        $parent_component = $component;
+        while (true)
+        {
+            $parent_component = $this->get_parent($parent_component);
+            if (!$parent_component)
+            {
+                break;
+            }
+
+            $components[] = $parent_component;
+        }
+        
+        return $components;
+    }
+
     /**
      * Helper, converting a component name (net_nehmer_blog)
      * to a file path (/net/nehmer/blog).

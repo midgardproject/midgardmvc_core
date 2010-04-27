@@ -71,10 +71,27 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
 
-        // Add current component to templating stack
-        if (!in_array($request->get_component(), $this->midgardmvc->configuration->services_templating_components))
+        // Add component (tree) to templating stack
+        $components = $this->midgardmvc->componentloader->get_tree($request->get_component());
+        if (count($components) == 1)
         {
-            $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($this->midgardmvc->context->component) . '/templates');
+            // This component doesn't inherit anything
+            if (!in_array($request->get_component(), $this->midgardmvc->configuration->services_templating_components))
+            {
+                $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($this->midgardmvc->context->component) . '/templates');
+            }
+        }
+        else
+        {
+            $components = array_reverse($components);
+            foreach ($components as $component)
+            {
+                // Walk through the inheritance tree and add all components to stack
+                if (!in_array($request->get_component(), $this->midgardmvc->configuration->services_templating_components))
+                {
+                    $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($this->midgardmvc->context->component) . '/templates');
+                }
+            }
         }
 
         if ($this->midgardmvc->configuration->services_templating_database_enabled)
