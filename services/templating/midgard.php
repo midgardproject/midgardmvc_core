@@ -210,9 +210,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
                     return $value;
                 }
             default:
-                $mc = midgard_pageelement::new_collector('page', $page_id);
+                $mc = midgardmvc_core_node_template::new_collector('node', $page_id);
                 $mc->add_constraint('name', '=', $element);
-                $mc->set_key_property('value');
+                $mc->set_key_property('content');
                 $mc->add_value_property('guid');
                 $mc->execute();
                 $keys = $mc->list_keys();
