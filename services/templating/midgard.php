@@ -170,9 +170,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
     
     private function get_element_style($templatedir_id, $element)
     {
-        $mc = midgard_element::new_collector('style', $templatedir_id);
+        $mc = midgardmvc_core_template::new_collector('templatedir', $templatedir_id);
         $mc->add_constraint('name', '=', $element);
-        $mc->set_key_property('value');
+        $mc->set_key_property('content');
         $mc->add_value_property('guid');
         $mc->execute();
         $keys = $mc->list_keys();
