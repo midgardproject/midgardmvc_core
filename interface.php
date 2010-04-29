@@ -69,8 +69,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         // Load the head helper
         $this->head = new midgardmvc_core_helpers_head();
         
-        if ($this->configuration->development_mode
-            and !class_exists('MFS\AppServer\DaemonicHandler')) // firephp is not appserver-compatible
+        if (    $this->configuration->development_mode
+            and !class_exists('MFS\AppServer\DaemonicHandler') // firephp is not appserver-compatible
+           )
         {
             // Load FirePHP logger
             // TODO: separate setting
