@@ -152,11 +152,11 @@ class midgardmvc_core_helpers_webdav extends HTTP_WebDAV_Server
         }
     }
 
-    private function get_node_children(midgard_page $node)
+    private function get_node_children(midgardmvc_core_node $node)
     {
         // Load children for PROPFIND purposes
         $children = array();
-        $mc = midgard_page::new_collector('up', $node->id);
+        $mc = midgardmvc_core_node::new_collector('up', $node->id);
         $mc->set_key_property('name');
         $mc->add_value_property('title');
         $mc->execute(); 

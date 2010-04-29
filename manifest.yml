@@ -22,7 +22,7 @@ authors:
         email: arttu@kaktus.cc
         url: http://www.kaktus.cc/
 action_types:
-        - midgard_page
+        - midgardmvc_core_node
 action_categories:
         - create
         - administer

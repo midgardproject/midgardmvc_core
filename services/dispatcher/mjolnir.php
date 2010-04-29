@@ -18,7 +18,7 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
     /**
      * Root page used for this Midgard MVC site
      *
-     * @var midgard_page
+     * @var midgardmvc_core_node
      */
     protected $_root_page = null;
 
@@ -33,11 +33,14 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         }
 
         $this->midgardmvc = midgardmvc_core::get_instance();
-        $this->_root_page = new midgard_page($this->midgardmvc->configuration->midgardmvc_root_page);
-        if (!$this->_root_page->guid)
+        try
         {
-            $this->_root_page = new midgard_page();
-            $this->_root_page->get_by_path('/midcom_root');
+            $this->_root_page = new midgardmvc_core_node($this->midgardmvc->configuration->midgardmvc_root_page);
+        }
+        catch (midgard_error_exception $e)
+        {
+            $this->_root_page = new midgardmvc_core_node();
+            $this->_root_page->get_by_path('/midgardmvc_root');
         }
     }
     

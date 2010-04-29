@@ -49,7 +49,7 @@ class midgardmvc_core_controllers_actions
             throw new midgardmvc_exception_notfound("Category {$args['category']} not found");
         }
 
-        $page = new midgard_page($args['guid']);
+        $page = new midgardmvc_core_node($args['guid']);
         if (!$page->guid)
         {
             throw new midgardmvc_exception_notfound("Folder {$args['guid']} not found");

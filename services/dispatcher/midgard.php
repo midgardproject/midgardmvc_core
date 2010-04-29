@@ -46,8 +46,8 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     public function get_request()
     {
         $request = new midgardmvc_core_helpers_request();
-        $request->set_root_page(new midgard_page($_MIDGARD['root']));
-        $request->set_page(new midgard_page($_MIDGARD['page']));
+        $request->set_root_page(new midgardmvc_core_node($_MIDGARD['root']));
+        $request->set_page(new midgardmvc_core_node($_MIDGARD['page']));
         
         $arg_string = substr($_MIDGARD['uri'], strlen($_MIDGARD['self']));
         $request_argv = array();
@@ -323,7 +323,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      * @param array $args associative arguments array
      * @return string url
      */
-    public function generate_url($route_id, array $args, midgard_page $page = null, $component = null)
+    public function generate_url($route_id, array $args, midgardmvc_core_node $page = null, $component = null)
     {
         static $pages_for_component = array();
         if (   is_null($page)
@@ -332,7 +332,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
             if (!isset($pages_for_component[$component]))
             {
                 // Find a page matching the requested component
-                $qb = new midgard_query_builder('midgard_page');
+                $qb = new midgard_query_builder('midgardmvc_core_node');
                 $qb->add_constraint('component', '=', $component);
                 $qb->begin_group('OR');
                 $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root_page->id);
@@ -644,7 +644,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         return true;
     }
     
-    public function set_page(midgard_page $page)
+    public function set_page(midgardmvc_core_node $page)
     {
         $context = $this->midgardmvc->context;
 
@@ -703,7 +703,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         while (   $page_id
                && $page_id != $root_id)
         {
-            $parent_mc = midgard_page::new_collector('id', $page_id);
+            $parent_mc = midgardmvc_core_node::new_collector('id', $page_id);
             $parent_mc->set_key_property('up');
             $parent_mc->add_value_property('name');
             $parent_mc->execute();

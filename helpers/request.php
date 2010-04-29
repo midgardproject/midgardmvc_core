@@ -26,21 +26,21 @@ class midgardmvc_core_helpers_request
     /**
      * The root page to be used with the request
      *
-     * @var midgard_page
+     * @var midgardmvc_core_node
      */
     private $root_page = null;
 
     /**
      * The page to be used with the request
      *
-     * @var midgard_page
+     * @var midgardmvc_core_node
      */
     private $page = null;
 
     /**
-     * Midgard style to use with the request
+     * Midgard templatedir to use with the request
      */
-    public $style_id = 0;
+    public $templatedir_id = 0;
 
     /**
      * Path to the page used with the request
@@ -100,7 +100,7 @@ class midgardmvc_core_helpers_request
         $this->argv = $path;        
         foreach ($path as $i => $p)
         {
-            $qb = new midgard_query_builder('midgard_page');
+            $qb = new midgard_query_builder('midgardmvc_core_node');
             $qb->add_constraint('up', '=', $parent_id);
             $qb->add_constraint('name', '=', $p);
             $res = $qb->execute();
@@ -109,9 +109,9 @@ class midgardmvc_core_helpers_request
                 break;            
             }
             
-            if ($res[0]->style)
+            if ($res[0]->templatedir)
             {
-                $this->style_id = $res[0]->style;
+                $this->templatedir_id = $res[0]->templatedir;
             }
             
             $parent_id = $res[0]->id;
@@ -128,18 +128,18 @@ class midgardmvc_core_helpers_request
     /**
      * Set a page to be used in the request
      */
-    public function set_root_page(midgard_page $page)
+    public function set_root_page(midgardmvc_core_node $page)
     {
         $this->root_page = $page;
         $this->path_for_page[$page->id] = '/';
         
-        $this->style_id = $page->style;
+        $this->templatedir_id = $page->templatedir;
     }
 
     /**
      * Set a page to be used in the request
      */
-    public function set_page(midgard_page $page)
+    public function set_page(midgardmvc_core_node $page)
     {
         $this->page = $page;
         
@@ -166,7 +166,7 @@ class midgardmvc_core_helpers_request
                         $path = "{$this->path_for_page[$parent_page->up]}{$path}";
                         break;
                     }
-                    $parent_page = new midgard_page($parent_page->up);
+                    $parent_page = new midgardmvc_core_node($parent_page->up);
                     if (   !$parent_page
                         || $parent_page->up == 0
                         || $parent_page->id == $this->root_page->id)
@@ -180,9 +180,9 @@ class midgardmvc_core_helpers_request
             $this->path_for_page[$page->id] = $path;
             $this->path = $this->path_for_page[$page->id];
         }
-        if ($page->style)
+        if ($page->templatedir)
         {
-            $this->style_id = $page->style;
+            $this->templatedir_id = $page->templatedir;
         }
     }
 
@@ -288,7 +288,7 @@ class midgardmvc_core_helpers_request
     public function populate_context()
     {
         $_core = midgardmvc_core::get_instance();
-        $_core->context->style_id = $this->style_id;
+        $_core->context->templatedir_id = $this->templatedir_id;
         $_core->context->root_page = $this->root_page;
         $_core->context->component = $this->component;
         

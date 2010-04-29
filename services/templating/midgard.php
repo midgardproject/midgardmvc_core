@@ -36,26 +36,26 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         {
             if (isset($this->midgardmvc->context->template_cache_prefix))
             {
-                return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+                return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
             }
             else
             {
-                return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+                return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
             }
         }
         if (!isset($this->midgardmvc->context->page))
         {
-            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
         if (isset($this->midgardmvc->context->route_id))
         {
-            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->style_id}-" . $this->midgardmvc->context->get_current_context() . 
+        return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
             "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
     }
 
@@ -97,10 +97,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         if ($this->midgardmvc->configuration->services_templating_database_enabled)
         {
             // Add style and page to templating stack
-            if (   isset($this->midgardmvc->context->style_id)
-                && $this->midgardmvc->context->style_id)
+            if (   isset($this->midgardmvc->context->templatedir_id)
+                && $this->midgardmvc->context->templatedir_id)
             {
-                $this->midgardmvc->templating->append_style($this->midgardmvc->context->style_id);
+                $this->midgardmvc->templating->append_style($this->midgardmvc->context->templatedir_id);
             }
             if (   isset($this->midgardmvc->context->page)
                 && $this->midgardmvc->context->page)
@@ -131,7 +131,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         }
     }
     
-    public function append_style($style_id)
+    public function append_style($templatedir_id)
     {
         if (!$this->midgardmvc->configuration->services_templating_database_enabled)
         {
@@ -142,7 +142,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         {
             $this->stacks[$stack] = array();
         }
-        $this->stacks[$stack]["st:{$style_id}"] = 'style'; 
+        $this->stacks[$stack]["st:{$templatedir_id}"] = 'style'; 
         
         // TODO: $this->midgardmvc->context->subtemplate support (look up child style)
     }
@@ -156,7 +156,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         if ($page_id != $this->midgardmvc->context->page->id)
         {
             // Register page to template cache        
-            $page = new midgard_page($page_id);
+            $page = new midgardmvc_core_node($page_id);
             $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($page->guid));
         }
 
@@ -168,9 +168,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $this->stacks[$stack]["pg:{$page_id}"] = 'page';
     }
     
-    private function get_element_style($style_id, $element)
+    private function get_element_style($templatedir_id, $element)
     {
-        $mc = midgard_element::new_collector('style', $style_id);
+        $mc = midgard_element::new_collector('style', $templatedir_id);
         $mc->add_constraint('name', '=', $element);
         $mc->set_key_property('value');
         $mc->add_value_property('guid');
@@ -196,7 +196,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         {
             case 'title':
             case 'content':
-                $mc = midgard_page::new_collector('id', $page_id);
+                $mc = midgardmvc_core_node::new_collector('id', $page_id);
                 $mc->set_key_property($element);
                 $mc->execute();
                 $keys = $mc->list_keys();
@@ -348,13 +348,13 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $request = new midgardmvc_core_helpers_request();
 
         if (   is_object($component_name)
-            && is_a($component_name, 'midgard_page'))
+            && is_a($component_name, 'midgardmvc_core_node'))
         {
             $request->set_page($component_name);
         }
         elseif (mgd_is_guid($component_name))
         {
-            $request->set_page(new midgard_page($component_name));
+            $request->set_page(new midgardmvc_core_node($component_name));
         }
         elseif (strpos($component_name, '/') !== false)
         {

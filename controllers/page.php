@@ -22,7 +22,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     {
         if (!isset(midgardmvc_core::get_instance()->context->page->id))
         {
-            throw new midgardmvc_exception_notfound('No Midgard page found');
+            throw new midgardmvc_exception_notfound('No Midgard MVC node found');
         }
         
         $this->object = midgardmvc_core::get_instance()->context->page;
@@ -30,7 +30,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     
     public function prepare_new_object(array $args)
     {
-        $this->object = new midgard_page();
+        $this->object = new midgardmvc_core_node();
         $this->object->up = midgardmvc_core::get_instance()->context->page->id;
     }
     
@@ -45,7 +45,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
         (
             'asgard_crud_update', array
             (
-                'type' => 'midgard_page', 
+                'type' => 'midgardmvc_core_node', 
                 'guid' => $this->object->guid
             )
         );

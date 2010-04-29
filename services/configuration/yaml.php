@@ -120,7 +120,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     /**
      * Load configuration from a Midgard object
      */   
-    public function load_instance($component, midgard_page $folder)
+    public function load_instance($component, midgardmvc_core_node $folder)
     {
         if (isset($this->configuration_for_instance["{$component}_{$folder->guid}"]))
         {

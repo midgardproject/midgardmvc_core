@@ -427,7 +427,7 @@ class midgardmvc_core_component_loader
 
         if (!empty($components_to_check))
         {
-            $qb = new midgard_query_builder('midgard_page');
+            $qb = new midgard_query_builder('midgardmvc_core_node');
             $qb->add_constraint('component', 'IN', $components_to_check);
             $folders = $qb->execute();
             foreach ($folders as $folder)
@@ -441,7 +441,7 @@ class midgardmvc_core_component_loader
         return $actions;
     }
 
-    public function get_category_actions($category, midgard_page $folder)
+    public function get_category_actions($category, midgardmvc_core_node $folder)
     {
         $actions = array();
         

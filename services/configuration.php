@@ -15,7 +15,7 @@ interface midgardmvc_core_services_configuration
 {
     public function load_component($component, $prepend = false);
     
-    public function load_instance($component, midgard_page $folder);
+    public function load_instance($component, midgardmvc_core_node $folder);
 
     public function normalize_routes($routes = null);
 
