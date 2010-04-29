@@ -39,23 +39,31 @@ class midgardmvc_core_exceptionhandler
             $midgardmvc->firephp->error($exception);
         }
 
-        if (headers_sent())
-        {
-            die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
-        }
-
         $header = self::header_by_code($http_code);
         if (!isset(midgardmvc_core::get_instance()->dispatcher))
         {
+            if (headers_sent())
+            {
+                die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
+            }
+
             header("X-MidgardMVC-Error: {$message}");
             header($header);
         }
         else
         {
-            midgardmvc_core::get_instance()->dispatcher->header("X-MidgardMVC-Error: {$message}");
-            midgardmvc_core::get_instance()->dispatcher->header($header);
+            $dsp = midgardmvc_core::get_instance()->dispatcher;
+
+            if ($dsp->headers_sent())
+            {
+                echo "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n";
+                $dsp->end_request();
+            }
+
+            $dsp->header("X-MidgardMVC-Error: {$message}");
+            $dsp->header($header);
         }
-        
+
         if ($http_code != 304)
         {
             if (isset(midgardmvc_core::get_instance()->dispatcher))
@@ -84,7 +92,7 @@ class midgardmvc_core_exceptionhandler
             {
                 if (!$midgardmvc->context)
                 {
-                    throw new Exception();
+                    throw new Exception('no context found');
                 }
 
                 $midgardmvc->context->set_item('midgardmvc_core_exceptionhandler', $data);
@@ -93,7 +101,7 @@ class midgardmvc_core_exceptionhandler
 
                 if (!$midgardmvc->templating)
                 {
-                    throw new Exception();
+                    throw new Exception('no templating found');
                 }
 
                 $midgardmvc->templating->template();
@@ -143,11 +151,18 @@ class midgardmvc_core_exceptionhandler
 }
 
 /**
+ * Basic Midgard MVC exception
+ *
+ * @package midgardmvc_core
+ */
+class midgardmvc_exception extends Exception {}
+
+/**
  * Midgard MVC "not found" exception
  *
  * @package midgardmvc_core
  */
-class midgardmvc_exception_notfound extends Exception
+class midgardmvc_exception_notfound extends midgardmvc_exception
 {
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 404) 
@@ -161,7 +176,7 @@ class midgardmvc_exception_notfound extends Exception
  *
  * @package midgardmvc_core
  */
-class midgardmvc_exception_unauthorized extends Exception
+class midgardmvc_exception_unauthorized extends midgardmvc_exception
 {
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 401) 
@@ -175,7 +190,7 @@ class midgardmvc_exception_unauthorized extends Exception
  *
  * @package midgardmvc_core
  */
-class midgardmvc_exception_httperror extends Exception
+class midgardmvc_exception_httperror extends midgardmvc_exception
 {
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 500) 
