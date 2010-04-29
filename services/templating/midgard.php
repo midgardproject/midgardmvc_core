@@ -114,7 +114,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
     {
         if (!file_exists($directory))
         {
-            throw new Exception("Template directory {$directory} not found.");
+            throw new midgardmvc_exception("Template directory {$directory} not found.");
         }
         $stack = $this->midgardmvc->context->get_current_context();
         if (!isset($this->stacks[$stack]))
@@ -470,6 +470,11 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $template_file = $this->midgardmvc->cache->template->get($this->get_cache_identifier());
         $content = file_get_contents($template_file);
 
+        if (strlen($content) == 0)
+        {
+            throw new midgardmvc_exception('template from "'.$template_file.'" is empty!');
+        }
+
         if ($data['template_engine'] == 'tal')
         {
             $content = $this->display_tal($content, $data);
@@ -558,7 +563,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         }
         catch (PHPTAL_TemplateException $e)
         {
-            throw new Exception("PHPTAL: {$e->srcFile} line {$e->srcLine}: " . $e->getMessage());
+            throw new midgardmvc_exception("PHPTAL: {$e->srcFile} line {$e->srcLine}: " . $e->getMessage());
         }
         
         return $content;
