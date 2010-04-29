@@ -89,6 +89,11 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         }
     }
 
+    public function headers_sent()
+    {
+        return headers_sent();
+    }
+
     public function setcookie($name, $value = '', $expire = 0, $path = '/', $domain = null, $secure = false, $httponly = false)
     {
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);

@@ -84,6 +84,12 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
         }
     }
 
+    public function headers_sent()
+    {
+        // it's never too late in appserver
+        return false;
+    }
+
     public function setcookie($name, $value = '', $expire = 0, $path = '/', $domain = null, $secure = false, $httponly = false)
     {
         return $this->appserver_context['_COOKIE']->setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
