@@ -28,7 +28,7 @@
         <property name="id" type="unsigned integer" primaryfield="id">
             <description>Local non-replication-safe database identifier</description>
         </property>
-        <property name="up" type="unsigned integer" link="midgard_style:id" upfield="up">
+        <property name="up" type="unsigned integer" link="midgardmvc_core_templatedir:id" upfield="up">
             <description>Style the style is under</description>
         </property>
         <property name="name" type="string" index="yes" unique="yes">
