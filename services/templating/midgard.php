@@ -270,11 +270,14 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             return $this->stack_elements[$stack][$element];
         }
 
+        if (in_array($element, $this->elements_shown)) {
+            throw new midgardmvc_exception('"'.$element.'" is already shown');
+        }
+
         // Reverse the stack in order to look for elements
         $reverse_stack = array_reverse($this->stacks[$stack], true);
         foreach ($reverse_stack as $identifier => $type)
         {
-            $element_content = null;
             switch ($type)
             {
                 case 'style':
@@ -286,8 +289,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
                 case 'directory':
                     $element_content = $this->get_element_directory($identifier, $element);
                     break;
+                default:
+                    $element_content = null;
             }
-            
+
             if (   $element_content
                 && !in_array($element, $this->elements_shown))
             {
@@ -305,7 +310,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
         
-        //throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack.");
+        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack.");
     }
 
     /**
