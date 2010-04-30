@@ -95,6 +95,36 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
         return $this->appserver_context['_COOKIE']->setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
 
+    public function session_start()
+    {
+        if (!isset($this->appserver_context['mfs.session']))
+            throw new LogicException('Session middleware is not available');
+
+        $this->appserver_context['mfs.session']->start();
+
+        return true;
+    }
+
+    public function session_has_var($name)
+    {
+        return isset($this->appserver_context['mfs.session']->$name);
+    }
+
+    public function session_get_var($name)
+    {
+        return $this->appserver_context['mfs.session']->$name;
+    }
+
+    public function session_set_var($name, $value)
+    {
+        $this->appserver_context['mfs.session']->$name = $value;
+    }
+
+    public function session_commit()
+    {
+        $this->appserver_context['mfs.session']->save();
+    }
+
     public function end_request()
     {
         throw new StartNewRequestException();

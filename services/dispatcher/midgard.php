@@ -99,6 +99,31 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         return setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
     }
 
+    public function session_start()
+    {
+        return session_start();
+    }
+
+    public function session_has_var($name)
+    {
+        return isset($_SESSION[$name]);
+    }
+
+    public function session_get_var($name)
+    {
+        return $_SESSION[$name];
+    }
+
+    public function session_set_var($name, $value)
+    {
+        $_SESSION[$name] = $value;
+    }
+
+    public function session_commit()
+    {
+        session_write_close();
+    }
+
     public function end_request()
     {
         exit();
