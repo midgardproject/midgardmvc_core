@@ -37,11 +37,9 @@ class midgardmvc_appserv_app
                 $mvc->serve();
                 $body = ob_get_clean();
             } catch (StartNewRequestException $e) {
-                $mvc->context->delete();
                 $body = ob_get_clean();
                 call_user_func($context['logger'], "--> [!] StartNewRequestException exception arrived");
             } catch (midgardmvc_exception $e) {
-                $mvc->context->delete();
                 ob_end_clean();
 
                 try {
@@ -54,7 +52,6 @@ class midgardmvc_appserv_app
                     throw $e;
                 }
             } catch (Exception $e) {
-                $mvc->context->delete();
                 ob_end_clean();
                 call_user_func($context['logger'], "--> [!] ".get_class($e)." exception arrived");
                 throw $e;

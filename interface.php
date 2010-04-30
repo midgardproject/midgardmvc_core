@@ -238,6 +238,31 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      */
     public function process()
     {
+        // php doesn't have "finally" keyword. emulating it
+
+        try
+        {
+            $this->_process();
+        }
+        catch (Exception $e)
+        {
+        }
+
+        // this will be executed even if _process() had exception
+        $this->_after_process();
+
+        if (isset($e))
+        {
+            // ->serve() wouldn't be called — do cleanup here
+            $this->cleanup_after_request();
+
+            // rethrowing exception, if there is one
+            throw $e;
+        }
+    }
+
+    private function _process()
+    {
         $this->context->create();
         date_default_timezone_set($this->configuration->get('default_timezone'));
         
@@ -301,11 +326,36 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
         $this->dispatcher->header('Content-Type: ' . $this->context->mimetype);
     }
-    
+
+    private function _after_process()
+    {
+        // add any cleanup after process() here
+    }
+
     /**
      * Serve a request either through templating or the WebDAV server
      */
     public function serve()
+    {
+        try
+        {
+            $this->_serve();
+        }
+        catch (Exception $e)
+        {
+        }
+
+        // this will be executed even if _serve() had exception
+        $this->_after_serve();
+
+        if (isset($e))
+        {
+            // rethrowing exception, if there is one
+            throw $e;
+        }
+    }
+
+    private function _serve()
     {
         // Handle HTTP request
         if (self::$instance->context->webdav_request)
@@ -324,7 +374,22 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->templating->display();
         
         $this->cache->autoload->store($this->context->uri, $this->autoloaded_files);
-        
+    }
+
+    private function _after_serve()
+    {
+        // add any cleanup after serve() here
+        $this->cleanup_after_request();
+    }
+
+    private function cleanup_after_request()
+    {
+        // commit session
+        if ($this->dispatcher->session_is_started())
+        {
+            $this->dispatcher->session_commit();
+        }
+
         // Clean up the context
         $this->context->delete();
     }
