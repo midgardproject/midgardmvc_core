@@ -15,6 +15,7 @@ try {
 
     $map = new \MFS\AppServer\Middleware\URLMap\URLMap(array(
         '/' => $app,
+        '/favicon.ico'                                  => function($ctx) { return array(404, array(), ''); },
         '/midcom-static/midgardmvc_core'                => new file_server($_midcom_root.'midgardmvc_core/static', 4000000),
         '/midcom-static/midgardmvc_helper_datamanager'  => new file_server($_midcom_root.'midgardmvc_helper_datamanager/static'),
         '/midcom-static/net_nemein_dasboard'            => new file_server($_midcom_root.'net_nemein_dasboard/static'),
