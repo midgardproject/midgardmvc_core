@@ -37,13 +37,29 @@ class midgardmvc_appserv_app
                 $mvc->serve();
                 $body = ob_get_clean();
             } catch (StartNewRequestException $e) {
+                $mvc->context->delete();
                 $body = ob_get_clean();
-                call_user_func($context['logger'], "-> [!] StartNewRequestException exception arrived");
-            } catch (Exception $e) {
+                call_user_func($context['logger'], "--> [!] StartNewRequestException exception arrived");
+            } catch (midgardmvc_exception $e) {
+                $mvc->context->delete();
                 ob_end_clean();
-                call_user_func($context['logger'], "-> [!] ".get_class($e)." exception arrived");
+
+                try {
+                    ob_start();
+                    midgardmvc_core_exceptionhandler::handle($e);
+                    $body = ob_get_clean();
+                } catch (Exception $e) {
+                    ob_end_clean();
+                    call_user_func($context['logger'], "--> [!] ".get_class($e)." exception arrived");
+                    throw $e;
+                }
+            } catch (Exception $e) {
+                $mvc->context->delete();
+                ob_end_clean();
+                call_user_func($context['logger'], "--> [!] ".get_class($e)." exception arrived");
                 throw $e;
             }
+
             call_user_func($context['logger'], "-> done with midgardmvc");
 
             return array(
