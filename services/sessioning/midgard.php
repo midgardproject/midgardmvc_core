@@ -51,8 +51,12 @@
  */
 class midgardmvc_core_services_sessioning_midgard
 {
+    const ROOT = 'midgardmvc_session_data';
+
     private $enabled = true;
-    
+    private $dispatcher = null;
+    private $data = array();
+
     /**
      * The constructor will initialize the sessioning, set the output nocacheable
      * and initialize the session data. This might involve creating an empty
@@ -66,17 +70,20 @@ class midgardmvc_core_services_sessioning_midgard
         {
             throw new Exception("Midgard MVC Sessioning has already been started, it must not be started twice. Aborting");
         }
-        
+
         $started = true;
+        $this->dispatcher = midgardmvc_core::get_instance()->dispatcher;
+
         try
         {
-            if (!headers_sent())
+            if (!$this->dispatcher->headers_sent())
             {
-                session_start();
+                $this->dispatcher->session_start();
             }
         }
         catch (Exception $e)
         {
+            midgardmvc_core::get_instance()->log(__CLASS__, "Couldn't start session: ".$e->getMessage(), 'warn');
             $this->enabled = false;
             return;
         }
@@ -85,11 +92,16 @@ class midgardmvc_core_services_sessioning_midgard
         /* Cache disabling made conditional based on domain/key existence */
 
         // Check for session data and load or initialize it, if necessary
-        if (! isset($_SESSION['midgardmvc_session_data']))
+        if ($this->dispatcher->session_has_var(self::ROOT))
         {
-            $_SESSION['midgardmvc_session_data'] = array();
-            $_SESSION['midgardmvc_session_data']['midgardmvc_core_services_sessioning'] = array();
-            $_SESSION['midgardmvc_session_data']['midgardmvc_core_services_sessioning']['startup'] = serialize(time());
+            $this->data = $this->dispatcher->session_get_var(self::ROOT);
+        }
+        else
+        {
+            $this->data['midgardmvc_core_services_sessioning'] = array();
+            $this->data['midgardmvc_core_services_sessioning']['startup'] = array();
+
+            $this->dispatcher->session_set_var(self::ROOT, $this->data);
         }
     }
 
@@ -109,7 +121,7 @@ class midgardmvc_core_services_sessioning_midgard
             return false;
         }
         
-        if (! array_key_exists($domain, $_SESSION["midgardmvc_session_data"]))
+        if (! array_key_exists($domain, $this->data))
         {
             // debug_push_class(__CLASS__, __FUNCTION__);
             // debug_add("Request for the domain [{$domain}] failed, because the domain doesn't exist.");
@@ -117,7 +129,7 @@ class midgardmvc_core_services_sessioning_midgard
             return false;
         }
 
-        if (! array_key_exists($key, $_SESSION["midgardmvc_session_data"][$domain]))
+        if (! array_key_exists($key, $this->data[$domain]))
         {
             // debug_push_class(__CLASS__, __FUNCTION__);
             // debug_add("Request for the key [{$key}] in the domain [{$domain}] failed, because the key doesn't exist.");
@@ -143,7 +155,7 @@ class midgardmvc_core_services_sessioning_midgard
             return null;
         }
         
-        return unserialize($_SESSION['midgardmvc_session_data'][$domain][$key]);
+        return unserialize($this->data[$domain][$key]);
     }
 
     /**
@@ -198,11 +210,14 @@ class midgardmvc_core_services_sessioning_midgard
         {
             return null;
         }
-        
+
         if ($this->exists($domain, $key))
         {
             $data = $this->get_helper($domain, $key);
-            unset($_SESSION['midgardmvc_session_data'][$domain][$key]);
+
+            unset($this->data[$domain][$key]);
+            $this->dispatcher->session_set_var(self::ROOT, $this->data);
+
             return $data;
         }
         else
@@ -228,15 +243,16 @@ class midgardmvc_core_services_sessioning_midgard
         {
             return;
         }
-        
+
         static $no_cache = false;
-        if (! $no_cache)
+        if (!$no_cache)
         {
             // midgardmvc_core::get_instance()->cache->content->no_cache();
             $no_cache = true;
         }
-        
-        $_SESSION['midgardmvc_session_data'][$domain][$key] = serialize($value);
+
+        $this->data[$domain][$key] = serialize($value);
+        $this->dispatcher->session_set_var(self::ROOT, $this->data);
     }
 }
 
