@@ -33,14 +33,16 @@ class midgardmvc_core_exceptionhandler
         $message = str_replace("\n", ' ', $message);
 
         $midgardmvc = midgardmvc_core::get_instance();
+
         $midgardmvc->log($message_type, $message, 'warn');
+
         if ($midgardmvc->firephp)
         {
             $midgardmvc->firephp->error($exception);
         }
 
         $header = self::header_by_code($http_code);
-        if (!isset(midgardmvc_core::get_instance()->dispatcher))
+        if (!isset($midgardmvc->dispatcher))
         {
             if (headers_sent())
             {
@@ -52,25 +54,23 @@ class midgardmvc_core_exceptionhandler
         }
         else
         {
-            $dsp = midgardmvc_core::get_instance()->dispatcher;
-
-            if ($dsp->headers_sent())
+            if ($midgardmvc->dispatcher->headers_sent())
             {
                 echo "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n";
-                $dsp->end_request();
+                $midgardmvc->dispatcher->end_request();
             }
 
-            $dsp->header("X-MidgardMVC-Error: {$message}");
-            $dsp->header($header);
+            $midgardmvc->dispatcher->header("X-MidgardMVC-Error: {$message}");
+            $midgardmvc->dispatcher->header($header);
         }
 
         if ($http_code != 304)
         {
-            if (isset(midgardmvc_core::get_instance()->dispatcher))
+            if (isset($midgardmvc->dispatcher))
             {
-                midgardmvc_core::get_instance()->dispatcher->header('Content-Type: text/html; charset=utf-8');
-            }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-             
+                $midgardmvc->dispatcher->header('Content-Type: text/html; charset=utf-8');
+            }
+
             $data['header'] = $header;
             $data['message_type'] = $message_type;
             $data['message'] = $message;
