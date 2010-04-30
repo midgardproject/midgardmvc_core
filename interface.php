@@ -66,9 +66,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$dispatcher}";
         $this->dispatcher = new $dispatcher_implementation();
 
-        // Load the head helper
-        $this->head = new midgardmvc_core_helpers_head();
-        
         if (    $this->configuration->development_mode
             and !class_exists('MFS\AppServer\DaemonicHandler') // firephp is not appserver-compatible
            )
@@ -238,6 +235,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      */
     public function process()
     {
+        // Load the head helper
+        $this->head = new midgardmvc_core_helpers_head();
+
         // php doesn't have "finally" keyword. emulating it
 
         try
