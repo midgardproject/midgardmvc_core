@@ -101,6 +101,7 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
             throw new LogicException('Session middleware is not available');
 
         $this->appserver_context['mfs.session']->start();
+        $this->session_is_started = true;
 
         return true;
     }
@@ -123,6 +124,7 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
     public function session_commit()
     {
         $this->appserver_context['mfs.session']->save();
+        $this->session_is_started = false;
     }
 
     public function end_request()

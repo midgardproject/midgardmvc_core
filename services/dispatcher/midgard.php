@@ -24,12 +24,14 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     protected $route_definitions = null;
     protected $exceptions_stack = array();
 
+    protected $session_is_started = false;
+
     /**
      * Constructor will read arguments and GET parameters from the request URL and store
      * them to the context.
      */
     public function __construct()
-    {        
+    {
         if (!extension_loaded('midgard'))
         {
             throw new Exception('Midgard 1.x is required for this Midgard MVC setup.');
@@ -101,7 +103,14 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
 
     public function session_start()
     {
-        return session_start();
+        $res = session_start();
+
+        if ($res)
+        {
+            $this->session_is_started = true;
+        }
+
+        return $res;
     }
 
     public function session_has_var($name)
@@ -122,6 +131,12 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     public function session_commit()
     {
         session_write_close();
+        $this->session_is_started = false;
+    }
+
+    public function session_is_started()
+    {
+        return $this->session_is_started;
     }
 
     public function end_request()
