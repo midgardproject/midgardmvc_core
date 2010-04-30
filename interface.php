@@ -172,7 +172,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         }
 
         if (   $this->firephp
-            && !headers_sent())
+            && !$this->dispatcher->headers_sent())
         {
             $this->firephp->$firephp_loglevel("{$prefix}: {$message}");
         }
