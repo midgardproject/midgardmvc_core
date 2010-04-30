@@ -60,8 +60,6 @@ class midgardmvc_core_services_sessioning
      * @access private
      */
     private $domain;
-    
-    private $core;
 
     /**
      * Constructs a session object.
@@ -83,28 +81,29 @@ class midgardmvc_core_services_sessioning
      */
     public function __construct($context = null)
     {
-        $this->core = midgardmvc_core::get_instance();
+        $core = midgardmvc_core::get_instance();
+
         if (is_null($context))
         {
-            $this->domain = $this->core->context->get_item('component');
-        }            
+            $this->domain = $core->context->get_item('component');
+        }
         else if (   is_numeric($context)
                  || is_int($context))
         {
-            $this->domain = $this->core->context->get_item('component', $context);
+            $this->domain = $core->context->get_item('component', $context);
         }
         else
         {
             $this->domain = $context;
         }
-        
+
         // Load the preferred sessioning implementation
-        $this->sessioning =& $this->core->sessioning;
-        
-        if (!$this->sessioning)
+        if (!$core->sessioning)
         {
             throw new Exception("Sessioning disabled");
         }
+
+        $this->sessioning = $core->sessioning;
     }
     
     /**
