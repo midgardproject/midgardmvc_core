@@ -426,7 +426,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         return self::$instance;
     }
 
-    public function get_object_actions(midgard_page &$object, $variant = null)
+    public function get_object_actions(midgardmvc_core_node &$object, $variant = null)
     {
         $actions = array();
         if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
@@ -454,7 +454,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         return $actions;
     }
 
-    public function get_administer_actions(midgard_page $folder)
+    public function get_administer_actions(midgardmvc_core_node $folder)
     {
         $actions = array();
         
@@ -469,7 +469,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         return $actions;
     }
 
-    public function get_create_actions(midgard_page $folder)
+    public function get_create_actions(midgardmvc_core_node $folder)
     {
         $actions = array();
 
