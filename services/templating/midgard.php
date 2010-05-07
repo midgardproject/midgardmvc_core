@@ -28,35 +28,29 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $this->stacks[0] = array();
         
         $this->midgardmvc = midgardmvc_core::get_instance();
+
+        $this->midgardmvc->context->register_delete_callback(array($this, 'delete_context_stack'));
     }
 
     public function get_cache_identifier()
     {
-        if (!isset($this->midgardmvc->context->host))
+        if (!isset($this->midgardmvc->context->template_cache_prefix))
         {
-            if (isset($this->midgardmvc->context->template_cache_prefix))
-            {
-                return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
-            }
-            else
-            {
-                return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
-            }
+            $this->midgardmvc->context->template_cache_prefix = 'CLI';   
         }
+
         if (!isset($this->midgardmvc->context->page))
         {
-            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
+            return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        if (isset($this->midgardmvc->context->route_id))
+        if (!isset($this->midgardmvc->context->route_id))
         {
-            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+            return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
+                "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-            "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+        return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
+            "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
     }
 
     public function prepare_stack(midgardmvc_core_helpers_request $request)
@@ -240,6 +234,21 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         }
         return file_get_contents($path);
     }
+
+    public function delete_context_stack($context_id)
+    {
+        if (isset($this->stacks[$context_id]))
+        {
+            unset($this->stacks[$context_id]);
+        }
+
+        if (isset($this->stack_elements[$context_id]))
+        {
+            unset($this->stack_elements[$context_id]);
+        }
+
+        $this->elements_shown = array();
+    }
     
     private function get_element($element)
     {
@@ -313,7 +322,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
         
-        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack.");
+        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack." .serialize($this->stacks));
     }
 
     /**
@@ -480,7 +489,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         if (strlen($content) == 0)
         {
-            throw new midgardmvc_exception('template from "'.$template_file.'" is empty!');
+            throw new midgardmvc_exception('Template from "'.$template_file.'" is empty!');
         }
 
         if ($data['template_engine'] == 'tal')
