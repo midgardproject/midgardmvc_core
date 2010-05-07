@@ -322,7 +322,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
         
-        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack." .serialize($this->stacks));
+        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack.");
     }
 
     /**
