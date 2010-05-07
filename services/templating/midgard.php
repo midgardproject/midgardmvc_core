@@ -270,7 +270,8 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             return $this->stack_elements[$stack][$element];
         }
 
-        if (in_array($element, $this->elements_shown)) {
+        if (in_array($element, $this->elements_shown)) 
+        {
             throw new midgardmvc_exception('"'.$element.'" is already shown');
         }
 
@@ -306,7 +307,9 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
                 $this->stack_elements[$stack][$element] = $element_content;
                 
                 // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
-                return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $this->stack_elements[$stack][$element]);
+                $this->stack_elements[$stack][$element] = preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
+
+                return $this->stack_elements[$stack][$element];
             }
         }
         
