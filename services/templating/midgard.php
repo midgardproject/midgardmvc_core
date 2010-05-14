@@ -250,7 +250,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $this->elements_shown = array();
     }
     
-    private function get_element($element)
+    public function get_element($element, $handle_includes = true)
     {
         if (is_array($element))
         {
@@ -315,9 +315,12 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
                 $this->stack_elements[$stack][$element] = $element_content;
                 
-                // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
-                $this->stack_elements[$stack][$element] = preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
-
+                if ($handle_includes)
+                {
+                    // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
+                    $this->stack_elements[$stack][$element] = preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
+                }
+                
                 return $this->stack_elements[$stack][$element];
             }
         }
