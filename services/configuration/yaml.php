@@ -24,15 +24,15 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     
     private $midgardmvc = null;
     
-    private $use_syck = true;
+    private $use_yaml = true;
     
     public function __construct()
     {
-        // Check for syck extension
-        $this->use_syck = extension_loaded('syck');
-        if (!$this->use_syck)
+        // Check for YAML extension
+        $this->use_yaml = extension_loaded('yaml');
+        if (!$this->use_yaml)
         {
-            // Syck PHP extension is not loaded, include the pure-PHP implementation
+            // YAML PHP extension is not loaded, include the pure-PHP implementation
             require_once 'midgardmvc_core/helpers/spyc.php';
         }
 
@@ -367,12 +367,12 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function unserialize($configuration)
     {
-        if (!$this->use_syck)
+        if (!$this->use_yaml)
         {
             return Spyc::YAMLLoad($configuration);
         }
 
-        return syck_load($configuration);
+        return yaml_parse($configuration);
     }
     
     /**
@@ -383,12 +383,12 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function serialize(array $configuration)
     {
-        if (!$this->use_syck)
+        if (!$this->use_yaml)
         {
             return Spyc::YAMLDump($configuration);
         }
 
-        return syck_dump($configuration);
+        return yaml_emit($configuration);
     }
     
     /**
