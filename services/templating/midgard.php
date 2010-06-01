@@ -428,13 +428,20 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      * @param array $arguments  Arguments to give to the route
      * @return $array data
      */
-    public function dynamic_load($component_name, $route_id, array $arguments)
+    public function dynamic_load($component_name, $route_id, array $arguments, $return_html = false)
     { 
         $this->midgardmvc->context->create();
         $data = $this->dynamic_call($component_name, $route_id, $arguments, false);
 
         $this->template('content_entry_point');
-        $this->display();
+        if ($return_html)
+        {
+            $output = $this->display($return_html);
+        }
+        else
+        {
+            $this->display();
+        }
 
         /* 
          * Gettext is not context safe. Here we return the "original" textdomain
@@ -442,6 +449,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
          */
         $this->midgardmvc->context->delete();
         $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component);
+        if ($return_html)
+        {
+            return $output;
+        }
     }
 
     /**
@@ -483,7 +494,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      *
      * @param string $content Content to display
      */
-    public function display()
+    public function display($return_output = false)
     {
         $data =& $this->midgardmvc->context->get();
 
@@ -523,7 +534,14 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
 
-        echo $content;
+        if ($return_html)
+        {
+            return $content;
+        }
+        else
+        {
+            echo $content;
+        }
         
         if ($this->midgardmvc->context->cache_enabled)
         {
