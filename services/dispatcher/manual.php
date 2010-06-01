@@ -97,6 +97,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
                 }
                 else
                 {
+                    $controller->data =& $data;
                     $controller->$action_method($this->action_arguments);
                 }
             }
