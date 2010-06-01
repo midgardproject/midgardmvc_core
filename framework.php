@@ -31,6 +31,7 @@ if (   isset($_SERVER['REQUEST_URI'])
     && !preg_match('%\?|/$|midgardmvc-.+-|/.+\..+$%', $_SERVER['REQUEST_URI']) 
     && $_SERVER['REQUEST_METHOD'] == 'GET'
     && !class_exists('MFS\AppServer\DaemonicHandler'))
+    && !class_exists('MFS_AppServer_DaemonicHandler'))
 {
     // Note: Midgard MVC is running under a conventional web server. Under Application Server we cannot use header()
     header('HTTP/1.0 301 Moved Permanently');
@@ -44,6 +45,7 @@ if (   isset($_SERVER['REQUEST_URI'])
 if (   isset($_SERVER['REQUEST_URI']) 
     && function_exists('mgd_version')
     && !class_exists('MFS\AppServer\DaemonicHandler'))
+    && !class_exists('MFS_AppServer_DaemonicHandler'))
 {
     // Advertise the fact that this is a Midgard server
     header('X-Powered-By: Midgard/' . mgd_version());

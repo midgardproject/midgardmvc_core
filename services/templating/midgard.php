@@ -28,35 +28,29 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         $this->stacks[0] = array();
         
         $this->midgardmvc = midgardmvc_core::get_instance();
+
+        $this->midgardmvc->context->register_delete_callback(array($this, 'delete_context_stack'));
     }
 
     public function get_cache_identifier()
     {
-        if (!isset($this->midgardmvc->context->host))
+        if (!isset($this->midgardmvc->context->template_cache_prefix))
         {
-            if (isset($this->midgardmvc->context->template_cache_prefix))
-            {
-                return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
-            }
-            else
-            {
-                return "CLI-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
-            }
+            $this->midgardmvc->context->template_cache_prefix = 'CLI';   
         }
+
         if (!isset($this->midgardmvc->context->page))
         {
-            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
+            return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->component}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
                 "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        if (isset($this->midgardmvc->context->route_id))
+        if (!isset($this->midgardmvc->context->route_id))
         {
-            return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-                "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+            return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
+                "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
         }
-        return "{$this->midgardmvc->context->host->id}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
-            "-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+        return "{$this->midgardmvc->context->template_cache_prefix}-{$this->midgardmvc->context->page->id}-{$this->midgardmvc->context->templatedir_id}-" . $this->midgardmvc->context->get_current_context() . 
+            "-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
     }
 
     public function prepare_stack(midgardmvc_core_helpers_request $request)
@@ -240,8 +234,23 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         }
         return file_get_contents($path);
     }
+
+    public function delete_context_stack($context_id)
+    {
+        if (isset($this->stacks[$context_id]))
+        {
+            unset($this->stacks[$context_id]);
+        }
+
+        if (isset($this->stack_elements[$context_id]))
+        {
+            unset($this->stack_elements[$context_id]);
+        }
+
+        $this->elements_shown = array();
+    }
     
-    private function get_element($element)
+    public function get_element($element, $handle_includes = true)
     {
         if (is_array($element))
         {
@@ -270,7 +279,8 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             return $this->stack_elements[$stack][$element];
         }
 
-        if (in_array($element, $this->elements_shown)) {
+        if (in_array($element, $this->elements_shown)) 
+        {
             throw new midgardmvc_exception('"'.$element.'" is already shown');
         }
 
@@ -305,8 +315,13 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
                 $this->stack_elements[$stack][$element] = $element_content;
                 
-                // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
-                return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $this->stack_elements[$stack][$element]);
+                if ($handle_includes)
+                {
+                    // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
+                    $this->stack_elements[$stack][$element] = preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
+                }
+                
+                return $this->stack_elements[$stack][$element];
             }
         }
         
@@ -413,13 +428,20 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      * @param array $arguments  Arguments to give to the route
      * @return $array data
      */
-    public function dynamic_load($component_name, $route_id, array $arguments)
+    public function dynamic_load($component_name, $route_id, array $arguments, $return_html = false)
     { 
         $this->midgardmvc->context->create();
         $data = $this->dynamic_call($component_name, $route_id, $arguments, false);
 
         $this->template('content_entry_point');
-        $this->display();
+        if ($return_html)
+        {
+            $output = $this->display($return_html);
+        }
+        else
+        {
+            $this->display();
+        }
 
         /* 
          * Gettext is not context safe. Here we return the "original" textdomain
@@ -427,6 +449,10 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
          */
         $this->midgardmvc->context->delete();
         $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component);
+        if ($return_html)
+        {
+            return $output;
+        }
     }
 
     /**
@@ -468,7 +494,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
      *
      * @param string $content Content to display
      */
-    public function display()
+    public function display($return_output = false)
     {
         $data =& $this->midgardmvc->context->get();
 
@@ -477,7 +503,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
 
         if (strlen($content) == 0)
         {
-            throw new midgardmvc_exception('template from "'.$template_file.'" is empty!');
+            throw new midgardmvc_exception('Template from "'.$template_file.'" is empty!');
         }
 
         if ($data['template_engine'] == 'tal')
@@ -508,7 +534,14 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
 
-        echo $content;
+        if ($return_html)
+        {
+            return $content;
+        }
+        else
+        {
+            echo $content;
+        }
         
         if ($this->midgardmvc->context->cache_enabled)
         {

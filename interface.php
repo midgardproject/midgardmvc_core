@@ -68,6 +68,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
         if (    $this->configuration->development_mode
             and !class_exists('MFS\AppServer\DaemonicHandler') // firephp is not appserver-compatible
+            and !class_exists('MFS_AppServer_DaemonicHandler') // + check for php52 version of class
            )
         {
             // Load FirePHP logger

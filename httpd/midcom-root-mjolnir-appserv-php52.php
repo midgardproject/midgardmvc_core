@@ -16,8 +16,8 @@ try {
     $app = new MFS_AppServer_Middleware_URLMap(array(
         '/' => _as_w($app),
         '/midcom-static/midgardmvc_core'                => _as_w(new file_server($_midcom_root.'midgardmvc_core/static')),
-        '/midcom-static/midgardmvc_helper_datamanager'  => _as_w(new file_server($_midcom_root.'midgardmvc_helper_datamanager/static')),
-        '/midcom-static/net_nemein_dasboard'            => _as_w(new file_server($_midcom_root.'net_nemein_dasboard/static')),
+        '/midcom-static/midgardmvc_helper_forms'        => new file_server($_midcom_root.'midgardmvc_helper_forms/static'),
+        '/midcom-static/midgardmvc_admin_asgard'        => new file_server($_midcom_root.'midgardmvc_admin/static'),
     ));
 
     $handler = new MFS_AppServer_DaemonicHandler('tcp://127.0.0.1:8080', 'HTTP');

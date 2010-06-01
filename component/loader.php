@@ -177,15 +177,15 @@ class midgardmvc_core_component_loader
         
         $manifest_yaml = file_get_contents($manifest_file);
 
-        if (!extension_loaded('syck'))
+        if (!extension_loaded('yaml'))
         {
-            // Syck PHP extension is not loaded, include the pure-PHP implementation
+            // YAML PHP extension is not loaded, include the pure-PHP implementation
             require_once('midgardmvc_core/helpers/spyc.php');
             $manifest = Spyc::YAMLLoad($manifest_yaml);
         }
         else
         {
-            $manifest = syck_load($manifest_yaml);
+            $manifest = yaml_parse($manifest_yaml);
         }
 
         // Normalize manifest

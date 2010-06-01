@@ -16,6 +16,7 @@ class midgardmvc_core_helpers_context
 {
     private $contexts = array();
     private $current_context = 0;
+    private $delete_callbacks = array();
     
     public function __construct()
     {
@@ -62,6 +63,12 @@ class midgardmvc_core_helpers_context
      */
     public function delete()
     {
+        foreach ($this->delete_callbacks as $callback)
+        {
+            // Notify callbacks that the context has been removed
+            call_user_func($callback, $this->current_context);
+        }
+        
         if ($this->current_context == 0)
         {
             $this->contexts = array();
@@ -72,6 +79,16 @@ class midgardmvc_core_helpers_context
         $this->current_context--;
         
         unset($this->contexts[$old_context]);
+    }
+
+    public function register_delete_callback($callback)
+    {
+        if (!is_callable($callback))
+        {
+            throw new InvalidArgumentException("Context deletion callback is not callable");
+        }
+
+        $this->delete_callbacks[] = $callback;
     }
     
     public function get_current_context()

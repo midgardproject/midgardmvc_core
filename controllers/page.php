@@ -43,7 +43,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     {
         return midgardmvc_core::get_instance()->dispatcher->generate_url
         (
-            'asgard_crud_update', array
+            'mvcadmin_crud_update', array
             (
                 'type' => 'midgardmvc_core_node', 
                 'guid' => $this->object->guid

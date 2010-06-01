@@ -27,15 +27,15 @@ class midgardmvc_core_helpers_snippet
             $content = midgardmvc_core_helpers_snippet::get_contents($path);
         }
 
-        if (!extension_loaded('syck'))
+        if (!extension_loaded('yaml'))
         {
-            // Syck PHP extension is not loaded, include the pure-PHP implementation
+            // YAML PHP extension is not loaded, include the pure-PHP implementation
             require_once('midgardmvc_core/helpers/spyc.php');
             return Spyc::YAMLLoad($content);
         }
         else
         {
-            return syck_load($content);
+            return yaml_parse($content);
         }
     }
     

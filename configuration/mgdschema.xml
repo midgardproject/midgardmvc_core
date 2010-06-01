@@ -48,6 +48,7 @@
         </property>
         <property name="content" type="text">
             <description>Contents of the template</description>
+            <contenttype>php</contenttype>
         </property>
         <property name="inherited" type="boolean">
             <description>Whether the template is inherited to template directories under this directory</description>
@@ -70,9 +71,11 @@
         </property>
         <property name="content"  type="text">
             <description>Content of the node</description>
+            <contenttype>html</contenttype>
         </property>
         <property name="component" type="string" index="yes">
             <description>Component used with the node</description>
+            <contenttype>component</contenttype>
         </property>
         <property name="templatedir" type="unsigned integer" link="midgardmvc_core_templatedir:id">
             <description>Template directory to load templates for the node from</description>
@@ -91,6 +94,7 @@
         </property>
         <property name="content" type="text">
             <description>Contents of the template</description>
+            <contenttype>php</contenttype>
         </property>
         <property name="inherited" type="boolean">
             <description>Whether the template is inherited to subnodes</description>

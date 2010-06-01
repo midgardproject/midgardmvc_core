@@ -16,7 +16,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
     public function setUp()
     {
         $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
-        $this->testConfiguration = syck_load(file_get_contents($path));
+        $this->testConfiguration = yaml_parse(file_get_contents($path));
         parent::setUp();
     }
     
@@ -55,7 +55,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
     public function test_unserialize()
     {
         $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
-        $data = syck_load(file_get_contents($path));
+        $data = yaml_parse(file_get_contents($path));
         $data2 = $this->_core->configuration->unserialize(file_get_contents($path));
         if ($data === $data2)
         {
@@ -70,8 +70,8 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
     public function test_serialization()
     {
         $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
-        $data = syck_load(file_get_contents($path));
-        $serialized = syck_dump($data);
+        $data = yaml_parse(file_get_contents($path));
+        $serialized = yaml_emit($data);
         $serialized2 = $this->_core->configuration->serialize($data);
 
         if ($serialized === $serialized2)
