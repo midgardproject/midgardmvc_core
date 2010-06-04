@@ -203,5 +203,25 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         }
         return $mgdschemas;
     }
+
+    public function headers_sent()
+    {
+        return headers_sent();
+    }
+
+    public function session_has_var($name)
+    {
+        return isset($_SESSION[$name]);
+    }
+
+    public function session_get_var($name)
+    {
+        return $_SESSION[$name];
+    }
+
+    public function session_set_var($name, $value)
+    {
+        $_SESSION[$name] = $value;
+    }
 }
 ?>

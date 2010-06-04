@@ -29,5 +29,13 @@ interface midgardmvc_core_services_dispatcher
     public function generate_url($route_id, array $args);
     
     public function get_midgard_connection();
+    
+    public function headers_sent();
+    
+    public function session_has_var($name);
+   
+    public function session_get_var($name);
+
+    public function session_set_var($name, $value);
 }
 ?>

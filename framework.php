@@ -44,7 +44,7 @@ if (   isset($_SERVER['REQUEST_URI'])
 
 if (   isset($_SERVER['REQUEST_URI']) 
     && function_exists('mgd_version')
-    && !class_exists('MFS\AppServer\DaemonicHandler'))
+    && !class_exists('MFS\AppServer\DaemonicHandler')
     && !class_exists('MFS_AppServer_DaemonicHandler'))
 {
     // Advertise the fact that this is a Midgard server
