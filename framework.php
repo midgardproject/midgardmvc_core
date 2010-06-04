@@ -30,7 +30,7 @@ if (!defined('MIDGARDMVC_TEST_RUN'))
 if (   isset($_SERVER['REQUEST_URI'])
     && !preg_match('%\?|/$|midgardmvc-.+-|/.+\..+$%', $_SERVER['REQUEST_URI']) 
     && $_SERVER['REQUEST_METHOD'] == 'GET'
-    && !class_exists('MFS\AppServer\DaemonicHandler'))
+    && !class_exists('MFS\AppServer\DaemonicHandler')
     && !class_exists('MFS_AppServer_DaemonicHandler'))
 {
     // Note: Midgard MVC is running under a conventional web server. Under Application Server we cannot use header()
