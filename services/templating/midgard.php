@@ -534,7 +534,7 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
             }
         }
 
-        if ($return_html)
+        if ($return_output)
         {
             return $content;
         }
