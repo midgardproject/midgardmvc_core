@@ -33,9 +33,9 @@ class midgardmvc_core_services_cache_module_template
             // Fluid instance has a dynamic cache directory location
             // FIXME: We need to make configuration more dynamic to support this properly
             $this->cache_directory = $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'];
-		}
+        }
         elseif ($_config->cachedir != '')
-	    {
+        {
             $this->cache_directory = $_config->cachedir;
         }
         else
