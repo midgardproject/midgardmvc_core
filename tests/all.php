@@ -13,7 +13,7 @@ if (!defined('PHPUnit_MAIN_METHOD')) {
 require_once('PHPUnit/Framework.php');
 require_once('PHPUnit/TextUI/TestRunner.php');
 
-require_once(dirname(__FILE__) . '/../../tests/helpers.php');
+require_once(dirname(__FILE__) . '/helpers.php');
 
 class midgardmvc_core_tests_all
 {   
