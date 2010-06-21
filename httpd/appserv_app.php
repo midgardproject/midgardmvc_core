@@ -1,6 +1,6 @@
 <?php
 
-require 'midgardmvc_core/framework.php';
+require realpath(dirname(__FILE__).'/..').'/framework.php';
 
 class StartNewRequestException extends RuntimeException {}
 
