@@ -30,7 +30,7 @@ if (! defined('MIDGARDMVC_TESTS_ENABLE_OUTPUT'))
 
 if (! defined('COMPONENT_DIR'))
 {
-    define('COMPONENT_DIR', realpath(dirname(__FILE__) . '/../'));
+    define('COMPONENT_DIR', realpath(dirname(__FILE__) . '/../../'));
 }
 
 require_once('PHPUnit/Framework.php');
@@ -54,7 +54,7 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
         parent::setUp();
 
         // Load MidCOM framework for tests
-        require_once(COMPONENT_DIR . 'midgardmvc_core/framework.php');
+        require_once(COMPONENT_DIR . '/midgardmvc_core/framework.php');
         $this->_core = midgardmvc_core::get_instance('manual');
         $this->_core->context->create();
         $this->_core->componentloader = new midgardmvc_core_component_loader();

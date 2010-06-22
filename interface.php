@@ -73,7 +73,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         {
             // Load FirePHP logger
             // TODO: separate setting
-            include('FirePHPCore/FirePHP.class.php');
+            @include('FirePHPCore/FirePHP.class.php');
             if (class_exists('FirePHP'))
             {
                 $this->firephp = FirePHP::getInstance(true);
