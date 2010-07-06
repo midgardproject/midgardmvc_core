@@ -66,7 +66,7 @@ class midgardmvc_appserv_app
             );
         } catch (Exception $e) {
             echo $e;
-            return array(500, array('Content-type', 'text/plain'), "Internal Server Error \n(check log)");
+            return array(500, array('Content-type', 'text/plain'), "Internal Server Error \n" . $e->getMessage());
         }
     }
 }
