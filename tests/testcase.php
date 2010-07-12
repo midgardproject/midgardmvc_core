@@ -22,7 +22,13 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
         // Create database and open connection
         parent::setUp();
 
-        $this->_core = midgardmvc_core::get_instance('manual');
+        $this->_core = midgardmvc_core::get_instance
+        (
+            array
+            (
+                'services_dispatcher' => 'manual',
+            )
+        );
         $this->_core->context->create();
         $this->_core->componentloader = new midgardmvc_core_component_loader();
     }
