@@ -6,10 +6,10 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-require_once(dirname(__FILE__) . '/../testcase.php');
-
 /**
- * Test to see if contexts are working
+ * Tests for the configuration stack
+ *
+ * @package midgardmvc_core
  */
 class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests_testcase
 {

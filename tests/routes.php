@@ -6,10 +6,10 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-require_once(dirname(__FILE__) . '/testcase.php');
-
 /**
  * Test that loads all components and dispatches each of their routes
+ *
+ * @package midgardmvc_core
  */
 class midgardmvc_core_tests_routes extends midgardmvc_core_tests_testcase
 {

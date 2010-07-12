@@ -6,11 +6,6 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-if (! defined('MIDGARDMVC_TESTS_ENABLE_OUTPUT')) 
-{
-    define('MIDGARDMVC_TESTS_ENABLE_OUTPUT', true);
-}
-
 /**
  * @package midgardmvc_core
  */
