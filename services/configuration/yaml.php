@@ -55,6 +55,18 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         return $context;
     }
 
+    public function load_array(array $config, $prepend = false)
+    {
+        if ($prepend)
+        {
+            $this->configuration[$this->get_current_context()] = self::merge_configs($config, $this->configuration[$this->get_current_context()]);
+        }
+        else
+        {
+            $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $config);
+        }
+    }
+
     /**
      * Load configuration for a Midgard MVC component and place it to the configuration stack
      */

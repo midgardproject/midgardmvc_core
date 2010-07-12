@@ -52,16 +52,24 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     /**
      * Load all basic services needed for Midgard MVC usage. This includes configuration, authorization and the component loader.
      */
-    public function load_base_services($dispatcher = 'midgard')
+    public function load_base_services(array $local_configuration = null)
     {
         // Load the context helper and initialize first context
         $this->context = new midgardmvc_core_helpers_context();
 
         $this->configuration = new midgardmvc_core_services_configuration_yaml();
         $this->configuration->load_component('midgardmvc_core');
+        if (!is_null($local_configuration))
+        {
+            $this->configuration->load_array($local_configuration);
+        }
 
         // Load the request dispatcher
-        $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$dispatcher}";
+        $dispatcher_implementation = 'midgardmvc_core_services_dispatcher_manual';
+        if (isset($local_configuration['services_dispatcher']))
+        {
+            $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$local_configuration['services_dispatcher']}";
+        }
         $this->dispatcher = new $dispatcher_implementation();
 
         if (    $this->configuration->development_mode
@@ -388,31 +396,23 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     /**
      * Access to the Midgard MVC instance
      */
-    public static function get_instance($dispatcher = null)
+    public static function get_instance($local_configuration = null)
     {
-        static $dispatcher_used = null;
-        if (is_null($dispatcher_used))
+        if (!is_null($local_configuration)
+            && !is_array($local_configuration))
         {
-            $dispatcher_used = $dispatcher;
-        }
-        if (   !is_null($dispatcher)
-            && $dispatcher != $dispatcher_used)
-        {
-            throw new BadMethodCallException("Dispatcher may be provided only once (using {$dispatcher_used} while you requested {$dispatcher})");
+            // Ratatoskr-style dispatcher selection fallback
+            $local_configuration = array
+            (
+                'services_dispatcher' => $local_configuration,
+            );
         }
 
         if (is_null(self::$instance))
         {
             // Load instance
             self::$instance = new midgardmvc_core();
-            if (is_null($dispatcher))
-            {
-                self::$instance->load_base_services();
-            }
-            else
-            {
-                self::$instance->load_base_services($dispatcher);
-            }
+            self::$instance->load_base_services($local_configuration);
         }
         return self::$instance;
     }
