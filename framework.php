@@ -59,4 +59,7 @@ require(MIDGARDMVC_ROOT . '/midgardmvc_core/exceptionhandler.php');
 require(MIDGARDMVC_ROOT . '/midgardmvc_core/component/interface.php');
 require(MIDGARDMVC_ROOT . '/midgardmvc_core/component/baseclass.php');
 require(MIDGARDMVC_ROOT . '/midgardmvc_core/interface.php');
+
+// Register autoloader so we get all Midgard MVC classes loaded automatically
+spl_autoload_register(array('midgardmvc_core', 'autoload'));
 ?>

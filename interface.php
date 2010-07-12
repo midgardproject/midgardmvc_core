@@ -47,8 +47,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
     public function __construct()
     {
-        // Register autoloader so we get all Midgard MVC classes loaded automatically
-        spl_autoload_register(array($this, 'autoload'));
     }
     
     /**
@@ -192,43 +190,35 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      *
      * @param string $class_name Name of a missing PHP class
      */
-    public function autoload($class_name)
+    public static function autoload($class_name)
     {
-        static $components = array('midgardmvc_core');
-        if (   count($components) < 2
-            && isset(self::$instance->componentloader))
+        $class_parts = explode('_', $class_name);
+        $component = '';
+        foreach ($class_parts as $i => $part)
         {
-            $components = array_keys(self::$instance->componentloader->manifests);
+            if ($component == '')
+            {
+                $component = $part;
+            }
+            else
+            {
+                $component .= "_{$part}";
+            }
+            unset($class_parts[$i]);
+            if (is_dir(MIDGARDMVC_ROOT . "/{$component}"))
+            {
+                break;
+            }
         }
-
-        foreach ($components as $component)
-        {
-            // Look which component the file is under
-            $component_length = strlen($component);
-            if (substr($class_name, 0, $component_length) != $component)
-            {
-                continue;
-            }
-            
-            if ($class_name == $component)
-            {
-                // Load the interface class
-                self::$instance->componentloader->load($component);
-            }
  
-            $path_under_component = str_replace('_', '/', substr($class_name, $component_length));
-            $path = MIDGARDMVC_ROOT . "/{$component}{$path_under_component}.php";
-            if (!file_exists($path))
-            {
-                return;
-            }
-            
-            if ($this->track_autoloaded_files)
-            {
-                $this->autoloaded_files[] = $path;
-            }
-            require($path);
+        $path_under_component = implode('/', $class_parts);
+        $path = MIDGARDMVC_ROOT . "/{$component}/{$path_under_component}.php";
+        if (!file_exists($path))
+        {
+            return;
         }
+        
+        require($path);
     }
     
     /**
