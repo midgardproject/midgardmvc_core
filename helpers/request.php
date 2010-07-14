@@ -26,16 +26,16 @@ class midgardmvc_core_helpers_request
     /**
      * The root page to be used with the request
      *
-     * @var midgardmvc_core_node
+     * @var midgardmvc_core_providers_hierarchy_node
      */
-    private $root_page = null;
+    private $root_node = null;
 
     /**
      * The page to be used with the request
      *
-     * @var midgardmvc_core_node
+     * @var midgardmvc_core_providers_hierarchy_node
      */
-    private $page = null;
+    private $node = null;
 
     /**
      * Midgard templatedir to use with the request
@@ -60,10 +60,6 @@ class midgardmvc_core_helpers_request
 
     public function __construct()
     {
-        if (isset(midgardmvc_core::get_instance()->context->root_page))
-        {
-            $this->set_root_page(midgardmvc_core::get_instance()->context->root_page);
-        }
     }
 
     /**
@@ -71,128 +67,41 @@ class midgardmvc_core_helpers_request
      *
      * @param $path URL path
      */
-    public function resolve_page($path)
+    public function resolve_node($path)
     {
-        if (   !is_string($path)
-            || substr($path, 0, 1) != '/')
-        {
-            throw new InvalidArgumentException('Invalid path provided');
-        }
-
-        $temp = trim($path);
-        $page = $this->root_page;
-        $parent_id = $this->root_page->id;
-        
-        // Clean up path
-        $path = substr(trim($path), 1);
-        if (substr($path, strlen($path) - 1) == '/')
-        {
-            $path = substr($path, 0, -1);
-        }
-        if ($path == '')
-        {
-            $this->argv = array();
-            $this->set_page($page);
-            return;
-        }
-        
-        $path = explode('/', $path);
-        $this->argv = $path;        
-        foreach ($path as $i => $p)
-        {
-            $qb = new midgard_query_builder('midgardmvc_core_node');
-            $qb->add_constraint('up', '=', $parent_id);
-            $qb->add_constraint('name', '=', $p);
-            $res = $qb->execute();
-            if (count($res) != 1)
-            {
-                break;            
-            }
-            
-            if ($res[0]->templatedir)
-            {
-                $this->templatedir_id = $res[0]->templatedir;
-            }
-            
-            $parent_id = $res[0]->id;
-            $temp = substr($temp, 1 + strlen($p));
-            $page = $res[0];
-            $this->path .= $page->name . '/';
-            $this->path_for_page[$page->id] = $this->path;
-            array_shift($this->argv);
-        }
-
-        $this->set_page($page);
+        $node = midgardmvc_core::get_instance()->hierarchy->get_node_by_path($path);
+        $this->set_node($node);
     }
 
     /**
      * Set a page to be used in the request
      */
-    public function set_root_page(midgardmvc_core_node $page)
+    public function set_root_node(midgardmvc_core_providers_hierarchy_node $node)
     {
-        $this->root_page = $page;
-        $this->path_for_page[$page->id] = '/';
-        
-        $this->templatedir_id = $page->templatedir;
+        $this->root_node = $node;
     }
 
     /**
      * Set a page to be used in the request
      */
-    public function set_page(midgardmvc_core_node $page)
+    public function set_node(midgardmvc_core_providers_hierarchy_node $node)
     {
-        $this->page = $page;
-        
-        if ($page->component)
-        {
-            $this->component = $page->component;
-        }
-
-        if (   !isset($this->path_for_page[$page->id])
-            && $this->root_page)
-        {
-            if ($page->id == $this->root_page->id)
-            {
-                $path = '/';
-            }
-            else
-            {
-                $parent_page = $page;
-                $path = "{$page->name}/";
-                while (true)
-                {
-                    if (isset($this->path_for_page[$parent_page->up]))
-                    {
-                        $path = "{$this->path_for_page[$parent_page->up]}{$path}";
-                        break;
-                    }
-                    $parent_page = new midgardmvc_core_node($parent_page->up);
-                    if (   !$parent_page
-                        || $parent_page->up == 0
-                        || $parent_page->id == $this->root_page->id)
-                    {
-                        $path = "/{$path}";
-                        break;
-                    }
-                    $path = "{$parent_page->name}/{$path}";
-                }
-            }
-            $this->path_for_page[$page->id] = $path;
-            $this->path = $this->path_for_page[$page->id];
-        }
-        if ($page->templatedir)
-        {
-            $this->templatedir_id = $page->templatedir;
-        }
+        $this->node = $node;
+        $this->set_argv($node->get_arguments());
+        $this->set_component($node->get_component());
     }
 
-    public function get_page()
+    public function get_node()
     {
-        return $this->page;
+        return $this->node;
     }
 
     public function set_component($component)
     {
+        if (!$component)
+        {
+            return;
+        }
         $this->component = $component;
     }
 
@@ -289,25 +198,16 @@ class midgardmvc_core_helpers_request
     {
         $_core = midgardmvc_core::get_instance();
         $_core->context->templatedir_id = $this->templatedir_id;
-        $_core->context->root_page = $this->root_page;
+        $_core->context->root_node = $this->root_node;
         $_core->context->component = $this->component;
         
         $_core->context->uri = $this->path;
         $_core->context->self = $this->path;
-        $_core->context->page = $this->page;
+        $_core->context->node = $this->node;
         $_core->context->prefix = $this->prefix;
         $_core->context->argv = $this->argv;
         $_core->context->query = $this->query;
         $_core->context->request_method = $this->method;
-        
         $_core->context->webdav_request = false;
-        if (   $_core->configuration->get('enable_webdav')
-            && (   $this->method != 'get'
-                && $this->method != 'post')
-            )
-        {
-            // Serve this request with the full HTTP_WebDAV_Server
-            $_core->context->webdav_request = true;
-        }
     }
 }

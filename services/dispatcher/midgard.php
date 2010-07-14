@@ -148,7 +148,7 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     {
         // In main Midgard request we dispatch the component in connection to a page
         $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component, $this->midgardmvc->context->page);
+        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($request->get_component());
         $this->midgardmvc->templating->prepare_stack($request);
     }
     

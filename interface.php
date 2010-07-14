@@ -113,7 +113,34 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
         $this->$service = new $service_implementation();
     }
-    
+
+    /**
+     * Helper for service initialization. Usually called via getters
+     *
+     * @param string $service Name of service to load
+     */
+    public function load_provider($provider)
+    {
+        if (isset($this->$provider))
+        {
+            return;
+        }
+        
+        $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/providers/{$provider}.php";
+        if (!file_exists($interface_file))
+        {
+            throw new InvalidArgumentException("Provider {$provider} not installed");
+        }
+        
+        $provider_implementation = $this->configuration->get("providers_{$provider}");
+        if (!$provider_implementation)
+        {
+            throw new Exception("No implementation defined for provider {$provider}");
+        }
+
+        $this->$provider = new $provider_implementation();
+    }
+
     /**
      * Logging interface
      *
@@ -230,7 +257,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     }
     
     /**
-     * Process the current request, loading the page's component and dispatching the request to it
+     * Process the current request, loading the node's component and dispatching the request to it
      */
     public function process()
     {
@@ -267,15 +294,17 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
 
-        // Let dispatcher populate request with the page and other information used
+        // Let dispatcher populate request with the node and other information used
         $request = $this->dispatcher->get_request();
         $request->populate_context();
         
+        /*
         if (isset($this->context->page->guid))
         {
             // Load per-folder configuration
             $this->configuration->load_instance($this->context->component, $this->context->page);
         }
+        */
 
         $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$this->context->uri} at " . gmdate('r'), 'info');
 

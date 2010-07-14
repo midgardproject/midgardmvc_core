@@ -16,11 +16,11 @@
 class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
 {
     /**
-     * Root page used for this Midgard MVC site
+     * Root node used for this Midgard MVC site, as provided by a hierarchy provider
      *
-     * @var midgardmvc_core_node
+     * @var midgardmvc_core_providers_hierarchy_node
      */
-    protected $_root_page = null;
+    protected $_root_node = null;
 
     /**
      * Read the request configuration and parse the URL
@@ -33,15 +33,9 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
         }
 
         $this->midgardmvc = midgardmvc_core::get_instance();
-        try
-        {
-            $this->_root_page = new midgardmvc_core_node($this->midgardmvc->configuration->midgardmvc_root_page);
-        }
-        catch (midgard_error_exception $e)
-        {
-            $this->_root_page = new midgardmvc_core_node();
-            $this->_root_page->get_by_path('/midgardmvc_root');
-        }
+
+        $this->midgardmvc->load_provider('hierarchy');
+        $this->_root_node = $this->midgardmvc->hierarchy->get_root_node();
     }
     
     /**
@@ -52,7 +46,7 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
     public function get_request()
     {
         $request = new midgardmvc_core_helpers_request();
-        $request->set_root_page($this->_root_page);
+        $request->set_root_node($this->_root_node);
         $request->set_method($_SERVER['REQUEST_METHOD']);
         
         // Parse URL into components (Mjolnir doesn't do this for us)
@@ -66,7 +60,7 @@ class midgardmvc_core_services_dispatcher_mjolnir extends midgardmvc_core_servic
             $request->set_query($get_parameters);
         }
         
-        $request->resolve_page($url_components['path']);
+        $request->resolve_node($url_components['path']);
 
         return $request;
     }

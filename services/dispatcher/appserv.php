@@ -23,7 +23,7 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
     public function get_request()
     {
         $request = new midgardmvc_core_helpers_request();
-        $request->set_root_page($this->_root_page);
+        $request->set_root_node($this->_root_node);
         $request->set_method($this->appserver_context['env']['REQUEST_METHOD']);
 
         // Parse URL into components (Mjolnir doesn't do this for us)
@@ -37,7 +37,7 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
             $request->set_query($get_parameters);
         }
 
-        $request->resolve_page($url_components['path']);
+        $request->resolve_node($url_components['path']);
 
         return $request;
     }

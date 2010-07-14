@@ -45,9 +45,9 @@ class midgardmvc_core_helpers_context
             {
                 $this->contexts[$context_id]['root'] = $this->contexts[0]['root'];
             }
-            if (isset($this->contexts[0]['root_page']))
+            if (isset($this->contexts[0]['root_node']))
             {
-                $this->contexts[$context_id]['root_page'] = $this->contexts[0]['root_page'];
+                $this->contexts[$context_id]['root_node'] = $this->contexts[0]['root_node'];
             }
             if (isset($this->contexts[0]['cache_enabled']))
             {
