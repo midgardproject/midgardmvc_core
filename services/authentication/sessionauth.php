@@ -397,7 +397,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             $uri = $app->context->uri;
             $log_message .= " ($uri)";
         }
-        $app->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warn');
+        $app->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warning');
         
         // Pass some data to the handler
         $data = array();
