@@ -99,7 +99,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         {
             // Built-in service implementation called using the shorthand notation
             $service_implementation = "midgardmvc_core_services_{$service}_{$service_implementation}";
-        } 
+        }
 
         $this->$service = new $service_implementation();
     }
@@ -126,6 +126,12 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         if (!$provider_implementation)
         {
             throw new Exception("No implementation defined for provider {$provider}");
+        }
+
+        if (strpos($provider_implementation, '_') === false)
+        {
+            // Built-in provider implementation called using the shorthand notation
+            $provider_implementation = "midgardmvc_core_providers_{$provider}_{$provider_implementation}";
         }
 
         $this->$provider = new $provider_implementation();
