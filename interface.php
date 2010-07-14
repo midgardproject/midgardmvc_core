@@ -24,11 +24,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     public $componentloader;
 
     /**
-     * @var midgardmvc_core_services dispatcher
-     */
-    public $dispatcher;
-
-    /**
      * @var midgardmvc_core_helpers_context
      */
     public $context;
@@ -39,9 +34,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      * @var FirePHP
      */
     public $firephp = null;
-    
-    private $track_autoloaded_files = false;
-    private $autoloaded_files = array();
     
     private static $instance = null;
 
@@ -63,14 +55,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         {
             $this->configuration->load_array($local_configuration);
         }
-
-        // Load the request dispatcher
-        $dispatcher_implementation = 'midgardmvc_core_services_dispatcher_manual';
-        if (isset($local_configuration['services_dispatcher']))
-        {
-            $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$local_configuration['services_dispatcher']}";
-        }
-        $this->dispatcher = new $dispatcher_implementation();
 
         if (    $this->configuration->development_mode
             and !class_exists('MFS\AppServer\DaemonicHandler') // firephp is not appserver-compatible
@@ -110,6 +94,12 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         {
             throw new Exception("No implementation defined for service {$service}");
         }
+
+        if (strpos($service_implementation, '_') === false)
+        {
+            // Built-in service implementation called using the shorthand notation
+            $service_implementation = "midgardmvc_core_services_{$service}_{$service_implementation}";
+        } 
 
         $this->$service = new $service_implementation();
     }
@@ -400,8 +390,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
         // Read contents from the output buffer and pass to Midgard MVC rendering
         $this->templating->display();
-        
-        $this->cache->autoload->store($this->context->uri, $this->autoloaded_files);
     }
 
     private function _after_serve()
@@ -429,7 +417,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         if (!is_null(self::$instance))
         {
-            return self::$instance
+            return self::$instance;
         }
 
         if (   !is_null($local_configuration)
@@ -446,70 +434,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         self::$instance = new midgardmvc_core();
         self::$instance->load_base_services($local_configuration);
         return self::$instance;
-    }
-
-    public function get_object_actions(midgardmvc_core_node &$object, $variant = null)
-    {
-        $actions = array();
-        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
-        {
-            // User is not allowed to edit so we have no actions available
-            return $actions;
-        }
-        
-        // This is the general action available for a page: forms-based editing
-        $actions['update'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_update', array(), $object),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('update', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/update.png',
-        );
-        $actions['delete'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_delete', array(), $object),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('delete', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/delete.png',
-        );
-        
-        return $actions;
-    }
-
-    public function get_administer_actions(midgardmvc_core_node $folder)
-    {
-        $actions = array();
-        
-        $actions['logout'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('logout', array()),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('logout', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/exit.png',
-        );
-        
-        return $actions;
-    }
-
-    public function get_create_actions(midgardmvc_core_node $folder)
-    {
-        $actions = array();
-
-        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:create', $folder))
-        {
-            // User is not allowed to create subfolders so we have no actions available
-            return $actions;
-        }
-        
-        $actions['page_create'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_create', array()),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('create folder', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/folder.png',
-        );
-        
-        return $actions;
     }
 }
 ?>
