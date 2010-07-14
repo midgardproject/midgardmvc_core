@@ -263,64 +263,38 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         // Load the head helper
         $this->head = new midgardmvc_core_helpers_head();
 
-        // php doesn't have "finally" keyword. emulating it
-
         try
         {
             $this->_process();
         }
         catch (Exception $e)
         {
-        }
-
-        // this will be executed even if _process() had exception
-        $this->_after_process();
-
-        if (isset($e))
-        {
             // ->serve() wouldn't be called — do cleanup here
+            $this->_after_process();
             $this->cleanup_after_request();
 
             // rethrowing exception, if there is one
             throw $e;
         }
+
+        $this->_after_process();
     }
 
     private function _process()
     {
         $this->context->create();
-        date_default_timezone_set($this->configuration->get('default_timezone'));
         
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
 
         // Let dispatcher populate request with the node and other information used
         $request = $this->dispatcher->get_request();
         $request->populate_context();
-        
-        /*
-        if (isset($this->context->page->guid))
-        {
-            // Load per-folder configuration
-            $this->configuration->load_instance($this->context->component, $this->context->page);
-        }
-        */
 
         $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$this->context->uri} at " . gmdate('r'), 'info');
 
         // Let injectors do their work
         $this->componentloader = new midgardmvc_core_component_loader();
         $this->componentloader->inject_process();
-
-        // Load the cache service and check for content cache
-        self::$instance->context->cache_enabled = false;
-        /*
-        if (self::$instance->context->cache_enabled)
-        {
-            $request->generate_identifier();
-            $this->cache->register_object($this->context->page);
-            $this->cache->content->check($this->context->cache_request_identifier);
-        }
-        */
 
         // Show the world this is Midgard
         $this->head->add_meta
@@ -331,13 +305,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
                 'content' => "Midgard/" . mgd_version() . " MidgardMVC/{$this->componentloader->manifests['midgardmvc_core']['version']} PHP/" . phpversion()
             )
         );
-
-        if ($this->configuration->enable_attachment_cache)
-        {
-            $classname = $this->configuration->attachment_handler;
-            $handler = new $classname();
-            $handler->connect_to_signals();
-        }
 
         // Then initialize the component, so it also goes to template stack
         $this->dispatcher->initialize($request);
@@ -370,30 +337,16 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         }
         catch (Exception $e)
         {
-        }
-
-        // this will be executed even if _serve() had exception
-        $this->_after_serve();
-
-        if (isset($e))
-        {
-            // rethrowing exception, if there is one
+            // this will be executed even if _serve() had exception
+            $this->_after_serve();
             throw $e;
         }
+
+        $this->_after_serve();
     }
 
     private function _serve()
     {
-        // Handle HTTP request
-        if (self::$instance->context->webdav_request)
-        {
-            // Start the full WebDAV server instance
-            // FIXME: Figure out how to prevent this with Variants
-            $webdav_server = new midgardmvc_core_helpers_webdav();
-            $webdav_server->serve();
-            // This will exit
-        }
-
         // Prepate the templates
         $this->templating->template();
 

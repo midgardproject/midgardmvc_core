@@ -38,7 +38,6 @@ date_formats:
     long: '%x %X'
 metadata_lock_timeout: 30
 schemadb: file:/midgardmvc_core/configuration/schema.yml
-default_timezone: UTC
 default_language: en_US
 uimessages_configuration:
     js:
