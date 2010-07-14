@@ -79,6 +79,14 @@ class midgardmvc_core_helpers_request
     }
 
     /**
+     * Get the request path
+     */
+    public function get_path()
+    {
+        return $this->path;
+    }
+
+    /**
      * Set a page to be used in the request
      */
     public function set_root_node(midgardmvc_core_providers_hierarchy_node $node)
@@ -251,5 +259,53 @@ class midgardmvc_core_helpers_request
         }
 
         $_core->context->cache_request_identifier = md5($identifier_source);
+    }
+
+    /**
+     * Get a request object for an intent
+     *
+     * Intent may be one of:
+     * - Instance of a Midgard MVC node (of hierarchy provider)
+     * - Instance of a Midgard MVC node (of MgdSchema)
+     * - Component name
+     * - Path
+     */
+    public static function get_for_intent($intent)
+    {
+        $request = new midgardmvc_core_helpers_request();
+        if (mgd_is_guid($intent))
+        {
+            // MgdSchema node GUID given
+            $intent = new midgardmvc_core_node($intent);
+        }
+        if (is_object($intent))
+        {
+            if ($intent instanceof midgardmvc_core_node)
+            {
+                // Change the MgdSchema object to a hierarchy node
+                $intent = new midgardmvc_core_providers_hierarchy_node_midgardmvc($intent);
+            }
+            
+            if ($intent instanceof midgardmvc_core_providers_hierarchy_node)
+            {
+                $request->set_node($intent);
+            }
+            else
+            {
+                throw new InvalidArgumentException('Received intent object of unknown type');
+            }
+        }
+        elseif (strpos($intent, '/') !== false)
+        {
+            // Path-based intent
+            $request->resolve_node($intent);
+        }
+        else
+        {
+            // Component name -based intent
+            $request->set_component($intent);
+        }
+
+        return $request;
     }
 }

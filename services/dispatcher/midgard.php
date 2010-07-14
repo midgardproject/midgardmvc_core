@@ -307,39 +307,23 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
      */
     public function generate_url($route_id, array $args, midgardmvc_core_node $page = null, $component = null)
     {
-        static $pages_for_component = array();
-        if (   is_null($page)
-            && !is_null($component))
-        {
-            if (!isset($pages_for_component[$component]))
-            {
-                // Find a page matching the requested component
-                $qb = new midgard_query_builder('midgardmvc_core_node');
-                $qb->add_constraint('component', '=', $component);
-                $qb->begin_group('OR');
-                $qb->add_constraint('up', 'INTREE', $this->midgardmvc->context->root_page->id);
-                $qb->add_constraint('id', '=', $this->midgardmvc->context->root_page->id);
-                $qb->end_group();
-                $qb->set_limit(1);
-                $pages = $qb->execute();
-                if (empty($pages))
-                {
-                    throw new OutOfBoundsException("No page matching component {$component} found");
-                }
-                $pages_for_component[$component] = $pages[0];
-            }
-            $page = $pages_for_component[$component];
-        }
-
         if (!is_null($page))
         {
-            $this->midgardmvc->context->create();
+            $request = midgardmvc_core_helpers_request::get_for_intent($page);
+        }
+        elseif (!is_null($component))
+        {
+            $request = midgardmvc_core_helpers_request::get_for_intent($component);
+        }
+        else
+        {
             $request = new midgardmvc_core_helpers_request();
-            $request->set_page($page);
-            $this->initialize($request);
         }
 
-        $route_definitions = $this->get_routes();
+        $this->midgardmvc->context->create($request);
+        $this->initialize($request);
+
+        $route_definitions = $this->midgardmvc->configuration->normalize_routes($request);
         if (!isset($route_definitions[$route_id]))
         {
             throw new OutOfBoundsException("route_id '{$route_id}' not found in routes configuration in context " . $this->midgardmvc->context->get_current_context());
@@ -374,15 +358,8 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         {
             throw new UnexpectedValueException("Missing arguments matching route '{$route_id}' of {$this->midgardmvc->core->component}: " . implode(', ', $link_remaining_args));
         }
-    
-        if (!is_null($page))
-        {
-            $url = preg_replace('%/{2,}%', '/', $this->midgardmvc->context->uri . $link);
-            $this->midgardmvc->context->delete();
-            return $url;
-        }
 
-        return preg_replace('%/{2,}%', '/', $this->midgardmvc->context->uri . $link);
+        return preg_replace('%/{2,}%', '/', $request->get_path() . $link);
     }
 
     /**
