@@ -280,6 +280,11 @@ class midgardmvc_core_helpers_request
         }
         if (is_object($intent))
         {
+            if ($intent instanceof midgardmvc_core_helpers_request)
+            {
+                return $intent;
+            }
+
             if ($intent instanceof midgardmvc_core_node)
             {
                 // Change the MgdSchema object to a hierarchy node
