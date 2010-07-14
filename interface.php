@@ -142,63 +142,66 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         if (!extension_loaded('midgard2'))
         {
-            // Temporary non-Midgard logger until midgard_error is backported to Ragnaroek
-            static $logger = null;
-            if (!$logger)
-            {
-                try
-                {
-                    $logger = new midgardmvc_core_helpers_log();
-                }
-                catch (Exception $e)
-                {
-                    // Unable to instantiate logger
-                    return;
-                }
-            }
-            static $log_levels = array
-            (
-                'debug' => 4,
-                'info' => 3,
-                'message' => 2,
-                'warn' => 1,
-            );
-            
-            if ($log_levels[$loglevel] > $log_levels[$this->configuration->get('log_level')])
-            {
-                // Skip logging, too low level
-                return;
-            }
-            $logger->log("{$prefix}: {$message}");
+            $this->log_with_helper($prefix, $message, $loglevel);
             return;
         }
 
-        $firephp_loglevel = $loglevel;
-        // Handle mismatching loglevels
-        switch ($loglevel)
-        {
-            case 'debug':
-            case 'message':
-                $firephp_loglevel = 'log';
-                break;
-            case 'warn':
-            case 'warning':
-                $loglevel = 'warning';  
-                $firephp_loglevel = 'warn';
-                break;
-            case 'error':
-            case 'critical':
-                $firephp_loglevel = 'error';
-                break;
-        }
+        midgard_error::$loglevel("{$prefix}: {$message}");
 
         if (   $this->firephp
             && !$this->dispatcher->headers_sent())
         {
+            $firephp_loglevel = $loglevel;
+            // Handle mismatching loglevels
+            switch ($loglevel)
+            {
+                case 'debug':
+                case 'message':
+                    $firephp_loglevel = 'log';
+                    break;
+                case 'warn':
+                case 'warning':
+                    $firephp_loglevel = 'warn';
+                    break;
+                case 'error':
+                case 'critical':
+                    $firephp_loglevel = 'error';
+                    break;
+            }
             $this->firephp->$firephp_loglevel("{$prefix}: {$message}");
         }
+    }
 
-        midgard_error::$loglevel("{$prefix}: {$message}");
+    private function log_with_helper($prefix, $message, $loglevel)
+    {
+        // Temporary non-Midgard logger until midgard_error is backported to Ragnaroek
+        static $logger = null;
+        if (!$logger)
+        {
+            try
+            {
+                $logger = new midgardmvc_core_helpers_log();
+            }
+            catch (Exception $e)
+            {
+                // Unable to instantiate logger
+                return;
+            }
+        }
+        static $log_levels = array
+        (
+            'debug' => 4,
+            'info' => 3,
+            'message' => 2,
+            'warn' => 1,
+        );
+        
+        if ($log_levels[$loglevel] > $log_levels[$this->configuration->get('log_level')])
+        {
+            // Skip logging, too low level
+            return;
+        }
+        $logger->log("{$prefix}: {$message}");
     }
     
     /**
