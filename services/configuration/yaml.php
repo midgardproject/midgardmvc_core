@@ -348,11 +348,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     
     public function set_value($key, $value)
     {
-        if (   defined('MIDGARDMVC_TEST_RUN')
-            && MIDGARDMVC_TEST_RUN)
-        {
-            $this->configuration[$this->get_current_context()][$key] = $value;
-        }
+        $this->configuration[$this->get_current_context()][$key] = $value;
     }
 
     /**

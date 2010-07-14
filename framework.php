@@ -17,10 +17,6 @@ if (!defined('MIDGARDMVC_STATIC_URL'))
     define('MIDGARDMVC_STATIC_URL', '/midcom-static');
 }
 
-if (!defined('MIDGARDMVC_TEST_RUN'))
-{
-    define('MIDGARDMVC_TEST_RUN', false);
-}
 /**
  * Make sure the URLs not having query string (or midcom-xxx- -method signature)
  * have trailing slash or some extension in the "filename".
