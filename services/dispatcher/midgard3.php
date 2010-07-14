@@ -13,7 +13,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_services_dispatcher
+class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_services_dispatcher
 {
     public $get = array();
     protected $route_array = array();
@@ -27,17 +27,26 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     protected $session_is_started = false;
 
     /**
-     * Constructor will read arguments and GET parameters from the request URL and store
-     * them to the context.
+     * Root node used for this Midgard MVC site, as provided by a hierarchy provider
+     *
+     * @var midgardmvc_core_providers_hierarchy_node
+     */
+    protected $_root_node = null;
+
+    /**
+     * Read the request configuration and parse the URL
      */
     public function __construct()
     {
-        if (!extension_loaded('midgard'))
+        if (!extension_loaded('midgard2'))
         {
-            throw new Exception('Midgard 1.x is required for this Midgard MVC setup.');
+            throw new Exception('Midgard 2.x is required for this Midgard MVC setup.');
         }
-        
+
         $this->midgardmvc = midgardmvc_core::get_instance();
+
+        $this->midgardmvc->load_provider('hierarchy');
+        $this->_root_node = $this->midgardmvc->hierarchy->get_root_node();
     }
 
     /**
@@ -48,34 +57,22 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     public function get_request()
     {
         $request = new midgardmvc_core_helpers_request();
-        $request->set_root_page(new midgardmvc_core_node($_MIDGARD['root']));
-        $request->set_page(new midgardmvc_core_node($_MIDGARD['page']));
-        
-        $arg_string = substr($_MIDGARD['uri'], strlen($_MIDGARD['self']));
-        $request_argv = array();
-        if ($arg_string)
-        {
-            $argv = explode('/', $arg_string);
-            foreach ($argv as $arg)
-            {
-                if (empty($arg))
-                {
-                    continue;
-                }
-                $request_argv[] = $arg;
-            }
-        }
-        $request->set_argv($request_argv);
-
+        $request->set_root_node($this->_root_node);
         $request->set_method($_SERVER['REQUEST_METHOD']);
         
-        $request->set_prefix($_MIDGARD['self']);
-        
-        if (isset($_GET))
+        // Parse URL into components (Mjolnir doesn't do this for us)
+        $url_components = parse_url("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+
+        // Handle GET parameters
+        if (!empty($url_components['query']))
         {
-            $request->set_query($_GET);
+            $get_parameters = array();
+            parse_str($url_components['query'], $get_parameters);
+            $request->set_query($get_parameters);
         }
         
+        $request->resolve_node($url_components['path']);
+
         return $request;
     }
 
@@ -301,24 +298,14 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
     /**
      * Generates an URL for given route_id with given arguments
      *
+     * @param mixed $intent Component name, node object, node GUID or node path
      * @param string $route_id the id of the route to generate a link for
      * @param array $args associative arguments array
      * @return string url
      */
-    public function generate_url($route_id, array $args, midgardmvc_core_node $page = null, $component = null)
+    public function generate_url($intent, $route_id, array $args)
     {
-        if (!is_null($page))
-        {
-            $request = midgardmvc_core_helpers_request::get_for_intent($page);
-        }
-        elseif (!is_null($component))
-        {
-            $request = midgardmvc_core_helpers_request::get_for_intent($component);
-        }
-        else
-        {
-            $request = new midgardmvc_core_helpers_request();
-        }
+        $request = midgardmvc_core_helpers_request::get_for_intent($intent);
 
         $this->midgardmvc->context->create($request);
         $this->initialize($request);
@@ -675,19 +662,31 @@ class midgardmvc_core_services_dispatcher_midgard implements midgardmvc_core_ser
         return $prefix . $page_path;
     }
 
+
     public function get_midgard_connection()
     {
-        return $_MIDGARD_CONNECTION;
+        return midgard_connection::get_instance();
     }
-    
+
     public function get_mgdschema_classes()
     {
         static $mgdschemas = array();
         if (empty($mgdschemas))
         {
-            foreach ($_MIDGARD['schema']['types'] as $classname => $null)
+            // Get the classes from PHP5 reflection
+            $re = new ReflectionExtension('midgard2');
+            $classes = $re->getClasses();
+            foreach ($classes as $refclass)
             {
-                $mgdschemas[] = $classname;
+                $parent_class = $refclass->getParentClass();
+                if (!$parent_class)
+                {
+                    continue;
+                }
+                if ($parent_class->getName() == 'midgard_object')
+                {
+                    $mgdschemas[] = $refclass->getName();
+                }
             }
         }
         return $mgdschemas;

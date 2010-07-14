@@ -1,6 +1,6 @@
 <?php
 
-class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_services_dispatcher_mjolnir
+class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_services_dispatcher_midgard3
 {
     private $appserver_context = null;
     private $headers = array();
