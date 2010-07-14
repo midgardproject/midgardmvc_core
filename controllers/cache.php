@@ -25,7 +25,7 @@ class midgardmvc_core_controllers_cache
         midgardmvc_core::get_instance()->context->cache_enabled = false;
         midgardmvc_core::get_instance()->head->relocate
         (
-            midgardmvc_core::get_instance()->dispatcher->generate_url('page_read', array())
+            midgardmvc_core::get_instance()->dispatcher->generate_url($this->request, 'page_read', array())
         );
     }
 

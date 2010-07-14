@@ -64,7 +64,7 @@ class midgardmvc_core_helpers_variants
                 'variant' => 'content',
                 'type' => 'html',
             );
-            $variant_url = midgardmvc_core::get_instance()->dispatcher->generate_url('page_variants', array('variant' => $content_variant));
+            $variant_url = midgardmvc_core::get_instance()->dispatcher->generate_url($this->request, 'page_variants', array('variant' => $content_variant));
             $edit = $xml->addChild('edit');
             $edit->addAttribute('mime-type', 'text/html');
             $open = $edit->addChild('open');

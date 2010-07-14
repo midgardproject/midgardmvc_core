@@ -269,6 +269,8 @@ class midgardmvc_core_helpers_request
      * - Instance of a Midgard MVC node (of MgdSchema)
      * - Component name
      * - Path
+     *
+     * @args mixed $intent Component name, node object, node GUID or node path
      */
     public static function get_for_intent($intent)
     {
@@ -282,7 +284,8 @@ class midgardmvc_core_helpers_request
         {
             if ($intent instanceof midgardmvc_core_helpers_request)
             {
-                return $intent;
+                $request->set_root_node($intent->get_root_node());
+                $request->set_node($intent->get_node());
             }
 
             if ($intent instanceof midgardmvc_core_node)

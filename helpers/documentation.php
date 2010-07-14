@@ -103,7 +103,7 @@ class midgardmvc_core_helpers_documentation
                 'documentation' => $reflectionproperty->description($property),
             );
 
-            try
+            /*try
             {
                 // Link to the class documentation is the property is of particular type
                 if (   strpos($type, '_') !== false
@@ -114,11 +114,13 @@ class midgardmvc_core_helpers_documentation
             }
             catch (Exception $e)
             {
-            }
+            }*/
+            $property_doc['type_url'] = '';
             
             if ($reflectionproperty->is_link($property))
             {
-                $property_doc['link_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $reflectionproperty->get_link_name($property)));
+                //$property_doc['link_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $reflectionproperty->get_link_name($property)));
+                $property_doc['link_url'] = '';
                 $property_doc['link'] = $reflectionproperty->get_link_name($property) . '::' . $reflectionproperty->get_link_target($property);
             }
 
@@ -250,7 +252,8 @@ class midgardmvc_core_helpers_documentation
         if ($parent_class)
         {
             $class_documentation['extends'] = $parent_class->getName();
-            $class_documentation['extends_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $parent_class->getName()));
+            $class_documentation['extends_url'] = '';
+            //$class_documentation['extends_url'] = midgardmvc_core::get_instance()->dispatcher->generate_url('midcom_documentation_class', array('class' => $parent_class->getName()));
         }
         
         return $class_documentation;
