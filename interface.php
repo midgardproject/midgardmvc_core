@@ -427,7 +427,12 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      */
     public static function get_instance($local_configuration = null)
     {
-        if (!is_null($local_configuration)
+        if (!is_null(self::$instance))
+        {
+            return self::$instance
+        }
+
+        if (   !is_null($local_configuration)
             && !is_array($local_configuration))
         {
             // Ratatoskr-style dispatcher selection fallback
@@ -437,12 +442,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             );
         }
 
-        if (is_null(self::$instance))
-        {
-            // Load instance
-            self::$instance = new midgardmvc_core();
-            self::$instance->load_base_services($local_configuration);
-        }
+        // Load and return MVC instance
+        self::$instance = new midgardmvc_core();
+        self::$instance->load_base_services($local_configuration);
         return self::$instance;
     }
 
