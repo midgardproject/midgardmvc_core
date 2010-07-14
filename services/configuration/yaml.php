@@ -405,7 +405,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      * @param array $route routes configuration
      * @return array normalized routes configuration
      */
-    public function normalize_routes($routes = null)
+    public function normalize_routes(midgardmvc_core_helpers_request $request, array $routes = null)
     {
         if (is_null($this->midgardmvc))
         {
@@ -414,19 +414,16 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
 
         if (is_null($routes))
         {
-            if (isset($this->midgardmvc->context->component_routes))
+            if ($request->isset_data_item('component_routes'))
             {
                 // We already have normalized routes for this context
-                return $this->midgardmvc->context->component_routes;
+                return $request->get_data_item('component_routes');
             }
             $routes = $this->get('routes');
         }
 
-        $enable_webdav = $this->midgardmvc->configuration->get('enable_webdav');
-
         $root_page = false;
-        if (   isset($this->midgardmvc->context->page)
-            && $this->midgardmvc->context->page->id == $this->midgardmvc->context->root_page->id)
+        if ($request->get_node() == $request->get_root_node())
         {
             $root_page = true;
         }
@@ -470,19 +467,9 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 );
             }
             
-            if (!$enable_webdav)
+            if (!isset($route['mimetype']))
             {
-                // Only allow GET and POST
-                $route['allowed_methods'] = array
-                (
-                    'GET',
-                    'POST',
-                );
-            }
-            
-            if (!isset($route['webdav_only']))
-            {
-                $route['webdav_only'] = false;
+                $route['mimetype'] = 'text/html';
             }
             
             if (!isset($route['template_entry_point']))

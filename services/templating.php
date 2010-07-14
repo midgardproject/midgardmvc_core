@@ -16,7 +16,7 @@ interface midgardmvc_core_services_templating
     /**
      * Include the template based on either global or controller-specific template entry point.
      */ 
-    public function template();
+    public function template(midgardmvc_core_helpers_request $request);
     
     /**
      * Include the content template based on either global or controller-specific template entry point.
@@ -27,6 +27,6 @@ interface midgardmvc_core_services_templating
      *
      * @param string $content Content to display
      */
-    public function display();
+    public function display(midgardmvc_core_helpers_request $request);
 }
 ?>

@@ -34,7 +34,7 @@ class midgardmvc_core_exceptionhandler
 
         $midgardmvc = midgardmvc_core::get_instance();
 
-        $midgardmvc->log($message_type, $message, 'warn');
+        $midgardmvc->log($message_type, $message, 'warning');
 
         if ($midgardmvc->firephp)
         {
@@ -104,8 +104,10 @@ class midgardmvc_core_exceptionhandler
                     throw new Exception('no templating found');
                 }
 
-                $midgardmvc->templating->template();
-                $midgardmvc->templating->display();
+                // FIXME: Use the real request here
+                $request = new midgardmvc_core_helpers_request();
+                $midgardmvc->templating->template($request);
+                $midgardmvc->templating->display($request);
             }
             catch (Exception $e)
             {

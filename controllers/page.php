@@ -20,12 +20,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
 
     public function load_object(array $args)
     {
-        if (!isset(midgardmvc_core::get_instance()->context->node))
-        {
-            throw new midgardmvc_exception_notfound('No Midgard MVC node found');
-        }
-        
-        $this->object = midgardmvc_core::get_instance()->context->node;
+        $this->object = $this->request->get_node();
     }
     
     public function prepare_new_object(array $args)

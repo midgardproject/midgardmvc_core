@@ -387,8 +387,6 @@ class midgardmvc_core_services_templating_midgard implements midgardmvc_core_ser
         
         // Copy HTTP request method of main context to the request
         $request->set_method($this->midgardmvc->context->get_item('request_method', 0));
-        
-        $request->populate_context();
 
         // Run process injector for this context too
         $this->midgardmvc->componentloader->inject_process();

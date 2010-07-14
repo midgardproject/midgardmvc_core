@@ -265,7 +265,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
         try
         {
-            $this->_process();
+            $request = $this->_process();
         }
         catch (Exception $e)
         {
@@ -278,23 +278,26 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         }
 
         $this->_after_process();
+        return $request;
     }
 
     private function _process()
     {
-        $this->context->create();
-        
         $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
 
         // Let dispatcher populate request with the node and other information used
         $request = $this->dispatcher->get_request();
-        $request->populate_context();
+        // TODO: We give it to context to emulate legacy functionality
+        $this->context->create($request);
 
-        $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$this->context->uri} at " . gmdate('r'), 'info');
+        // Disable cache for now
+        $request->set_data_item('cache_enabled', false);
+
+        $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$request->path} at " . gmdate('r'), 'info');
 
         // Let injectors do their work
         $this->componentloader = new midgardmvc_core_component_loader();
-        $this->componentloader->inject_process();
+        $this->componentloader->inject_process($request);
 
         // Show the world this is Midgard
         $this->head->add_meta
@@ -310,7 +313,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->dispatcher->initialize($request);
         try
         {
-            $this->dispatcher->dispatch();
+            $this->dispatcher->dispatch($request);
         }
         catch (midgardmvc_exception_unauthorized $exception)
         {
@@ -319,6 +322,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         }
 
         $this->dispatcher->header('Content-Type: ' . $this->context->mimetype);
+
+        return $request;
     }
 
     private function _after_process()
@@ -329,11 +334,11 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     /**
      * Serve a request either through templating or the WebDAV server
      */
-    public function serve()
+    public function serve(midgardmvc_core_helpers_request $request)
     {
         try
         {
-            $this->_serve();
+            $this->_serve($request);
         }
         catch (Exception $e)
         {
@@ -345,13 +350,13 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->_after_serve();
     }
 
-    private function _serve()
+    private function _serve(midgardmvc_core_helpers_request $request)
     {
         // Prepate the templates
-        $this->templating->template();
+        $this->templating->template($request);
 
         // Read contents from the output buffer and pass to Midgard MVC rendering
-        $this->templating->display();
+        $this->templating->display($request);
     }
 
     private function _after_serve()

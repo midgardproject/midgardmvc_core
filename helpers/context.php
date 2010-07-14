@@ -9,15 +9,14 @@
 /**
  * Context data management helper for Midgard MVC
  *
+ * This is the legacy way to access request data. Use the direct request object instead.
  *
  * @package midgardmvc_core
  */
 class midgardmvc_core_helpers_context
 {
-    private $contexts = array();
-    private $current_context = 0;
-    private $delete_callbacks = array();
-    
+    private $request = null;
+
     public function __construct()
     {
     }
@@ -25,37 +24,12 @@ class midgardmvc_core_helpers_context
     /**
      * Create and prepare a new component context.
      */
-    public function create()
+    public function create(midgardmvc_core_helpers_request $request = null)
     {
-        $context_id = count($this->contexts);
-        $this->contexts[$context_id] = array
-        (
-            // TODO: Convert to 'application/xhtml+xml' as soon as Midgard MVC javascripts are compatible with it
-            'mimetype'             => 'text/html', 
-            'template_engine'      => 'tal',
-            'template_entry_point' => 'ROOT',
-            'content_entry_point'  => 'content',
-            'component'            => 'midgardmvc_core',
-        );
-        
-        if ($context_id > 0)
+        if (!is_null($request))
         {
-            // Creating a new request context, copy some values from ctx 0
-            if (isset($this->contexts[0]['root']))
-            {
-                $this->contexts[$context_id]['root'] = $this->contexts[0]['root'];
-            }
-            if (isset($this->contexts[0]['root_node']))
-            {
-                $this->contexts[$context_id]['root_node'] = $this->contexts[0]['root_node'];
-            }
-            if (isset($this->contexts[0]['cache_enabled']))
-            {
-                $this->contexts[$context_id]['cache_enabled'] = $this->contexts[0]['cache_enabled'];
-            }
+            $this->request = $request;
         }
-        
-        $this->current_context = $context_id;
     }
     
     /**
@@ -63,37 +37,17 @@ class midgardmvc_core_helpers_context
      */
     public function delete()
     {
-        foreach ($this->delete_callbacks as $callback)
-        {
-            // Notify callbacks that the context has been removed
-            call_user_func($callback, $this->current_context);
-        }
-        
-        if ($this->current_context == 0)
-        {
-            $this->contexts = array();
-            return;
-        }
-        
-        $old_context = $this->current_context;
-        $this->current_context--;
-        
-        unset($this->contexts[$old_context]);
+        return;
     }
 
     public function register_delete_callback($callback)
     {
-        if (!is_callable($callback))
-        {
-            throw new InvalidArgumentException("Context deletion callback is not callable");
-        }
-
-        $this->delete_callbacks[] = $callback;
+        return;
     }
     
     public function get_current_context()
     {
-        return $this->current_context;
+        return 0;
     }
     
     /**
@@ -104,17 +58,7 @@ class midgardmvc_core_helpers_context
      */
     public function get($context_id = null)
     {
-        if (is_null($context_id))
-        {
-            $context_id = $this->current_context;
-        }
-
-        if (!isset($this->contexts[$context_id]))
-        {
-            throw new OutOfBoundsException("Midgard MVC context {$context_id} not found.");
-        }
-        
-        return $this->contexts[$context_id];
+        return $this->request->get_data();
     }
 
     /**
@@ -126,22 +70,13 @@ class midgardmvc_core_helpers_context
      */
     public function get_item($key, $context_id = null)
     {
-        if (is_null($context_id))
+        $mvc = midgardmvc_core::get_instance();
+        $mvc->log('Midgard MVC', "Accessing request data via legacy context key {$key}", 'info');
+        if (is_null($this->request))
         {
-            $context_id = $this->current_context;
+            throw new Exception('No request set for context');
         }
-        
-        if (!isset($this->contexts[$context_id]))
-        {
-            throw new OutOfBoundsException("Midgard MVC context {$context_id} not found.");
-        }
-        
-        if (!isset($this->contexts[$context_id][$key]))
-        {
-            throw new OutOfBoundsException("Midgard MVC context key '{$key}' in context {$context_id} not found.");
-        }
-        
-        return $this->contexts[$context_id][$key];
+        return $this->request->get_data_item($key);
     }
 
     /**
@@ -153,17 +88,13 @@ class midgardmvc_core_helpers_context
      */
     public function set_item($key, $value, $context_id = null)
     {
-        if (is_null($context_id))
+        $mvc = midgardmvc_core::get_instance();
+        $mvc->log('Midgard MVC', "Setting request data via legacy context key {$key}", 'info');
+        if (is_null($this->request))
         {
-            $context_id = $this->current_context;
+            throw new Exception('No request set for context');
         }
-        
-        if (!isset($this->contexts[$context_id]))
-        {
-            throw new OutOfBoundsException("Midgard MVC context {$context_id} not found.");
-        }
-        
-        $this->contexts[$context_id][$key] = $value;
+        return $this->request->set_data_item($key, $value);
     }
 
     /**
@@ -196,13 +127,7 @@ class midgardmvc_core_helpers_context
      **/
     public function __isset($key)
     {
-        if (   isset($this->contexts[$this->current_context])
-            && isset($this->contexts[$this->current_context][$key]))
-        {
-            return true;
-        }
-
-        return false;
+        return $this->request->isset_data_item($key);
     }
 }
 ?>

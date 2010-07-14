@@ -17,7 +17,7 @@ interface midgardmvc_core_services_configuration
     
     public function load_instance($component, midgardmvc_core_node $folder);
 
-    public function normalize_routes($routes = null);
+    public function normalize_routes(midgardmvc_core_helpers_request $request, array $routes = null);
 
     /**
      * Retrieve a configuration key

@@ -33,8 +33,8 @@ class midgardmvc_appserv_app
             call_user_func($context['logger'], "-> starting midgardmvc");
             try {
                 ob_start();
-                $mvc->process();
-                $mvc->serve();
+                $request = $mvc->process();
+                $mvc->serve($request);
                 $body = ob_get_clean();
             } catch (StartNewRequestException $e) {
                 $body = ob_get_clean();

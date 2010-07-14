@@ -14,10 +14,10 @@ require('midgardmvc_core/framework.php');
 $midgardmvc = midgardmvc_core::get_instance('mjolnir');
     
 // Process the request
-$midgardmvc->process();
+$request = $midgardmvc->process();
 
 // Serve the request
-$midgardmvc->serve();
+$midgardmvc->serve($request);
 
 // End
 unset($midgardmvc);

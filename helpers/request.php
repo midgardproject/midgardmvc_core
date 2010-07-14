@@ -58,6 +58,11 @@ class midgardmvc_core_helpers_request
      */
     public $argv = array();
 
+    /**
+     * Data associated with the request, typically set by a controller and displayed by a template
+     */
+    private $data = array();
+
     public function __construct()
     {
     }
@@ -82,12 +87,20 @@ class midgardmvc_core_helpers_request
     }
 
     /**
+     * Get root node used in this request
+     */
+    public function get_root_node()
+    {
+        return $this->root_node;
+    }
+
+    /**
      * Set a page to be used in the request
      */
     public function set_node(midgardmvc_core_providers_hierarchy_node $node)
     {
         $this->node = $node;
-        $this->set_argv($node->get_arguments());
+        $this->set_arguments($node->get_arguments());
         $this->set_component($node->get_component());
     }
 
@@ -110,16 +123,65 @@ class midgardmvc_core_helpers_request
         return $this->component;
     }
 
-    public function set_argv(array $argv)
+    public function set_arguments(array $argv)
     {
         $this->argv = $argv;
     }
     
-    public function get_argv()
+    public function get_arguments()
     {
         return $this->argv;
     }
-    
+
+    public function set_data_item($key, $value)
+    {
+        $this->data[$key] = $value;
+    }
+
+    public function isset_data_item($key)
+    {
+        return isset($this->data[$key]);
+    }
+
+    public function get_data_item($key)
+    {
+        if (!isset($this->data[$key]))
+        {
+            // TODO: These are deprecated keys that used to be populated to context
+            switch ($key)
+            {
+                case 'root_node':
+                case 'root_page':
+                    return $this->root_node;
+                case 'component':
+                    return $this->component;
+                case 'uri':
+                    return $this->path;
+                case 'self':
+                    return $this->path;
+                case 'node':
+                case 'page':
+                    return $this->node;
+                case 'prefix':
+                    return $this->prefix;
+                case 'argv':
+                    return $this->argv;
+                case 'query':
+                    return $this->query;
+                case 'request_method':
+                    return $this->method;
+                default:
+                    throw new OutOfBoundsException("Midgard MVC request data '{$key}' not found.");
+            }
+        }
+        return $this->data[$key];
+    }
+
+    public function get_data()
+    {
+        return $this->data;
+    }
+
     public function set_method($method)
     {
         $this->method = strtolower($method);
@@ -189,25 +251,5 @@ class midgardmvc_core_helpers_request
         }
 
         $_core->context->cache_request_identifier = md5($identifier_source);
-    }
-
-    /**
-     * Populate request information info the Midgard MVC context
-     */
-    public function populate_context()
-    {
-        $_core = midgardmvc_core::get_instance();
-        $_core->context->templatedir_id = $this->templatedir_id;
-        $_core->context->root_node = $this->root_node;
-        $_core->context->component = $this->component;
-        
-        $_core->context->uri = $this->path;
-        $_core->context->self = $this->path;
-        $_core->context->node = $this->node;
-        $_core->context->prefix = $this->prefix;
-        $_core->context->argv = $this->argv;
-        $_core->context->query = $this->query;
-        $_core->context->request_method = $this->method;
-        $_core->context->webdav_request = false;
     }
 }

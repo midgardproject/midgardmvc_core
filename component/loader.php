@@ -342,9 +342,9 @@ class midgardmvc_core_component_loader
     }
 
     /**
-     * Injectors are component classes that manipulate the context
+     * Injectors are component classes that manipulate the request
      */
-    private function inject($injector_type)
+    private function inject(midgardmvc_core_helpers_request $request, $injector_type)
     {
         $injector_array = "{$injector_type}_injectors";
         $injector_method = "inject_{$injector_type}";
@@ -356,110 +356,19 @@ class midgardmvc_core_component_loader
             // Instantiate the injector class
             $injector = new $injector_class($this->_core->configuration);
             
-            // Inject
-            $injector->$injector_method();
+            // Inject the request
+            $injector->$injector_method($request);
         }
     }
 
-    public function inject_process()
+    public function inject_process(midgardmvc_core_helpers_request $request)
     {
-        $this->inject('process');
+        $this->inject($request, 'process');
     }
 
-    public function inject_template()
+    public function inject_template(midgardmvc_core_helpers_request $request)
     {
-        $this->inject('template');
-    }
-
-    public function get_action_categories()
-    {
-        return array_keys($this->category_action_providers);
-    }
-
-    public function get_object_actions($object)
-    {
-        $actions = array();
-
-        if (!is_object($object))
-        {
-            return $actions;
-        }
-        $type = get_class($object);
-        
-        $components_to_check = array();
-        $libraries_to_check = array();
-
-        if (isset($this->type_action_providers[$type]))
-        {
-            // Type-specific actions
-            foreach ($this->type_action_providers[$type] as $component)
-            {
-                if (   isset($this->manifests[$component]['library'])
-                    && $this->manifests[$component]['library'])
-                {
-                    $libraries_to_check[] = $component;
-                    continue;
-                }
-                $components_to_check[] = $component;
-            }
-        }
-
-        if (isset($this->type_action_providers['*']))
-        {
-            // Generic actions for any type
-            foreach ($this->type_action_providers['*'] as $component)
-            {
-                if (   isset($this->manifests[$component]['library'])
-                    && $this->manifests[$component]['library'])
-                {
-                    $libraries_to_check[] = $component;
-                    continue;
-                }
-                $components_to_check[] = $component;
-            }
-        }
-
-        foreach ($libraries_to_check as $component)
-        {
-            $interface = $this->_core->componentloader->load($component);
-            $component_actions = $interface->get_object_actions($object);
-            $actions = array_merge($actions, $component_actions);
-        }
-
-        if (!empty($components_to_check))
-        {
-            $qb = new midgard_query_builder('midgardmvc_core_node');
-            $qb->add_constraint('component', 'IN', $components_to_check);
-            $folders = $qb->execute();
-            foreach ($folders as $folder)
-            {
-                $interface = $this->_core->componentloader->load($folder->component, $folder);
-                $component_actions = $interface->get_object_actions($object);
-                $actions = array_merge($actions, $component_actions);
-            }
-        }
-
-        return $actions;
-    }
-
-    public function get_category_actions($category, midgardmvc_core_node $folder)
-    {
-        $actions = array();
-        
-        if (!isset($this->category_action_providers[$category]))
-        {
-            return $actions;
-        }
-        
-        foreach ($this->category_action_providers[$category] as $component)
-        {
-            $interface = $this->_core->componentloader->load($component, $folder);
-            $method = "get_{$category}_actions";
-            $component_actions = $interface->$method($folder);
-            $actions = array_merge($actions, $component_actions);
-        }
-        
-        return $actions;
+        $this->inject($request, 'template');
     }
 }
 ?>

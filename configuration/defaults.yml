@@ -2,10 +2,10 @@ services_authentication: midgardmvc_core_services_authentication_sessionauth
 services_authentication_cookie_cookiepath: /
 services_authentication_authtype: Plaintext
 services_authorization: midgardmvc_core_services_authorization_simple
-services_templating: midgardmvc_core_services_templating_midgard
+services_templating: midgardmvc_core_services_templating_midgardmvc
 services_templating_components:
     - midgardmvc_core
-services_templating_database_enabled: true
+services_templating_engine: tal
 services_configuration_database_enabled: true
 services_sessioning: midgardmvc_core_services_sessioning_midgard
 services_uimessages: midgardmvc_core_services_uimessages_simple
@@ -49,6 +49,7 @@ routes:
         controller: midgardmvc_core_controllers_page
         action: read
         route: /
+        content_entry_point: midgardmvc-show-page
     cache_invalidate:
         controller: midgardmvc_core_controllers_cache
         action: invalidate

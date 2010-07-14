@@ -48,12 +48,6 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         $this->midgardmvc->context->component_routes = $routes;
         return $this->midgardmvc->context->component_routes;
     }
-    
-    public function set_route($route_id, array $arguments)
-    {
-        $this->midgardmvc->context->route_id = $route_id;
-        $this->action_arguments = $arguments;
-    }
 
     /**
      * Load a component and dispatch the request to it
@@ -77,40 +71,10 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         $data = array();
         if (!method_exists($controller, $action_method))
         {
-            if (   $this->midgardmvc->context->request_method == 'get'
-                || $this->midgardmvc->context->request_method == 'post'
-                || $this->midgardmvc->context->request_method == 'head')
-            {
-                // Sometimes GET-only routes are dynamic_loaded on pages where we do a POST, we need to support that
-                $action_method = "get_{$selected_route_configuration['action']}";
-                if (!method_exists($controller, $action_method))
-                {
-                    // Fallback for the legacy "action_XX" method names that had the action_x($route_id, &$data, $args) signature
-                    // TODO: Remove when components are ready for it
-                    $action_method = "action_{$selected_route_configuration['action']}";
-                    if (!method_exists($controller, $action_method))
-                    {
-                        throw new midgardmvc_exception_notfound("Action {$selected_route_configuration['action']} not found");
-                    }
-
-                    $controller->$action_method($this->midgardmvc->context->route_id, $data, $this->action_arguments);
-                }
-                else
-                {
-                    $controller->data =& $data;
-                    $controller->$action_method($this->action_arguments);
-                }
-            }
-            else
-            {
-                throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} not allowed", 405);
-            }
+            throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} not allowed", 405);
         }
-        else
-        {
-            $controller->data =& $data;
-            $controller->$action_method($this->action_arguments);
-        }
+        $controller->data =& $data;
+        $controller->$action_method($this->action_arguments);
 
         if ($this->is_core_route($this->midgardmvc->context->route_id))
         {
