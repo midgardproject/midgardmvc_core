@@ -28,7 +28,7 @@ class midgardmvc_core_helpers_request
      *
      * @var midgardmvc_core_providers_hierarchy_node
      */
-    private $root_node = null;
+    private static $root_node = null;
 
     /**
      * The page to be used with the request
@@ -91,7 +91,7 @@ class midgardmvc_core_helpers_request
      */
     public function set_root_node(midgardmvc_core_providers_hierarchy_node $node)
     {
-        $this->root_node = $node;
+        self::$root_node = $node;
     }
 
     /**
@@ -99,7 +99,7 @@ class midgardmvc_core_helpers_request
      */
     public function get_root_node()
     {
-        return $this->root_node;
+        return self::$root_node;
     }
 
     /**
@@ -143,7 +143,29 @@ class midgardmvc_core_helpers_request
 
     public function set_data_item($key, $value)
     {
-        $this->data[$key] = $value;
+        // TODO: These are deprecated keys that used to be populated to context
+        switch ($key)
+        {
+            case 'root_node':
+            case 'root_page':
+                return $this->set_root_node($value);
+            case 'component':
+                return $this->set_component($value);
+            case 'node':
+            case 'page':
+                return $this->set_node($value);
+            case 'prefix':
+                return $this->set_prefix($value);
+            case 'argv':
+                return $this->set_arguments($value);
+            case 'query':
+                return $this->set_query($value);
+            case 'request_method':
+                return $this->set_method($value);
+            default:
+                $this->data[$key] = $value;
+                break;
+        }
     }
 
     public function isset_data_item($key)
@@ -160,7 +182,7 @@ class midgardmvc_core_helpers_request
             {
                 case 'root_node':
                 case 'root_page':
-                    return $this->root_node;
+                    return $this->get_root_node();
                 case 'component':
                     return $this->component;
                 case 'uri':
