@@ -33,7 +33,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (!$this->use_yaml)
         {
             // YAML PHP extension is not loaded, include the pure-PHP implementation
-            require_once 'midgardmvc_core/helpers/spyc.php';
+            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
         }
 
         $this->midgardmvc = midgardmvc_core::get_instance();

@@ -181,7 +181,7 @@ class midgardmvc_core_component_loader
         if (!extension_loaded('yaml'))
         {
             // YAML PHP extension is not loaded, include the pure-PHP implementation
-            require_once('midgardmvc_core/helpers/spyc.php');
+            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
             $manifest = Spyc::YAMLLoad($manifest_yaml);
         }
         else
