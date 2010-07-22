@@ -52,7 +52,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     /**
      * Load a component and dispatch the request to it
      */
-    public function dispatch()
+    public function dispatch(midgardmvc_core_helpers_request $request)
     {
         $route_definitions = $this->get_routes();
         if (!isset($route_definitions[$this->midgardmvc->context->route_id]))

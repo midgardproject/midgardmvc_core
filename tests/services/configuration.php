@@ -190,7 +190,8 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
         $initial_value = midgardmvc_core::get_instance()->configuration->get('log_level');
         
         // Then enter another context
-        midgardmvc_core::get_instance()->context->create();
+        $request = new midgardmvc_core_helpers_request();
+        midgardmvc_core::get_instance()->context->create($request);
         $new_value = midgardmvc_core::get_instance()->configuration->get('log_level');
         midgardmvc_core::get_instance()->context->delete();
         
