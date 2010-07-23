@@ -11,8 +11,40 @@ Basic building blocks:
 * Service: a standardized interface to access a given functionality. For example: authentication
 * Provider: a standardized interface to access given information. For example: hierarchy. The difference between Services and Providers is that Services perform tasks while Providers merely provide access to a particular type of data
 
-Serving a request
------------------
+Running Midgard MVC
+-------------------
+
+Midgard MVC is usually run from a _rootfile_ that is set as the target of a rewrite rule on your web server. With lighttpd, the rule might look like the following:
+
+    url.rewrite-once = ( "^/midcom-static/(.*)$" => "/midcom-static/$1",   "^(.*)\.*" => "midgard-root.php")
+
+The folder `midgardmvc_core/httpd` contains example rootfiles for different setups. A barebones rootfile would look like the following:
+
+    <?php
+    // Load Midgard MVC
+    // Note: your Midgard MVC base directory has to be in PHP include_path
+    require('midgardmvc_core/framework.php');
+    $midgardmvc = midgardmvc_core::get_instance('midgard3');
+        
+    // Process the request
+    $request = $midgardmvc->process();
+
+    // Serve the request
+    $midgardmvc->serve($request);
+
+    // End
+    unset($midgardmvc);
+    ?>
+
+If you want to use Midgard content repository together with Midgard MVC, ensure that you have the `midgard2` extension enabled in your `php.ini` with `midgard.configuration_file` pointing to your database configuration and `midgard.http=On`.
+
+### Running Midgard MVC with the PHP AppServer
+
+It is also possible to run Midgard MVC using the PHP-based AppServer as your web server. In that case you need an installation of the AppServer in your PHP include path, and just have to run the following command:
+
+    $ php midgardmvc_core/httpd/midcom-root-mjolnir-appserv.php
+
+### Midgard MVC request process
 
 * Bootstrapping
   * Midgard MVC bootstrap PHP file (`framework.php`) is called
