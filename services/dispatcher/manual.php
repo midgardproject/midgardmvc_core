@@ -34,14 +34,6 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         return $request;
     }
     
-    public function initialize(midgardmvc_core_helpers_request $request)
-    {
-        // In main Midgard request we dispatch the component in connection to a page
-        $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component);
-        $this->midgardmvc->templating->prepare_stack($request);
-    }
-    
     public function get_routes()
     {
         $routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->configuration->get('routes'));
@@ -54,6 +46,10 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
      */
     public function dispatch(midgardmvc_core_helpers_request $request)
     {
+        $this->midgardmvc->context->component = $request->get_component();
+        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component);
+        $this->midgardmvc->templating->prepare_stack($request);
+
         $route_definitions = $this->get_routes();
         if (!isset($route_definitions[$this->midgardmvc->context->route_id]))
         {

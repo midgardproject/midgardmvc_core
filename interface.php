@@ -307,8 +307,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             )
         );
 
-        // Then initialize the component, so it also goes to template stack
-        $this->dispatcher->initialize($request);
         try
         {
             $this->dispatcher->dispatch($request);

@@ -168,9 +168,7 @@ Within any stage of Midgard MVC execution you can make a sub-request in the foll
     // Get a Request object based on the intent
     $request = midgardmvc_core_helpers_request::get_for_intent($intent);
     // Process the Request
-    $mvc = midgardmvc_core::get_instance();
-    $mvc->dispatcher->initialize($request);
-    $mvc->dispatcher->dispatch($request);
+    midgardmvc_core::get_instance()->dispatcher->dispatch($request);
     // Use the resulting data
     $component_data = $request->get_data_item('current_component');
     echo $component_data['date'];

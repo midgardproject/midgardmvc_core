@@ -141,19 +141,15 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         exit();
     }
 
-    public function initialize(midgardmvc_core_helpers_request $request)
-    {
-        // In main Midgard request we dispatch the component in connection to a page
-        $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($request->get_component());
-        $this->midgardmvc->templating->prepare_stack($request);
-    }
-
     /**
      * Load a component and dispatch the request to it
      */
     public function dispatch(midgardmvc_core_helpers_request $request)
     {
+        $this->midgardmvc->context->component = $request->get_component();
+        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($request->get_component());
+        $this->midgardmvc->templating->prepare_stack($request);
+
         $route_definitions = $this->midgardmvc->configuration->normalize_routes($request);
 
         $route_id_map = array();

@@ -197,7 +197,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $this->midgardmvc->componentloader->inject_process($request);
 
         // Then initialize the component, so it also goes to template stack
-        $this->dispatcher->initialize($request);
         $this->dispatcher->set_route($route_id, $arguments);
         $this->dispatcher->dispatch($request);
 

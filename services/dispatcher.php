@@ -20,9 +20,7 @@ interface midgardmvc_core_services_dispatcher
 
     public function get_request();
     
-    public function initialize(midgardmvc_core_helpers_request $request);
-    
-    public function dispatch(midgardmvc_core_helpers_request $request);    
+    public function dispatch(midgardmvc_core_helpers_request $request);
     
     public function generate_url($intent, $route_id, array $args);
     
