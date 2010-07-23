@@ -31,7 +31,7 @@ class midgardmvc_core_component_loader
     
     public function can_load($component)
     {
-        if (isset($this->tried_to_load[$component]))
+        if (array_key_exists($component, $this->tried_to_load))
         {
             // We have already loaded (or tried and failed to load) the component
             return $this->tried_to_load[$component];

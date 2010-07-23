@@ -16,6 +16,11 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         $this->content =& $node->content;
     }
 
+    public function get_object()
+    {
+        return $this->node;
+    }
+
     public function get_component()
     {
         return $this->node->component;
