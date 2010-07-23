@@ -290,7 +290,7 @@ class midgardmvc_core_helpers_request
         
         if ($this->data['cache_enabled'])
         {
-            switch ($_core->context->cache_strategy)
+            switch ($this->data['cache_strategy'])
             {
                 case 'public':
                     // Shared cache for everybody

@@ -25,9 +25,13 @@ class midgardmvc_core_controllers_about
         $this->data['versions'] = array
         (
             'midgardmvc'  => midgardmvc_core::get_instance()->componentloader->manifests['midgardmvc_core']['version'],
-            'midgard' => mgd_version(),
             'php'     => phpversion(),
         );
+
+        if (extension_loaded('midgard2'))
+        {
+            $this->data['versions']['midgard2'] = mgd_version();
+        }
         
         $this->data['components'] = array();
         foreach (midgardmvc_core::get_instance()->componentloader->manifests as $component => $manifest)

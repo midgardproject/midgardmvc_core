@@ -83,16 +83,18 @@ class midgardmvc_core_exceptionhandler
                 return;
             }
 
-            if ($midgardmvc->configuration && $midgardmvc->configuration->enable_exception_trace)
+            if (   $midgardmvc->configuration 
+                && $midgardmvc->configuration->enable_exception_trace)
             {
                 $data['trace'] = $exception->getTrace();
             }
 
             try
             {
-                if (!$midgardmvc->context)
+                if ($midgardmvc->context->get_current_context() == 0)
                 {
-                    throw new Exception('no context found');
+                    $request = new midgardmvc_core_helpers_request();
+                    $midgardmvc->context->create($request);
                 }
 
                 $midgardmvc->context->set_item('midgardmvc_core_exceptionhandler', $data);

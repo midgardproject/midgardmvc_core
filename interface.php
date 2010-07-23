@@ -297,16 +297,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->componentloader = new midgardmvc_core_component_loader();
         $this->componentloader->inject_process($request);
 
-        // Show the world this is Midgard
-        $this->head->add_meta
-        (
-            array
-            (
-                'name' => 'generator',
-                'content' => "Midgard/" . mgd_version() . " MidgardMVC/{$this->componentloader->manifests['midgardmvc_core']['version']} PHP/" . phpversion()
-            )
-        );
-
         try
         {
             $this->dispatcher->dispatch($request);
@@ -317,7 +307,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             $this->authentication->handle_exception($exception);
         }
 
-        $this->dispatcher->header('Content-Type: ' . $this->context->mimetype);
+        $this->dispatcher->header('Content-Type: ' . $request->get_data_item('mimetype'));
 
         return $request;
     }

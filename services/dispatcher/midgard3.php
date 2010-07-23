@@ -38,11 +38,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
      */
     public function __construct()
     {
-        if (!extension_loaded('midgard2'))
-        {
-            throw new Exception('Midgard 2.x is required for this Midgard MVC setup.');
-        }
-
         $this->midgardmvc = midgardmvc_core::get_instance();
 
         $this->midgardmvc->load_provider('hierarchy');
