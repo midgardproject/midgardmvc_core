@@ -39,19 +39,19 @@ Component structure
 A component is a functional module that runs inside Midgard MVC. It is usually run associated to a particular Midgard MVC Node, but can also tack itself to be run alongside another component's Node.
 
 * component_name
-  * manifest.yml: Component's package manifest, routes and signal listener registration
+  * `manifest.yml`: Component's package manifest, routes and signal listener registration
   * configuration
-    - defaults.yml: Component's default configuration, as name-value pairs
+     - `defaults.yml`: Component's default configuration, as name-value pairs
   * controllers
-    - ControllerName.php: A controller class for the component
+     - `ControllerName.php`: A controller class for the component
   * models
-    - classname.xml: Midgard Schema used by the component, registers type "classname"
-    - viewname.xml: Midgard View used by the component, registers view "viewname"
-    - classname.php: PHP class that extends a Midgard Schema
+     - `classname.xml`: Midgard Schema used by the component, registers type `classname`
+     - `viewname.xml`: Midgard View used by the component, registers view `viewname`
+     - `classname.php`: PHP class that extends a Midgard Schema
   * services
-    -  Authentication.php: component-specific implementation of Midgard MVC Authentication Service
+     - `Authentication.php`: component-specific implementation of Midgard MVC Authentication Service
   * templates
-    - templatename.xhtml: A TAL template used by the component, named "templatename"
+     - `templatename.xhtml`: A TAL template used by the component, named `templatename`
 
 Routes
 ------
@@ -145,11 +145,11 @@ Templates are defined by giving them a name. For example, a template for display
 
 When the templating phase of the route happens, MVC will look for such element from the template stack. Template stack is a list of components running with the current request. First MVC looks for the element in the current component, and if it can't be found there it goes looking for it down the stack:
 
-* Current running component templates directory
-* templates directories of any components injected to the template stack
-* Midgard MVC core templates directory
+* Current running component `templates` directory
+* `templates` directories of any components injected to the template stack
+* Midgard MVC core `templates` directory
 
-The first matching template element will be used and executed via TAL. The data returned by the component will be exposed into TAL as a "current_component" variable. In case of our date example the template could simply be a `net_example_calendar/templates/show-date.html` file with following contents:
+The first matching template element will be used and executed via TAL. The data returned by the component will be exposed into TAL as a `current_component` variable. In case of our date example the template could simply be a `net_example_calendar/templates/show-date.html` file with following contents:
 
     <p>Current date is <span tal:content="current_component/date">5/8/1999 01:00</span></p>
 
