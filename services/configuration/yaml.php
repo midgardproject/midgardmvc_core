@@ -13,169 +13,76 @@
  */
 class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_services_configuration
 {
-    private $configuration = array
-    (
-        0 => array()
-    );
+    static $configuration = array();
     
-    private $configuration_for_component = array();
-    
-    private $configuration_for_instance = array();
-    
-    private $midgardmvc = null;
-    
-    private $use_yaml = true;
+    static $use_yaml = null;
     
     public function __construct()
     {
-        // Check for YAML extension
-        $this->use_yaml = extension_loaded('yaml');
-        if (!$this->use_yaml)
+        if (is_null(self::$use_yaml))
         {
-            // YAML PHP extension is not loaded, include the pure-PHP implementation
-            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            // Check for YAML extension
+            self::$use_yaml = extension_loaded('yaml');
+            if (!self::$use_yaml)
+            {
+                // YAML PHP extension is not loaded, include the pure-PHP implementation
+                require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            }
         }
 
-        $this->midgardmvc = midgardmvc_core::get_instance();
+        $this->mvc = midgardmvc_core::get_instance();
     }
 
-    private function get_current_context()
+    public function load_array_to_component($component, array $config)
     {
-        if (!isset($this->midgardmvc->context))
+        if (!isset(self::$configuration[$component]))
         {
-            return 0;
+            self::$configuration[$component] = $config;
+            return;
         }
-        
-        $context = $this->midgardmvc->context->get_current_context();
-        if (!isset($this->configuration[$context]))
-        {
-            // Copy context 0 configuration as basis
-            $this->configuration[$context] = $this->configuration[0];
-        }
-        return $context;
-    }
 
-    public function load_array(array $config, $prepend = false)
-    {
-        if ($prepend)
-        {
-            $this->configuration[$this->get_current_context()] = self::merge_configs($config, $this->configuration[$this->get_current_context()]);
-        }
-        else
-        {
-            $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $config);
-        }
+        self::$configuration[$component] = self::merge_configs(self::$configuration[$component], $config);
     }
 
     /**
      * Load configuration for a Midgard MVC component and place it to the configuration stack
      */
-    public function load_component($component, $prepend = false)
+    public function load_component($component)
     {
-        if (isset($this->configuration_for_component[$component]))
+        if (isset(self::$configuration[$component]))
         {
-            // We have already loaded configuration for this component, keep it
-            if (empty($this->configuration[$this->get_current_context()]))
+            $config = self::$configuration[$component];
+        }
+        else
+        {
+            // Check for component inheritance
+            if (isset($this->mvc->componentloader))
             {
-                $this->configuration[$this->get_current_context()] = $this->configuration_for_component[$component];
-                return;
+                $components = $this->mvc->componentloader->get_tree($component);
             }
             else
             {
-                $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $this->configuration_for_component[$component]);
-                return;
+                $components = array
+                (
+                    $component,
+                );
             }
-        }        
-        
-        // Check for component inheritance
-        if (isset($this->midgardmvc->componentloader))
-        {
-            $components = $this->midgardmvc->componentloader->get_tree($component);
-        }
-        else
-        {
-            $components = array
-            (
-                $component,
-            );
-        }
-        $config = array();
-        foreach ($components as $load_component)
-        {
-            if (isset($this->configuration_for_component[$load_component]))
+            $config = array();
+            foreach ($components as $load_component)
             {
-                // We already have this component and its parents, no need to traverse further
-                $config = self::merge_configs($this->configuration_for_component[$load_component], $config);
-                break;
-            }
-            
-            // Load component default config from filesystem 
-            $component_config = $this->load_file(MIDGARDMVC_ROOT . "/{$load_component}/configuration/defaults.yml");
-            if (!empty($component_config))
-            {
+                if (isset(self::$configuration[$load_component]))
+                {
+                    // We already have this component and its parents, no need to traverse further
+                    $config = self::merge_configs(self::$configuration[$load_component], $config);
+                    break;
+                }
+                
+                // Load component default config from filesystem 
+                $component_config = $this->load_file(MIDGARDMVC_ROOT . "/{$load_component}/configuration/defaults.yml");
                 $config = self::merge_configs($component_config, $config);
+                self::$configuration[$load_component] = $config;
             }
         }
-       
-        if ($prepend)
-        {
-            $this->configuration_for_component[$component] = self::merge_configs($config, $this->configuration[$this->get_current_context()]);
-        }
-        else
-        {
-            $this->configuration_for_component[$component] = self::merge_configs($this->configuration[$this->get_current_context()], $config);
-        }
-        
-        $this->configuration[$this->get_current_context()] = $this->configuration_for_component[$component];
-    }
-
-    /**
-     * Load configuration from a Midgard object
-     */   
-    public function load_instance($component, midgardmvc_core_node $folder)
-    {
-        if (isset($this->configuration_for_instance["{$component}_{$folder->guid}"]))
-        {
-            // We have already loaded configuration for this component, keep it
-            if (!empty($this->configuration_for_instance["{$component}_{$folder->guid}"]))
-            {
-                $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $this->configuration_for_instance["{$component}_{$folder->guid}"]);
-            }
-            return;
-        }
-        
-        if (!$this->midgardmvc->dispatcher->get_midgard_connection())
-        {
-            // No DB connection available, skip
-            return;
-        }
-
-        $mc = midgard_parameter::new_collector('parentguid', $folder->guid);
-        $mc->add_constraint('domain', '=', $component);
-        // TODO: Parent components too via IN statement
-        $mc->add_constraint('name', '=', 'configuration');
-        $mc->add_constraint('value', '<>', '');
-        $mc->set_key_property('guid');
-        $mc->add_value_property('value');
-        $mc->execute();
-        $guids = $mc->list_keys();
-        $config = array();
-        foreach ($guids as $guid => $array)
-        {
-            $config = $this->unserialize($mc->get_subkey($guid, 'value'));
-            if (!is_array($config))
-            {
-                return;
-            }
-        }
-
-        $this->configuration_for_instance["{$component}_{$folder->guid}"] = $config;
-        if (empty($config))
-        {
-            return;
-        }
-
-        $this->configuration[$this->get_current_context()] = self::merge_configs($this->configuration[$this->get_current_context()], $config);
     }
 
     public static function merge_configs(array $base, array $extension)
@@ -184,6 +91,10 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         {
             // Original was empty, no need to merge
             return $extension;
+        }
+        elseif (empty($extension))
+        {
+            return $base;
         }
         $merged = $base;
         
@@ -254,62 +165,10 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         return $configuration;
     }
 
-    /**
-     * Internal helper of loading configuration array from a snippet
-     *
-     * @param string $snippet_path
-     * @return array
-     */
-    private function load_snippet($snippet_path)
+    private function get_identifier()
     {
-        if (is_null($this->midgardmvc))
-        {
-            $this->midgardmvc = midgardmvc_core::get_instance();
-        }
-
-        if (!$this->midgardmvc->dispatcher->get_midgard_connection())
-        {
-            return array();
-        }
-
-        try
-        {
-            $snippet = new midgard_snippet();
-            $snippet->get_by_path($snippet_path);
-        }
-        catch (Exception $e) 
-        {
-            return array();
-        }
-        $configuration = $this->unserialize($snippet->code);
-        if (!is_array($configuration))
-        {
-            return array();
-        }
-        return $configuration;
+        return $this->mvc->context->get_context_identifier();
     }
-
-    /* 
-    private function load_locals()
-    {
-        $this->locals = array();
-        foreach ($this->components as $component)
-        {
-            $snippet_path = "/local-configuration/{$component}/configuration";
-            $components = $this->load_snippet($snippet_path);
-            if (empty($this->locals))
-            {
-                $this->locals = $components;
-                continue;
-            }
-            if (empty($components))
-            {
-                continue;
-            }
-            $this->locals = self::merge_configs($this->locals, $components);
-        }
-    }
-    */
 
     /**
      * Retrieve a configuration key
@@ -325,30 +184,27 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     {
         if (!$this->exists($key))
         {
-            throw new OutOfBoundsException("Configuration key '{$key}' does not exist.");
+            $identifier = $this->get_identifier();
+            throw new OutOfBoundsException("Configuration key '{$key}' does not exist in {$identifier}.");
         }
 
+        $identifier = $this->get_identifier();
         if (!is_null($subkey))
-        {                      
-            if (!isset($this->configuration[$this->get_current_context()][$key][$subkey]))
+        {
+            if (!isset(self::$configuration[$identifier][$key][$subkey]))
             {
-                throw new OutOfBoundsException("Configuration key '{$key}/{$subkey}' does not exist.");
+                throw new OutOfBoundsException("Configuration key '{$key}/{$subkey}' does not exist in {$identifier}.");
             }
 
-            return $this->configuration[$this->get_current_context()][$key][$subkey];
+            return self::$configuration[$identifier][$key][$subkey];
         }
 
-        return $this->configuration[$this->get_current_context()][$key];
+        return self::$configuration[$identifier][$key];
     }
 
     public function __get($key)
     {
         return $this->get($key);
-    }
-    
-    public function set_value($key, $value)
-    {
-        $this->configuration[$this->get_current_context()][$key] = $value;
     }
 
     /**
@@ -359,7 +215,14 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function exists($key)
     {
-        return array_key_exists($key, $this->configuration[$this->get_current_context()]);
+        $identifier = $this->get_identifier();
+        if (!isset(self::$configuration[$identifier]))
+        {
+            // Empty configuration, we need to merge it
+            self::$configuration[$identifier] = self::$configuration[$this->mvc->context->component];
+        }
+
+        return array_key_exists($key, self::$configuration[$identifier]);
     }
 
     public function __isset($key)
@@ -375,7 +238,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function unserialize($configuration)
     {
-        if (!$this->use_yaml)
+        if (!self::$use_yaml)
         {
             return Spyc::YAMLLoad($configuration);
         }
@@ -391,7 +254,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function serialize(array $configuration)
     {
-        if (!$this->use_yaml)
+        if (!self::$use_yaml)
         {
             return Spyc::YAMLDump($configuration);
         }
@@ -407,11 +270,6 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
      */
     public function normalize_routes(midgardmvc_core_helpers_request $request, array $routes = null)
     {
-        if (is_null($this->midgardmvc))
-        {
-            $this->midgardmvc = midgardmvc_core::get_instance();
-        }
-
         if (is_null($routes))
         {
             if ($request->isset_data_item('component_routes'))

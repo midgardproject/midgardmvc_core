@@ -219,12 +219,12 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     public function test_contexts()
     {
         midgardmvc_core::get_instance()->configuration->load_component('midgardmvc_core');
-        $initial_value = midgardmvc_core::get_instance()->configuration->get('log_level');
+        $initial_value = midgardmvc_core::get_instance()->configuration->get('services_authentication');
         
         // Then enter another context
         $request = new midgardmvc_core_helpers_request();
         midgardmvc_core::get_instance()->context->create($request);
-        $new_value = midgardmvc_core::get_instance()->configuration->get('log_level');
+        $new_value = midgardmvc_core::get_instance()->configuration->get('services_authentication');
         midgardmvc_core::get_instance()->context->delete();
         
         $this->assertEquals($initial_value, $new_value);

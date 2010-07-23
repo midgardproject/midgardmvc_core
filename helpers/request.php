@@ -274,12 +274,12 @@ class midgardmvc_core_helpers_request
     /**
      * Generate a valid cache identifier for a context of the current request
      */
-    public function generate_identifier()
+    public function get_identifier()
     {
         if (isset($this->data['cache_request_identifier']))
         {
             // An injector has generated this already, let it be
-            return;
+            return $this->data['cache_request_identifier'];
         }
 
         $identifier_source  = "URI={$this->path}";
@@ -288,7 +288,8 @@ class midgardmvc_core_helpers_request
         // TODO: Check language settings
         $identifier_source .= ';LANG=ALL';
         
-        if ($this->data['cache_enabled'])
+        if (   isset($this->data['cache_enabled'])
+            && $this->data['cache_enabled'])
         {
             switch ($this->data['cache_strategy'])
             {
@@ -312,6 +313,7 @@ class midgardmvc_core_helpers_request
         }
 
         $this->data['cache_request_identifier'] = md5($identifier_source);
+        return $this->data['cache_request_identifier'];
     }
 
     /**
