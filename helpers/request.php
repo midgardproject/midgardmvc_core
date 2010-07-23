@@ -76,6 +76,7 @@ class midgardmvc_core_helpers_request
     {
         $node = midgardmvc_core::get_instance()->hierarchy->get_node_by_path($path);
         $this->set_node($node);
+        $this->path = $path;
     }
 
     /**
@@ -254,8 +255,8 @@ class midgardmvc_core_helpers_request
             return;
         }
 
-        $identifier_source  = "URI={$_core->context->uri}";
-        $identifier_source .= ";COMP={$_core->context->component}";
+        $identifier_source  = "URI={$this->path}";
+        $identifier_source .= ";COMP={$this->component}";
         
         // TODO: Check language settings
         $identifier_source .= ';LANG=ALL';

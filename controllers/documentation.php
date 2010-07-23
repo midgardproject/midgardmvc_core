@@ -13,7 +13,7 @@
  */
 class midgardmvc_core_controllers_documentation
 {
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
         $this->configuration = $this->midgardmvc->configuration;

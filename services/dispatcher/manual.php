@@ -46,8 +46,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
      */
     public function dispatch(midgardmvc_core_helpers_request $request)
     {
-        $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($this->midgardmvc->context->component);
+        $this->midgardmvc->componentloader->load($request->get_component);
         $this->midgardmvc->templating->prepare_stack($request);
 
         $route_definitions = $this->get_routes();

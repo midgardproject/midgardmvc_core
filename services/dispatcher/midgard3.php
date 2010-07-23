@@ -146,8 +146,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
      */
     public function dispatch(midgardmvc_core_helpers_request $request)
     {
-        $this->midgardmvc->context->component = $request->get_component();
-        $this->midgardmvc->context->component_instance = $this->midgardmvc->componentloader->load($request->get_component());
+        $this->midgardmvc->componentloader->load($request->get_component());
         $this->midgardmvc->templating->prepare_stack($request);
 
         $route_definitions = $this->midgardmvc->configuration->normalize_routes($request);
@@ -235,7 +234,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         // Initialize controller
         $controller_class = $route['controller'];
         // FIXME: Component instance is not really necessary here
-        $controller = new $controller_class($this->midgardmvc->context->component_instance);
+        $controller = new $controller_class();
         $controller->request = $request;
     
         // Define the action method for the route_id

@@ -14,7 +14,7 @@
 class midgardmvc_core_controllers_attachment
 {
 
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct()
     {
       $this->configuration = $instance->configuration;
     }

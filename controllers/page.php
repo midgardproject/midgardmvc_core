@@ -13,7 +13,7 @@
  */
 class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_baseclasses_crud
 {
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct()
     {
         $this->configuration =& midgardmvc_core::get_instance()->configuration;
     }

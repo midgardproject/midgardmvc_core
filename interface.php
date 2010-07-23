@@ -291,7 +291,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         // Disable cache for now
         $request->set_data_item('cache_enabled', false);
 
-        $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$request->path} at " . gmdate('r'), 'info');
+        $this->log('Midgard MVC', 'Serving ' . $request->get_method() . ' ' . $request->get_path() . ' at ' . gmdate('r'), 'info');
 
         // Let injectors do their work
         $this->componentloader = new midgardmvc_core_component_loader();

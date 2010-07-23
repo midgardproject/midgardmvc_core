@@ -149,7 +149,7 @@ When the templating phase of the route happens, MVC will look for such element f
 * `templates` directories of any components injected to the template stack
 * Midgard MVC core `templates` directory
 
-The first matching template element will be used and executed via TAL. The data returned by the component will be exposed into TAL as a `current_component` variable. In case of our date example the template could simply be a `net_example_calendar/templates/show-date.html` file with following contents:
+The first matching template element will be used and executed via TAL. The data returned by the component will be exposed into TAL as a `current_component` variable. In case of our date example the template could simply be a `net_example_calendar/templates/show-date.xhtml` file with following contents:
 
     <p>Current date is <span tal:content="current_component/date">5/8/1999 01:00</span></p>
 
