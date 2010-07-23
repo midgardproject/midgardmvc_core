@@ -30,9 +30,11 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
-    public function get_cache_identifier()
+    public function get_cache_identifier(midgardmvc_core_helpers_request $request)
     {
-        return "{$this->midgardmvc->context->node->name}-{$this->midgardmvc->context->route_id}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+        $request->generate_identifier();
+        return $request->get_data_item('cache_request_identifier');
+        //return "{$request->get_node()->name}-{$request->get_route()}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
     }
 
     public function prepare_stack(midgardmvc_core_helpers_request $request)
@@ -266,18 +268,18 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         // Check if we have the element in cache already
         if (   !$this->midgardmvc->configuration->development_mode
-            && $this->midgardmvc->cache->template->check($this->get_cache_identifier()))
+            && $this->midgardmvc->cache->template->check($this->get_cache_identifier($request)))
         {
             return;
         }
 
         // Register current page to cache
-        $this->midgardmvc->cache->template->register($this->get_cache_identifier(), array($request->get_component()));
+        $this->midgardmvc->cache->template->register($this->get_cache_identifier($request), array($request->get_component()));
 
         $element = $this->get_element($request->get_data_item($element_identifier));
         
         // Template cache didn't have this template, collect it
-        $this->midgardmvc->cache->template->put($this->get_cache_identifier(), $element);
+        $this->midgardmvc->cache->template->put($this->get_cache_identifier($request), $element);
     }
     
     /**
@@ -289,7 +291,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     {
         $data =& $request->get_data();
 
-        $template_file = $this->midgardmvc->cache->template->get($this->get_cache_identifier());
+        $template_file = $this->midgardmvc->cache->template->get($this->get_cache_identifier($request));
         $content = file_get_contents($template_file);
 
         if (strlen($content) == 0)
@@ -359,7 +361,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // FIXME: Rethink whole tal modifiers concept 
         include_once('TAL/modifiers.php');
         
-        $tal = new PHPTAL($this->get_cache_identifier());
+        $tal = new PHPTAL($this->get_cache_identifier($request));
         
         $tal->uimessages = false;
         if ($this->midgardmvc->configuration->enable_uimessages)

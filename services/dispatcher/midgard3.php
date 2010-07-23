@@ -177,7 +177,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
             try
             {   
                 $success_flag = true; // before trying route it's marked success
-                $this->midgardmvc->context->route_id = $route_id;
+                $request->set_route($route_id);
                 $this->dispatch_route($request, $route_definitions[$route_id], $arguments);
             }
             catch (Exception $e)

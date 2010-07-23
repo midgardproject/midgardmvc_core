@@ -53,6 +53,10 @@ class midgardmvc_core_helpers_request
 
     private $path_for_page = array();
 
+    private $route = null;
+
+    private $template_aliases = array();
+
     /**
      * URL parameters after page has been resolved
      */
@@ -132,6 +136,16 @@ class midgardmvc_core_helpers_request
         return $this->component;
     }
 
+    public function set_route($route)
+    {
+        $this->route = $route;
+    }
+
+    public function get_route()
+    {
+        return $this->route;
+    }
+
     public function set_arguments(array $argv)
     {
         $this->argv = $argv;
@@ -140,6 +154,20 @@ class midgardmvc_core_helpers_request
     public function get_arguments()
     {
         return $this->argv;
+    }
+
+    public function set_template_alias($alias, $template)
+    {
+        $this->template_aliases[$alias] = $template;
+    }
+
+    public function get_template_alias($alias)
+    {
+        if (!isset($this->template_aliases[$alias]))
+        {
+            return $alias;
+        }
+        return $this->template_aliases[$alias];
     }
 
     public function set_data_item($key, $value)
@@ -248,8 +276,7 @@ class midgardmvc_core_helpers_request
      */
     public function generate_identifier()
     {
-        $_core = midgardmvc_core::get_instance();
-        if (isset($_core->context->cache_request_identifier))
+        if (isset($this->data['cache_request_identifier']))
         {
             // An injector has generated this already, let it be
             return;
@@ -261,27 +288,30 @@ class midgardmvc_core_helpers_request
         // TODO: Check language settings
         $identifier_source .= ';LANG=ALL';
         
-        switch ($_core->context->cache_strategy)
+        if ($this->data['cache_enabled'])
         {
-            case 'public':
-                // Shared cache for everybody
-                $identifier_source .= ';USER=EVERYONE';
-                break;
-            default:
-                // Per-user cache
-                if ($_core->authentication->is_user())
-                {
-                    $user = $_core->authentication->get_person();
-                    $identifier_source .= ";USER={$user->username}";
-                }
-                else
-                {
-                    $identifier_source .= ';USER=ANONYMOUS';
-                }
-                break;
+            switch ($_core->context->cache_strategy)
+            {
+                case 'public':
+                    // Shared cache for everybody
+                    $identifier_source .= ';USER=EVERYONE';
+                    break;
+                default:
+                    // Per-user cache
+                    if ($_core->authentication->is_user())
+                    {
+                        $user = $_core->authentication->get_person();
+                        $identifier_source .= ";USER={$user->username}";
+                    }
+                    else
+                    {
+                        $identifier_source .= ';USER=ANONYMOUS';
+                    }
+                    break;
+            }
         }
 
-        $_core->context->cache_request_identifier = md5($identifier_source);
+        $this->data['cache_request_identifier'] = md5($identifier_source);
     }
 
     /**
