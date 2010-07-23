@@ -20,7 +20,6 @@ services_cache_configuration:
 providers_hierarchy: midgardmvc_core_providers_hierarchy_midgardmvc
 midgardmvc_root_page: '4a2f5298c09611de9dcf75343667cef6cef6'
 log_file: __MIDGARDLOG__/__SERVERNAME__.__LOGNAME__.log
-log_level: warn
 development_mode: false
 enable_exception_trace: false
 enable_webdav: true

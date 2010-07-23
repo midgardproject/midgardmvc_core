@@ -283,8 +283,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
 
     private function _process()
     {
-        $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
-
         // Let dispatcher populate request with the node and other information used
         $request = $this->dispatcher->get_request();
         // TODO: We give it to context to emulate legacy functionality
