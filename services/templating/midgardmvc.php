@@ -32,9 +32,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
     public function get_cache_identifier(midgardmvc_core_helpers_request $request)
     {
-        $request->generate_identifier();
-        return $request->get_data_item('cache_request_identifier');
-        //return "{$request->get_node()->name}-{$request->get_route()}-{$this->midgardmvc->context->template_entry_point}-{$this->midgardmvc->context->content_entry_point}";
+        return $request->get_identifier();
     }
 
     public function prepare_stack(midgardmvc_core_helpers_request $request)
@@ -136,11 +134,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             if (   $element_content
                 && !in_array($element, $this->elements_shown))
             {
-                if ($this->midgardmvc->firephp)
-                {
-                    $this->midgardmvc->firephp->log("Included template '{$element}' from {$type} {$identifier}");
-                }
-
                 $this->elements_shown[] = $element;
 
                 $this->stack_elements[$stack][$element] = $element_content;

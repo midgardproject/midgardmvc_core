@@ -258,16 +258,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
             throw $e;
         }
 
-        if ($this->midgardmvc->firephp)
-        {
-            $this->midgardmvc->firephp->group("Route " . get_class($controller) . "::{$action_method}");
-            $this->midgardmvc->firephp->log($route, 'With configuration');
-            //FIXME: enable when #1489 is fixed
-            // $this->midgardmvc->firephp->dump('Returned', $data);
-            $this->midgardmvc->firephp->log(array_keys($data), 'Returned keys');
-            $this->midgardmvc->firephp->groupEnd();
-        }
-
         $this->data_to_request($request, $route, $controller->data);
     }
 

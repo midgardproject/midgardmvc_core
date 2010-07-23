@@ -28,13 +28,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      */
     public $context;
     
-    /**
-     * Access to installed FirePHP logger
-     *
-     * @var FirePHP
-     */
-    public $firephp = null;
-    
     private static $instance = null;
 
     public function __construct()
@@ -53,21 +46,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->configuration->load_component('midgardmvc_core');
         if (!is_null($local_configuration))
         {
-            $this->configuration->load_array($local_configuration);
-        }
-
-        if (    $this->configuration->development_mode
-            and !class_exists('MFS\AppServer\DaemonicHandler') // firephp is not appserver-compatible
-            and !class_exists('MFS_AppServer_DaemonicHandler') // + check for php52 version of class
-           )
-        {
-            // Load FirePHP logger
-            // TODO: separate setting
-            include('FirePHPCore/FirePHP.class.php');
-            if (class_exists('FirePHP'))
-            {
-                $this->firephp = FirePHP::getInstance(true);
-            }
+            $this->configuration->load_array_to_component('midgardmvc_core', $local_configuration);
         }
     }
     
@@ -153,29 +132,6 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         }
 
         midgard_error::$loglevel("{$prefix}: {$message}");
-
-        if (   $this->firephp
-            && !$this->dispatcher->headers_sent())
-        {
-            $firephp_loglevel = $loglevel;
-            // Handle mismatching loglevels
-            switch ($loglevel)
-            {
-                case 'debug':
-                case 'message':
-                    $firephp_loglevel = 'log';
-                    break;
-                case 'warn':
-                case 'warning':
-                    $firephp_loglevel = 'warn';
-                    break;
-                case 'error':
-                case 'critical':
-                    $firephp_loglevel = 'error';
-                    break;
-            }
-            $this->firephp->$firephp_loglevel("{$prefix}: {$message}");
-        }
     }
 
     private function log_with_helper($prefix, $message, $loglevel)

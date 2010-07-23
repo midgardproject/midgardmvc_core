@@ -36,11 +36,6 @@ class midgardmvc_core_exceptionhandler
 
         $midgardmvc->log($message_type, $message, 'warning');
 
-        if ($midgardmvc->firephp)
-        {
-            $midgardmvc->firephp->error($exception);
-        }
-
         $header = self::header_by_code($http_code);
         if (!isset($midgardmvc->dispatcher))
         {

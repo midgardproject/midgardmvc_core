@@ -36,7 +36,6 @@ date_formats:
     short: '%d/%m/%Y'
     long: '%x %X'
 metadata_lock_timeout: 30
-schemadb: file:/midgardmvc_core/configuration/schema.yml
 default_language: en_US
 uimessages_configuration:
     js:
