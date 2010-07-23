@@ -306,8 +306,7 @@ class midgardmvc_core_helpers_request
         {
             if ($intent instanceof midgardmvc_core_helpers_request)
             {
-                $request->set_root_node($intent->get_root_node());
-                $request->set_node($intent->get_node());
+                $request = clone $request;
             }
 
             if ($intent instanceof midgardmvc_core_node)

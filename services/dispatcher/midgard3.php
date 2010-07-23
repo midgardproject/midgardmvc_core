@@ -288,6 +288,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         {
             $request->set_data_item($component, $data);
         }
+        $request->set_data_item('current_component', $data);
         
         // Set other request data from route
         $request->set_data_item('mimetype', $route_configuration['mimetype']);

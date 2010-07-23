@@ -410,7 +410,8 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         $app->context->cache_enabled = false;
         
         // Do normal templating
-        $app->templating->template();
+        $request = new midgardmvc_core_helpers_request();
+        $app->templating->template($request);
         $app->templating->display();
         
         // Clean up the context
