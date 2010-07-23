@@ -142,7 +142,7 @@ class midgardmvc_core_controllers_documentation
             throw new midgardmvc_exception_notfound("File not found");
         }
 
-        require_once 'markdown.php';        
+        require_once MIDGARDMVC_ROOT .'/midgardmvc_core/helpers/markdown.php';
         $this->data['markdown'] = file_get_contents($path);
         $this->data['markdown_formatted'] = Markdown($this->data['markdown']);
     }
