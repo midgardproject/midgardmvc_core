@@ -9,12 +9,23 @@
 /**
  * YAML-based configuration implementation for Midgard MVC
  *
+ * Configuration of a request is a single flat array of key-value pairs, merged from a configuration stack
+ * in following order:
+ *
+ * - midgardmvc_core
+ * - parent components of current component
+ * - current component
+ * - injectors
+ * - local configuration of a node
+ *
  * @package midgardmvc_core
  */
 class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_services_configuration
 {
     static $configuration = array();
-    
+
+    static $injectors = array();
+
     static $use_yaml = null;
     
     public function __construct()
@@ -47,11 +58,12 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     /**
      * Load configuration for a Midgard MVC component and place it to the configuration stack
      */
-    public function load_component($component)
+    public function load_component($component, $injector = false)
     {
         if (isset(self::$configuration[$component]))
         {
             $config = self::$configuration[$component];
+            return;
         }
         else
         {
@@ -82,6 +94,11 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                 $config = self::merge_configs($component_config, $config);
                 self::$configuration[$load_component] = $config;
             }
+        }
+
+        if ($injector)
+        {
+            self::$injectors[] = $component;
         }
     }
 
@@ -133,7 +150,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
                         $merged[$key][$route_id] = $route_definition;
                     }
                 }
-                $merged[$key] = midgardmvc_core_services_configuration_yaml::merge_configs($merged[$key], $value);
+                $merged[$key] = self::merge_configs($merged[$key], $value);
                 
                 continue;
             }
@@ -219,7 +236,7 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
         if (!isset(self::$configuration[$identifier]))
         {
             // Empty configuration, we need to merge it
-            self::$configuration[$identifier] = self::$configuration[$this->mvc->context->component];
+            $this->prepare_stack($identifier);
         }
 
         return array_key_exists($key, self::$configuration[$identifier]);
@@ -228,6 +245,20 @@ class midgardmvc_core_services_configuration_yaml implements midgardmvc_core_ser
     public function __isset($key)
     {
         return $this->exists($key);
+    }
+
+    private function prepare_stack($identifier)
+    {
+        // Include Midgard MVC and current component
+        self::$configuration[$identifier] = self::merge_configs(self::$configuration['midgardmvc_core'], self::$configuration[$this->mvc->context->component]);
+
+        // Include injectors
+        foreach (self::$injectors as $injector)
+        {
+            self::$configuration[$identifier] = self::merge_configs(self::$configuration[$identifier], self::$configuration[$injector]);
+        }
+
+        // TODO: Local configs from node
     }
 
     /**

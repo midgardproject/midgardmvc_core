@@ -50,7 +50,7 @@ class midgardmvc_core_component_loader
         return true;
     }
     
-    public function load($component)
+    public function load($component, $injector = false)
     {
         static $loaded_interfaces = array();
         
@@ -95,7 +95,7 @@ class midgardmvc_core_component_loader
         }
 
         // Load configuration for the component
-        midgardmvc_core::get_instance()->configuration->load_component($component);
+        midgardmvc_core::get_instance()->configuration->load_component($component, $injector);
         
         if (isset($this->interfaces[$component]))
         {
@@ -351,7 +351,7 @@ class midgardmvc_core_component_loader
         foreach ($this->$injector_array as $component => $injector_class)
         {
             // Ensure the component is loaded
-            $this->load($component);
+            $this->load($component, true);
 
             // Instantiate the injector class
             $injector = new $injector_class($this->_core->configuration);
