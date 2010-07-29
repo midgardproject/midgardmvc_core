@@ -55,12 +55,14 @@ It is also possible to run Midgard MVC using the PHP-based AppServer as your web
   * Front controller loads hierarchy providers specified in configuration
 * Request processing
   * A request object gets populated with the current HTTP request parameters
+  * Process injectors are called, if any
   * Request object uses hierarchy providers to determine what components handle the request
   * Dispatcher loads the necessary component
   * Dispatcher dispatches the request to the component controller class, passing it the request object
   * Component controller class executes and sets data to the request object
 * Templating
   * Front controller loads template providers specified in configuration
+  * Template injectors are called, if any
   * Front controller determines template to be used with the request
   * Front controller uses a template provider to generate request output
   * Request output is sent to browser
@@ -75,13 +77,13 @@ A component is a functional module that runs inside Midgard MVC. It is usually r
   * configuration
      - `defaults.yml`: Component's default configuration, as name-value pairs
   * controllers
-     - `ControllerName.php`: A controller class for the component
+     - `controllername.php`: A controller class for the component
   * models
      - `classname.xml`: Midgard Schema used by the component, registers type `classname`
      - `viewname.xml`: Midgard View used by the component, registers view `viewname`
      - `classname.php`: PHP class that extends a Midgard Schema
   * services
-     - `Authentication.php`: component-specific implementation of Midgard MVC Authentication Service
+     - `authentication.php`: component-specific implementation of Midgard MVC Authentication Service
   * templates
      - `templatename.xhtml`: A TAL template used by the component, named `templatename`
 
@@ -96,16 +98,19 @@ Minimal route definition:
 
     route_identifier:
         - path: '/some/url'
+        - path:fi: '/some/url'
         - controller: controller class
         - action: action name
-            - content_entry_point: template name
+        - template_aliases:
+            - root: name of template used when "root" is included
+            - content: name of template used when "content" is included
 
 ### Route matching
 
 There are several ways Midgard MVC matches Requests to Routes. The matching is handled by providing an Intent to the factory method of the Request class:
 
 * Explicit matching
-  * In an explicit match we know the component, route identifier and arguments
+  * In an explicit match we know the component instance, route identifier and arguments
 * Implicit matching
   * In implicit matching we know one or multiple of:
      - Route identifier and arguments
@@ -142,14 +147,14 @@ Here is a simple example. Route definition from `net_example_calendar/manifest.y
 
     show_date:
         - path: '/date'
-        - controller: net_example_calendar_date
+        - controller: net_example_calendar_controllers_date
         - action: date
             - content_entry_point: show-date
 
 Controller class `net_example_calendar/controllers/date.php`:
 
     <?php
-    class net_example_calendar_date
+    class net_example_calendar_controllers_date
     {
         public function get_date(array $args)
         {
@@ -195,7 +200,7 @@ Since this means that potentially multiple routes, controllers and templates wil
 Within any stage of Midgard MVC execution you can make a sub-request in the following way:
 
     <?php
-    // Set up intent, for example a hierarchy node, URL or component name
+    // Set up intent, for example a hierarchy node, node URL or component name
     $intent = '/myfolder/date';
     // Get a Request object based on the intent
     $request = midgardmvc_core_helpers_request::get_for_intent($intent);
@@ -206,8 +211,41 @@ Within any stage of Midgard MVC execution you can make a sub-request in the foll
     echo $component_data['date'];
     ?>
 
+Error handling
+--------------
+
+Midgard MVC strives to encourage safe PHP programming practices. Because of this, all PHP code run under the framework is E_ALL error reporting level. This means that using unassigned variables and other similar sources of potential bugs will cause PHP errors to be shown on pages.
+
+The actual application-level error handling happens with Exceptions. In any phase of application execution you can stop the processing by throwing an Exception appropriate to the situation. This will cause an error page to be shown and the error to be logged by MVC.
+
+Typical Exceptions used with Midgard MVC are:
+
+* `midgardmvc_exception_notfound`: Requested content could not be found. Shows a HTTP 404 error page.
+* `midgardmvc_exception_unauthorized`: User tried to perform an unauthorized operation. Shows a HTTP 401 error page with a possibility for logging in.
+* `midgardmvc_exception_httperror`: Some other type of HTTP error. The desired HTTP error code should be provided as the second parameter to the exception constructor.
+
+### Example of throwing appropriate Exceptions in your controller
+
+    public function post_comment(array $args)
+    {
+        $article = new net_example_article($args['article']);
+        if (!$article->guid)
+        {
+            throw new midgardmvc_exception_notfound("Article {$args['article']} could not be found");
+        }
+
+        if (!midgardmvc_core::get_instance()->authorization->can_do('mgd:create', $article))
+        {
+            throw new midgardmvc_exception_unauthorized("You are not allowed to comment article {$article->title}");
+        }
+
+        // Implement saving a new comment to the article here
+    }
+
 Saving route state
 ------------------
+
+*Note*: State saving is not yet implemented in Midgard MVC.
 
 Although web by itself is stateless, in Midgard MVC a route can save its state in two different ways:
 
@@ -217,8 +255,6 @@ Although web by itself is stateless, in Midgard MVC a route can save its state i
 If route data is found from a saved state, then the controller action will be called with the data pre-populated. The controller action can then either use or ignore it as it sees fit. Typical usage for stored route data is avoiding unnecessary Midgard database queries for retrieving information that is already available.
 
 If route output is found from a saved state then Midgard MVC will return this output directly to the user and the controller action or the template will not be run.
-
-> TODO: HOW DOES THIS WORK FOR OTHER CLASSES THAN CONTROLLERS?
 
 ### State audience
 
