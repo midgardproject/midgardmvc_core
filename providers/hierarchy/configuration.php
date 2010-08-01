@@ -5,14 +5,25 @@ class midgardmvc_core_providers_hierarchy_configuration implements midgardmvc_co
 
     public function __construct()
     {
+        // FIXME: Load this from configuration instead
         $config = array
         (
-            'name' => null,
+            // This folder is /
             'title' => 'Midgard MVC',
             'content' => '',
             'component' => 'midgardmvc_core',
+            'children' => array
+            (
+                // This folder is /foo
+                'foo' => array
+                (
+                    'title' => 'Midgard MVC',
+                    'content' => '',
+                    'component' => 'midgardmvc_core',
+                ),
+            ),
         );
-        $this->root_node = new midgardmvc_core_providers_hierarchy_node_configuration($config);
+        $this->root_node = new midgardmvc_core_providers_hierarchy_node_configuration(null, $config);
     }
 
     public function get_root_node()

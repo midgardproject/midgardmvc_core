@@ -3,6 +3,7 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
 {
     private $node = null;
     private $argv = array();
+    private $path = '/';
 
     public $name = '';
     public $title = '';
@@ -34,6 +35,16 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
     public function set_arguments(array $argv)
     {
         $this->argv = $argv;
+    }
+
+    public function get_path()
+    {
+        return $this->path;
+    }
+
+    public function set_path($path)
+    {
+        $this->path = $path;
     }
 
     public function get_child_nodes()

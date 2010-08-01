@@ -1,7 +1,7 @@
 <?php
 interface midgardmvc_core_providers_hierarchy_node
 {
-    public function set_arguments (array $argv);
+    public function set_arguments(array $argv);
 
     public function get_component();
 

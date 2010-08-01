@@ -34,10 +34,12 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
         }
         if ($path == '')
         {
+            $this->root_node->set_arguments(array());
             return $this->root_node;
         }
         
         $path = explode('/', $path);
+        $real_path = array();
         $argv = $path; 
         $node = $this->root_node;
         foreach ($path as $i => $p)
@@ -48,9 +50,11 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
                 break;
             }
             $node = $child;
+            $real_path[] = $p;
             array_shift($argv);
         }
-        $node->set_arguments($argv);;
+        $node->set_arguments($argv);
+        $node->set_path(implode('/', $real_path));
         return $node;
     }
 }
