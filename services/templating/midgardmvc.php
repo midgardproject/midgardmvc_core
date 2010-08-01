@@ -38,13 +38,16 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
 
         $request = $this->midgardmvc->context->get_request();
-        
-        $orig_element = $element;
-        if ($element == 'content')
+
+        // Check for possible element aliases
+        $route = $request->get_route();
+        if ($route)
         {
-            $element = $this->midgardmvc->context->content_entry_point;
+            if (isset($route->template_aliases[$element]))
+            {
+                $element = $route->template_aliases[$element];
+            }
         }
-        $this->midgardmvc->log("foo", "Templating {$orig_element} as {$element}");
 
         $component_chain = array_reverse($request->get_component_chain());
         foreach ($component_chain as $component)
@@ -166,7 +169,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     /**
      * Include the template based on either global or controller-specific template entry point.
      */    
-    public function template(midgardmvc_core_request $request, $element_identifier = 'template_entry_point')
+    public function template(midgardmvc_core_request $request, $element_identifier = 'root')
     {
         // Let injectors do their work
         $this->midgardmvc->component->inject($request, 'template');
@@ -181,7 +184,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // Register current page to cache
         $this->midgardmvc->cache->template->register($this->get_cache_identifier($request), array($request->get_component()));
 
-        $element = $this->get_element($request->get_data_item($element_identifier));
+        $element = $this->get_element($element_identifier);
         
         // Template cache didn't have this template, collect it
         $this->midgardmvc->cache->template->put($this->get_cache_identifier($request), $element);

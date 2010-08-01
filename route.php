@@ -5,7 +5,11 @@ class midgardmvc_core_route
     public $path = '';
     public $controller = '';
     public $action = '';
-    public $template_aliases = array();
+    public $template_aliases = array
+    (
+        'root' => 'ROOT',
+        'content' => '',
+    );
     public $mimetype = 'text/html';
     //public $mimetype = 'application/xhtml+xml';
 
@@ -17,7 +21,10 @@ class midgardmvc_core_route
         $this->action = $action;
         if (!is_null($template_aliases))
         {
-            $this->template_aliases = $template_aliases;
+            foreach ($template_aliases as $alias => $template)
+            {
+                $this->template_aliases[$alias] = $template;
+            }
         }
     }
 
