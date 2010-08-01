@@ -27,7 +27,13 @@ class midgardmvc_appserv_app
 
         // starting processing
         try {
-            $mvc = midgardmvc_core::get_instance('appserv');
+            $config = array
+            (
+                'services_dispatcher' => 'appserv',
+                //'services_authentication' => 'runtime',
+                'providers_component' => 'midgardmvc',
+            );
+            $mvc = midgardmvc_core::get_instance($config);
             $mvc->dispatcher->set_request_data($context);
 
             call_user_func($context['logger'], "-> starting midgardmvc");
