@@ -1,4 +1,16 @@
 <?php
+/**
+ * @package midgardmvc_core
+ * @author The Midgard Project, http://www.midgard-project.org
+ * @copyright The Midgard Project, http://www.midgard-project.org
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ */
+
+/**
+ * Midgard MVC hierarchy node from database
+ *
+ * @package midgardmvc_core
+ */
 class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_core_providers_hierarchy_node
 {
     private $node = null;
