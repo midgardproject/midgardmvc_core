@@ -379,6 +379,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     public function handle_exception(Exception $exception)
     {
         $app = midgardmvc_core::get_instance();
+        $request = $midgardmvc->context->get_request();
 
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
@@ -386,38 +387,32 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             if ($this->login($_POST['username'], $_POST['password']))
             {
                 // Dispatch again since now we have a user
-                $app->dispatcher->dispatch();
+                $app->dispatcher->dispatch($request);
                 return;
             }
         }
 
         $log_message = str_replace("\n", ' ', $exception->getMessage());
-        if (isset($app->context->uri))
-        {
-            $uri = $app->context->uri;
-            $log_message .= " ($uri)";
-        }
-        $app->log('midgardmvc_core_services_authentication_sessionauth', $log_message, 'warning');
+        $app->log(__CLASS__, $log_message, 'info');
         
         // Pass some data to the handler
         $data = array();
         $data['message'] = $exception->getMessage();
         $data['exception'] = $exception;
-        $app->context->midgardmvc_core_exceptionhandler = $data;
-        
-        // Set entry point and disable cache
-        $app->context->template_entry_point = 'midcom-login-form';
-        $app->context->cache_enabled = false;
-        
-        // Do normal templating
-        $request = new midgardmvc_core_helpers_request();
-        $app->templating->template($request);
-        $app->templating->display();
-        
-        // Clean up the context
-        $app->context->delete();
 
-        $app->dispatcher->end_request();
+        $route = $request->get_route();
+        $route->template_aliases['root'] = 'midcom-login-form';
+        $request->set_route($route);
+        
+        $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
+        $request->set_data_item('cache_enabled', false);
+
+        // Do normal templating
+        $app->templating->template($request);
+        $app->templating->display($request);
+        
+        // Clean up and finish
+        $app->context->delete();
     }
 
 }

@@ -86,23 +86,23 @@ class midgardmvc_core_exceptionhandler
 
             try
             {
-                if ($midgardmvc->context->get_current_context() == 0)
+                $request = $midgardmvc->context->get_request();
+                if (!$request)
                 {
-                    $request = new midgardmvc_core_helpers_request();
-                    $midgardmvc->context->create($request);
+                    throw $exception;
                 }
 
-                $midgardmvc->context->set_item('midgardmvc_core_exceptionhandler', $data);
-                $midgardmvc->context->set_item('template_entry_point', 'midcom-show-error');
-                $midgardmvc->context->set_item('cache_enabled', false);
+                $route = $request->get_route();
+                $route->template_aliases['root'] = 'midcom-show-error';
+                
+                $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
+                $request->set_data_item('cache_enabled', false);
 
                 if (!$midgardmvc->templating)
                 {
                     throw new Exception('no templating found');
                 }
 
-                // FIXME: Use the real request here
-                $request = new midgardmvc_core_helpers_request();
                 $midgardmvc->templating->template($request);
                 $midgardmvc->templating->display($request);
             }
@@ -121,7 +121,7 @@ class midgardmvc_core_exceptionhandler
                 echo "</html>";
             }
             
-            // Clean up the context
+            // Clean up and finish
             $midgardmvc->context->delete();
         }
     }

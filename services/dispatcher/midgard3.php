@@ -244,7 +244,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         catch (Exception $e)
         {
             // Read controller's returned data to context before carrying on with exception handling
-            $this->data_to_request($request, $route, $controller->data);
+            $this->data_to_request($request, $controller->data);
             throw $e;
         }
 
@@ -275,18 +275,18 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
      */
     public function generate_url($intent, $route_id, array $args)
     {
+        // Create a request from the intent and assign it to a context
         $request = midgardmvc_core_request::get_for_intent($intent);
-
         $this->midgardmvc->context->create($request);
 
-        $route_definitions = $this->midgardmvc->configuration->normalize_routes($request);
-        if (!isset($route_definitions[$route_id]))
+        $routes = $this->midgardmvc->component->get_routes($request);
+        if (!isset($routes[$route_id]))
         {
-            throw new OutOfBoundsException("route_id '{$route_id}' not found in routes configuration in context " . $this->midgardmvc->context->get_current_context());
+            throw new OutOfBoundsException("Route ID '{$route_id}' not found in routes of request " . $request->get_identifier());
         }
-        $route = $route_definitions[$route_id]['route'];
-        $link = $route;
 
+        $route = $routes[$route_id];
+        $link = $route->path;
         foreach ($args as $key => $value)
         {
             if (is_array($value))

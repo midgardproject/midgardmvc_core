@@ -83,7 +83,7 @@ routes:
         path: /mgd:login
         root_only: true
         template_aliases: 
-            content: midcom-login-form
+            root: midcom-login-form
     logout:
         controller: midgardmvc_core_controllers_authentication
         action: logout
