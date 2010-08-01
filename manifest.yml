@@ -21,8 +21,3 @@ authors:
         name: Arttu Manninen
         email: arttu@kaktus.cc
         url: http://www.kaktus.cc/
-action_types:
-        - midgardmvc_core_node
-action_categories:
-        - create
-        - administer

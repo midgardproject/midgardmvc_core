@@ -52,8 +52,6 @@ if (   isset($_SERVER['REQUEST_URI'])
 require(MIDGARDMVC_ROOT . '/midgardmvc_core/exceptionhandler.php');
 
 // Start up Midgard MVC
-require(MIDGARDMVC_ROOT . '/midgardmvc_core/component/interface.php');
-require(MIDGARDMVC_ROOT . '/midgardmvc_core/component/baseclass.php');
 require(MIDGARDMVC_ROOT . '/midgardmvc_core/interface.php');
 
 // Register autoloader so we get all Midgard MVC classes loaded automatically

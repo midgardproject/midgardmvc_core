@@ -67,6 +67,25 @@ It is also possible to run Midgard MVC using the PHP-based AppServer as your web
   * Front controller uses a template provider to generate request output
   * Request output is sent to browser
 
+### Midgard MVC Front Controller
+
+The Midgard MVC Front Controller `midgardmvc_core` is responsible for catching a HTTP request and ensuring it gets processed and templated. The Front Controller implements a Singleton pattern, meaning that only a single Midgard MVC Front Controller is available at a time.
+
+The Front Controller is accessible via:
+
+    $mvc = midgardmvc_core::get_instance();
+
+### Midgard MVC Dispatcher
+
+The Midgard MVC Dispatcher receives a Request object and instantiates and calls the necessary Components and Controllers, and calls their action methods.
+
+The Dispatcher is accessible via:
+
+    $dispatcher = midgardmvc_core::get_instance->dispatcher;
+    $dispatcher->dispatch($request);
+
+Depending on what Controllers and action methods were called (if any), this will either return the Request object with some new data populated or cause an Exception to be thrown.
+
 Component structure
 -------------------
 
@@ -137,7 +156,7 @@ Variables can be used with URL patterns in the following way:
 Workings of a controller
 ------------------------
 
-Controller is a PHP class that contains one or more actions matching route definitions of a component. When invoked, Midgard MVC dispatcher will load the component, instantiate the controller class specified in route definition, pass it the Request object and a reference to request data array, and finally call the action method corresponding to the route used, passing it the arguments from the request.
+Controller is a PHP class that contains one or more actions matching route definitions of a component. When invoked, Midgard MVC dispatcher will load the component, instantiate the controller class specified in route definition, passing it the Request object and a reference to request data array, and finally call the action method corresponding to the route used, passing it the arguments from the request.
 
 The controller will then do whatever processing or data fetching it needs to do. Any content the controller wants to pass to a template should be added to the data array. If any errors occur, the controller should throw an exception. 
 
@@ -149,13 +168,19 @@ Here is a simple example. Route definition from `net_example_calendar/manifest.y
         - path: '/date'
         - controller: net_example_calendar_controllers_date
         - action: date
-            - content_entry_point: show-date
+        - template_aliases:
+            - content: show-date
 
 Controller class `net_example_calendar/controllers/date.php`:
 
     <?php
     class net_example_calendar_controllers_date
     {
+        public function __construct(midgardmvc_core_request $request)
+        {
+            $this->request = $request;
+        }
+
         public function get_date(array $args)
         {
             $this->data['date'] = strftime('%x %X');
@@ -178,7 +203,8 @@ Templates are defined by giving them a name. For example, a template for display
         - path: '/date'
         - controller: net_example_calendar_date
         - action: date
-            - content_entry_point: show-date
+        - template_aliases:
+            - content: show-date
 
 When the templating phase of the route happens, MVC will look for such element from the template stack. Template stack is a list of components running with the current request. First MVC looks for the element in the current component, and if it can't be found there it goes looking for it down the stack:
 
@@ -203,7 +229,7 @@ Within any stage of Midgard MVC execution you can make a sub-request in the foll
     // Set up intent, for example a hierarchy node, node URL or component name
     $intent = '/myfolder/date';
     // Get a Request object based on the intent
-    $request = midgardmvc_core_helpers_request::get_for_intent($intent);
+    $request = midgardmvc_core_request::get_for_intent($intent);
     // Process the Request
     midgardmvc_core::get_instance()->dispatcher->dispatch($request);
     // Use the resulting data

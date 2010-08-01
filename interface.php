@@ -11,17 +11,12 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core extends midgardmvc_core_component_baseclass
+class midgardmvc_core
 {
     /**
      * @var midgardmvc_core_services_configuration_yaml
      */
     public $configuration;
-
-    /**
-     * @var midgardmvc_core_component_loader
-     */
-    public $componentloader;
 
     /**
      * @var midgardmvc_core_helpers_context
@@ -167,11 +162,20 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     }
     
     /**
-     * Magic getter for service loading
+     * Magic getter for service and provider loading
      */
     public function __get($key)
     {
-        $this->load_service($key);
+        try
+        {
+            // First try loading as a service
+            $this->load_service($key);
+        }
+        catch (InvalidArgumentException $e)
+        {
+            // Load a provider instead
+            $this->load_provider($key);
+        }
         return $this->$key;
     }
     
@@ -241,6 +245,8 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         // Let dispatcher populate request with the node and other information used
         $request = $this->dispatcher->get_request();
+        $request->add_component_to_chain($this->component->get('midgardmvc_core'));
+
         // TODO: We give it to context to emulate legacy functionality
         $this->context->create($request);
 
@@ -250,8 +256,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->log('Midgard MVC', 'Serving ' . $request->get_method() . ' ' . $request->get_path() . ' at ' . gmdate('r'), 'info');
 
         // Let injectors do their work
-        $this->componentloader = new midgardmvc_core_component_loader();
-        $this->componentloader->inject_process($request);
+        $this->component->inject($request, 'process');
 
         try
         {
@@ -276,7 +281,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     /**
      * Serve a request either through templating or the WebDAV server
      */
-    public function serve(midgardmvc_core_helpers_request $request)
+    public function serve(midgardmvc_core_request $request)
     {
         try
         {
@@ -292,7 +297,7 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
         $this->_after_serve();
     }
 
-    private function _serve(midgardmvc_core_helpers_request $request)
+    private function _serve(midgardmvc_core_request $request)
     {
         // Prepate the templates
         $this->templating->template($request);
