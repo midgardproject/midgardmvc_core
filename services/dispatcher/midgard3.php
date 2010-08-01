@@ -15,13 +15,6 @@
  */
 class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_services_dispatcher
 {
-    public $get = array();
-    protected $route_array = array();
-    protected $route_id = false;
-    protected $action_arguments = array();
-    protected $route_arguments = array();
-    protected $component_routes = array();
-    protected $route_definitions = null;
     protected $exceptions_stack = array();
 
     protected $session_is_started = false;
@@ -146,14 +139,25 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
      */
     public function dispatch(midgardmvc_core_request $request)
     {
-        $route_definitions = $this->midgardmvc->component->get_routes($request);
-        $matched_routes = $this->get_route_matches($request, $route_definitions);
+        $routes = $this->midgardmvc->component->get_routes($request);
+        $matched_routes = array();
+        // make a normalized string of $argv
+        $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $request->get_arguments()) . '/');
+        foreach ($routes as $route)
+        {
+            $matches = $route->check_match($argv_str);
+            if (!is_null($matches))
+            {
+                $matched_routes[$route->id] = $matches;
+            }
+        }
+        //$matched_routes = $this->get_route_matches($request, $route_definitions);
         if (!$matched_routes)
         {
             // TODO: Check message
             throw new midgardmvc_exception_notfound('No route matches current URL ' . $request->get_path());
         }
-        unset($route_id_map);
+        //unset($route_id_map);
 
         $success_flag = true; // Flag to tell if route ran successfully
         foreach ($matched_routes as $route_id => $arguments)
@@ -161,7 +165,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
             try
             {   
                 $success_flag = true; // before trying route it's marked success
-                $request->set_route($route_definitions[$route_id]);
+                $request->set_route($routes[$route_id]);
                 $this->dispatch_route($request, $arguments);
             }
             catch (Exception $e)
@@ -213,14 +217,10 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
     private function dispatch_route(midgardmvc_core_request $request, array $arguments)
     {
         $route = $request->get_route();
-        // Inform client of allowed HTTP methods
-        //$this->header('Allow: ' . implode(', ', $route['allowed_methods']));
 
-        // Initialize controller
+        // Initialize controller and pass it the request object
         $controller_class = $route->controller;
-        // FIXME: Component instance is not really necessary here
-        $controller = new $controller_class();
-        $controller->request = $request;
+        $controller = new $controller_class($request);
     
         // Define the action method for the route_id
         $request_method = $request->get_method();
@@ -263,8 +263,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         // Set other request data from route
         $route = $request->get_route();
         $request->set_data_item('mimetype', $route->mimetype);
-        //$request->set_data_item('template_entry_point', $route_configuration['template_entry_point']);
-        //$request->set_data_item('content_entry_point', $route_configuration['content_entry_point']);
     }
 
     /**
@@ -319,317 +317,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
 
         return preg_replace('%/{2,}%', '/', $request->get_path() . $link);
     }
-
-    /**
-     * Tries to match one route from an array of route definitions
-     * associated with route_id route_ids
-     *
-     * The array should look something like this:
-     * array
-     * (
-     *     '/view/{guid:article_id}/' => 'view',
-     *     '/?articleid={int:article_id}' => 'view',
-     *     '/foo/bar' => 'someroute_id',
-     *     '/latest/{string:category}/{int:number}' => 'categorylatest',
-     * )
-     * The route parts are automatically normalized to end with trailing slash
-     * if they don't contain GET arguments
-     *
-     * @param array $routes map of routes to route_ids
-     * @return array of matched routes together with their action arguments
-     */
-    public function get_route_matches(midgardmvc_core_request $request, array $routes)
-    {
-        // make a normalized string of $argv
-        $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $request->get_arguments()) . '/');
-
-        $matched_routes = array();
-        foreach ($routes as $route)
-        {
-            // Reset variables
-            list ($route_path, $route_get, $route_args) = $route->split_path();
-            if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
-            {
-                // Simple route (only static arguments)
-                if (   $route_path === $argv_str
-                    && (   !$route_get
-                        || $this->get_matches($route_get, $route))
-                    )
-                {
-                    // echo "DEBUG: simple match route_id:{$route_id}\n";
-                    $matched_routes[$route->id] = array();
-                }
-
-                if ($route_args) // Route @ set
-                {
-                    $path = explode('@', $route_path);
-                    if (preg_match('%' . str_replace('/', '\/', $path[0]) . '/(.*)\/%', $argv_str, $matches))
-                    {
-                        $matched_routes[$route->id] = array();
-                        $matched_routes[$route->id]['variable_arguments'] = explode('/', $matches[1]);
-                    }
-                }
-                // Did not match, try next route
-                continue;
-            }
-            // "complex" route (with variable arguments)
-            if(preg_match('%@%', $route->path, $match))
-            {   
-                $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}\@%', '([^/]+?)', $route_path)) . '(.*)%';
-            }
-            else 
-            {
-                $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}%', '([^/]+?)', $route_path)) . '$%';
-            }
-//            echo "DEBUG: route_path_regex:{$route_path_regex} argv_str:{$argv_str}\n";
-            if (!preg_match($route_path_regex, $argv_str, $route_path_regex_matches))
-            {
-                // Does not match, NEXT!
-                continue;
-            }
-            if (   $route_get
-                && !$this->get_matches($route_get, $route))
-            {
-                // We have GET part that could not be matched, NEXT!
-                continue;
-            }
-
-            // We have a complete match, setup route_id arguments and return
-            $matched_routes[$route_id] = array();
-
-            // Map variable arguments
-            foreach ($route_path_matches[1] as $index => $varname)
-            {
-                $variable_parts = explode(':', $varname);
-                if (count($variable_parts) == 1)
-                {
-                    $type_hint = '';
-                }
-                else
-                {
-                    $type_hint = $variable_parts[0];
-                }
-                                
-                // Strip type hints from variable names
-                $varname = preg_replace('/^.+:/', '', $varname);
-
-                if ($type_hint == 'token')
-                {
-                    // Tokenize the argument to handle resource typing
-                    $matched_routes[$route->id][$varname] = $this->tokenize_argument($route_path_regex_matches[$index + 1]);
-                }
-                else
-                {
-                    $matched_routes[$route->id][$varname] = $route_path_regex_matches[$index + 1];
-                }
-                
-                if (preg_match('%@%', $route->path, $match)) // Route @ set
-                {
-                    $path = explode('@', $route_path);
-                    if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
-                    {
-                        $matched_routes[$route->id] = explode('/', $matches[1]);
-                    }
-                }
-                
-            }
-            //return true;
-        }
-
-        if (count($matched_routes) == 0)
-        {
-             // No match
-            return false;
-        }
-
-        return $matched_routes;
-    }
-    
-    private function tokenize_argument($argument)
-    {
-        $tokens = array
-        (
-            'identifier' => '',
-            'variant'    => '',
-            'language'   => '',
-            'type'       => 'html',
-        );
-        $argument_parts = explode('.', $argument);
-
-        // First part is always identifier
-        $tokens['identifier'] = $argument_parts[0];
-
-        if (count($argument_parts) == 2)
-        {
-            // If there are two parts, the second is type
-            $tokens['type'] = $argument_parts[1];
-        }
-        
-        if (count($argument_parts) >= 3)
-        {
-            // If there are three parts, then second is variant and third is type
-            $tokens['variant'] = $argument_parts[1];
-            $tokens['type'] = $argument_parts[2];
-        }
-
-        if (count($argument_parts) >= 4)
-        {
-            // If there are four or more parts, then third is language and fourth is type
-            $tokens['language'] = $argument_parts[2];
-            $tokens['type'] = $argument_parts[3];
-        }
-        
-        return $tokens;
-    }
-
-    /**
-     * Checks GET part of a route definition and places arguments as needed
-     *
-     * @access private
-     * @param string $route_get GET part of a route definition
-     * @param string $route full route definition (used only for error reporting)
-     * @return boolean indicating match/no match
-     *
-     * @fixme Move action arguments to subarray
-     */
-    private function get_matches(&$route_get, &$route)
-    {
-        /**
-         * It's probably faster to check against $route_get before calling this method but
-         * we want to be robust
-         */
-        if (empty($route_get))
-        {
-            return true;
-        }
-
-        if (!preg_match_all('%\&?(.+?)=\{(.+?)\}%', $route_get, $route_get_matches))
-        {
-            // Can't parse arguments from route_get
-            throw new UnexpectedValueException("GET part of route '{$route->id}' ('{$route_get}') cannot be parsed");
-        }
-
-        /*
-        echo "DEBUG: route_get_matches\n===\n";
-        print_r($route_get_matches);
-        echo "===\n";
-        */
-
-        foreach ($route_get_matches[1] as $index => $get_key)
-        {
-            //echo "this->get[{$get_key}]:{$this->get[$get_key]}\n";
-            if (   !isset($this->get[$get_key])
-                || empty($this->get[$get_key]))
-            {
-                // required GET parameter not present, return false;
-                $this->action_arguments = array();
-                return false;
-            }
-            
-            preg_match('%/{\$([a-zA-Z]+):([a-zA-Z]+)}/%', $route_get_matches[2][$index], $matches);
-            
-            if(count($matches) == 0)
-            {
-                $type_hint = '';
-            }
-            else
-            {
-                $type_hint = $matches[1];
-            }
-                
-            // Strip type hints from variable names
-            $varname = preg_replace('/^.+:/', '', $route_get_matches[2][$index]);
-                            
-            if ($type_hint == 'token')
-            {
-                 // Tokenize the argument to handle resource typing
-                $this->action_arguments[$varname] = $this->tokenize_argument($this->get[$get_key]);
-            }
-            else
-            {
-                $this->action_arguments[$varname] = $this->get[$get_key];
-            }
-        }
-
-        // Unlike in route_matches falling through means match
-        return true;
-    }
-    
-    public function set_page(midgardmvc_core_node $page)
-    {
-        $context = $this->midgardmvc->context;
-
-        $context->page = $page;
-        $context->prefix = $this->get_page_prefix();
-    }
-    
-    private function get_page_prefix()
-    {
-        $context = $this->midgardmvc->context;
-
-
-        if (!$context->page)
-        {
-            throw new Exception("No page set for the manual dispatcher");
-        }
-        
-        static $prefixes = array();
-        if (isset($prefixes[$context->page->id]))
-        {
-            return $prefixes[$context->page->id];
-        }
-    
-        $prefix = '/';
-        $root_id = 0;
-        if (isset($context->host))
-        {
-            $host_mc = midgard_host::new_collector('id', $context->host->id);
-            $host_mc->set_key_property('root');
-            $host_mc->add_value_property('prefix');
-            $host_mc->execute();
-            $roots = $host_mc->list_keys();
-            if (!$roots)
-            {
-                throw new Exception("Failed to load root page data for host {$context->host->id}");
-            }
-            $root_id = null;
-            foreach ($roots as $root => $array)
-            {
-                $root_id = $root;
-                $prefix = $host_mc->get_subkey($root, 'prefix') . '/';
-                break;
-            }
-        }
-
-        $root_id = $this->midgardmvc->context->root_page->id;
-        if ($context->page->id == $root_id)
-        {
-            // We're requesting prefix for the root page
-            $prefixes[$context->page->id] = $prefix;
-            return $prefix;
-        }
-        
-        $page_path = '';
-        $page_id = $context->page->id;
-        while (   $page_id
-               && $page_id != $root_id)
-        {
-            $parent_mc = midgardmvc_core_node::new_collector('id', $page_id);
-            $parent_mc->set_key_property('up');
-            $parent_mc->add_value_property('name');
-            $parent_mc->execute();
-            $parents = $parent_mc->list_keys();
-            foreach ($parents as $parent => $array)
-            {
-                $page_id = $parent;
-                $page_path = $parent_mc->get_subkey($parent, 'name') . "/{$page_path}";
-            }
-        }
-
-        $prefixes[$context->page->id] = $prefix . $page_path;
-        return $prefix . $page_path;
-    }
-
 
     public function get_midgard_connection()
     {
