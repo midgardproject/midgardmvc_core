@@ -117,7 +117,6 @@ Minimal route definition:
 
     route_identifier:
         - path: '/some/url'
-        - path:fi: '/some/url'
         - controller: controller class
         - action: action name
         - template_aliases:

@@ -25,7 +25,7 @@ class midgardmvc_core_helpers_context
     /**
      * Create and prepare a new component context.
      */
-    public function create(midgardmvc_core_helpers_request $request)
+    public function create(midgardmvc_core_request $request)
     {
         $request_id = count($this->requests);
         $this->requests[$request_id] = $request;
@@ -47,7 +47,16 @@ class midgardmvc_core_helpers_context
     {
         return $this->current_request;
     }
-    
+
+    public function get_request()
+    {
+        if (!isset($this->requests[$this->current_request]))
+        {
+            return null;
+        }
+        return $this->requests[$this->current_request];
+    }
+
     public function get_context_identifier()
     {
         if (!isset($this->requests[$this->current_request]))

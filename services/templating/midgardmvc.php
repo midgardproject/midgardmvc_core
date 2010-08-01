@@ -14,10 +14,6 @@
 class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_services_templating
 {
     private $dispatcher = null;
-    private $stacks = array();
-    private $stack_elements = array();
-
-    private $elements_shown = array();
 
     private $gettext_translator = array();
     
@@ -25,70 +21,12 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
     public function __construct()
     {
-        $this->stacks[0] = array();
-        
         $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
-    public function get_cache_identifier(midgardmvc_core_helpers_request $request)
+    public function get_cache_identifier(midgardmvc_core_request $request)
     {
         return $request->get_identifier();
-    }
-
-    public function prepare_stack(midgardmvc_core_helpers_request $request)
-    {
-        // Set up initial templating stack
-        if (   $this->midgardmvc->configuration->services_templating_components
-            && is_array($this->midgardmvc->configuration->services_templating_components))
-        {
-            foreach ($this->midgardmvc->configuration->services_templating_components as $templating_component)
-            {
-                $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($templating_component) . '/templates');
-            }
-        }
-
-        // Add component (tree) to templating stack
-        $components = $this->midgardmvc->componentloader->get_tree($request->get_component());
-        $components = array_reverse($components);
-        foreach ($components as $component)
-        {
-            // Walk through the inheritance tree and add all components to stack
-            if (!in_array($component, $this->midgardmvc->configuration->services_templating_components))
-            {
-                $this->midgardmvc->templating->append_directory($this->midgardmvc->componentloader->component_to_filepath($component) . '/templates');
-            }
-        }
-    }
-
-    public function append_directory($directory)
-    {
-        if (!file_exists($directory))
-        {
-            throw new midgardmvc_exception("Template directory {$directory} not found.");
-        }
-        $stack = $this->midgardmvc->context->get_current_context();
-        if (!isset($this->stacks[$stack]))
-        {
-            $this->stacks[$stack] = array();
-        }
-        $this->stacks[$stack][$directory] = 'directory';
-        
-        if (   isset($this->midgardmvc->context->subtemplate)
-            && $this->midgardmvc->context->subtemplate
-            && file_exists("{$directory}/{$this->midgardmvc->context->subtemplate}"))
-        {
-            $this->stacks[$stack]["{$directory}/{$this->midgardmvc->context->subtemplate}"] = 'directory';
-        }
-    }
-
-    private function get_element_directory($directory, $element)
-    {
-        $path = "{$directory}/{$element}.xhtml";
-        if (!file_exists($path))
-        {
-            return null;
-        }
-        return file_get_contents($path);
     }
 
     public function get_element($element, $handle_includes = true)
@@ -99,56 +37,34 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             $element = $element[1];
         }
 
-        $stack = $this->midgardmvc->context->get_current_context();
-        if (!isset($this->stacks[$stack]))
-        {
-            throw new OutOfBoundsException("Midgard MVC style stack {$stack} not found.");
-        }
+        $request = $this->midgardmvc->context->get_request();
         
-        if (!isset($this->stack_elements[$stack]))
-        {
-            $this->stack_elements[$stack] = array();
-        }
-        
+        $orig_element = $element;
         if ($element == 'content')
         {
             $element = $this->midgardmvc->context->content_entry_point;
         }
-        
-        if (isset($this->stack_elements[$stack][$element]))
-        {
-            return $this->stack_elements[$stack][$element];
-        }
+        $this->midgardmvc->log("foo", "Templating {$orig_element} as {$element}");
 
-        if (in_array($element, $this->elements_shown)) 
+        $component_chain = array_reverse($request->get_component_chain());
+        foreach ($component_chain as $component)
         {
-            throw new midgardmvc_exception('"'.$element.'" is already shown');
-        }
-
-        // Reverse the stack in order to look for elements
-        $reverse_stack = array_reverse($this->stacks[$stack], true);
-        foreach ($reverse_stack as $identifier => $type)
-        {
-            $element_content = $this->get_element_directory($identifier, $element);
-
-            if (   $element_content
-                && !in_array($element, $this->elements_shown))
+            $element_content = $component->get_template_contents($element);
+            if (is_null($element_content))
             {
-                $this->elements_shown[] = $element;
-
-                $this->stack_elements[$stack][$element] = $element_content;
-                
-                if ($handle_includes)
-                {
-                    // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
-                    $this->stack_elements[$stack][$element] = preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
-                }
-                
-                return $this->stack_elements[$stack][$element];
+                // This component didn't provide the necessary element, go to next one in stack
+                continue;
             }
+
+            if (!$handle_includes)
+            {
+                return $element_content;
+            }
+            // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
+            return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
         }
-        
-        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC style stack.");
+
+        throw new OutOfBoundsException("Element {$element} not found in Midgard MVC component chain.");
     }
 
     /**
@@ -183,15 +99,14 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             $this->dispatcher = new midgardmvc_core_services_dispatcher_manual();
         }
 
-        $request = midgardmvc_core_helpers_request::get_for_intent($intent);
+        $request = midgardmvc_core_request::get_for_intent($intent);
         
         // Dynamic call with GET
         $request->set_method('get');
 
         // Run process injector for this request too
-        $this->midgardmvc->componentloader->inject_process($request);
+        $this->midgardmvc->component->inject($request, 'process');
 
-        // Then initialize the component, so it also goes to template stack
         $this->dispatcher->set_route($route_id, $arguments);
         $this->dispatcher->dispatch($request);
 
@@ -241,7 +156,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
          * because in dynamic call the new component may change it
          */
         $this->midgardmvc->context->delete();
-        $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component);
+        $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component->name);
         if ($return_html)
         {
             return $output;
@@ -251,13 +166,10 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     /**
      * Include the template based on either global or controller-specific template entry point.
      */    
-    public function template(midgardmvc_core_helpers_request $request, $element_identifier = 'template_entry_point')
+    public function template(midgardmvc_core_request $request, $element_identifier = 'template_entry_point')
     {
-        if ($this->midgardmvc->componentloader)
-        {
-            // Let injectors do their work
-            $this->midgardmvc->componentloader->inject_template($request);
-        }
+        // Let injectors do their work
+        $this->midgardmvc->component->inject($request, 'template');
 
         // Check if we have the element in cache already
         if (   !$this->midgardmvc->configuration->development_mode
@@ -280,7 +192,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
      *
      * @param string $content Content to display
      */
-    public function display(midgardmvc_core_helpers_request $request, $return_output = false)
+    public function display(midgardmvc_core_request $request, $return_output = false)
     {
         $data =& $request->get_data();
 
@@ -303,14 +215,14 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             ob_start();
         }
         
-        $filters = $this->midgardmvc->configuration->get('output_filters');
+        /*$filters = $this->midgardmvc->configuration->get('output_filters');
         if ($filters)
         {
             foreach ($filters as $filter)
             {
                 foreach ($filter as $component => $method)
                 {
-                    $instance = $this->midgardmvc->componentloader->load($component);
+                    $instance = $this->midgardmvc->component->get($component);
                     if (!$instance)
                     {
                         continue;
@@ -318,7 +230,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
                     $content = $instance->$method($content);
                 }
             }
-        }
+        }*/
 
         if ($return_output)
         {
@@ -343,7 +255,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
     }
 
-    private function display_tal(midgardmvc_core_helpers_request $request, $content, array $data)
+    private function display_tal(midgardmvc_core_request $request, $content, array $data)
     {
         // We use the PHPTAL class
         if (!class_exists('PHPTAL'))
@@ -378,7 +290,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         $tal->setSource($content);
 
-        $translator =& $this->midgardmvc->i18n->set_translation_domain($request->get_component());
+        $translator =& $this->midgardmvc->i18n->set_translation_domain($request->get_component()->name);
         $tal->setTranslator($translator);  
     
         try

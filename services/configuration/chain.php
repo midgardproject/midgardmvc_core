@@ -1,0 +1,153 @@
+<?php
+/**
+ * @package midgardmvc_core
+ * @author The Midgard Project, http://www.midgard-project.org
+ * @copyright The Midgard Project, http://www.midgard-project.org
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ */
+
+/**
+ * Component inheritance chain-based configuration implementation for Midgard MVC
+ *
+ * Configuration of a request is a single flat array of key-value pairs, merged from a configuration stack
+ * in following order:
+ *
+ * - midgardmvc_core
+ * - parent components of current component
+ * - current component
+ * - injectors
+ * - local configuration of a node
+ *
+ * @package midgardmvc_core
+ */
+class midgardmvc_core_services_configuration_chain implements midgardmvc_core_services_configuration
+{
+    static $configuration = array();
+    private $local_configuration = array();
+
+    public function __construct(array $local_configuration = null)
+    {
+        if (!is_null($local_configuration))
+        {
+            $this->local_configuration = $local_configuration;
+        }
+        $this->mvc = midgardmvc_core::get_instance();
+    }
+
+    /**
+     * Retrieve a configuration key
+     *
+     * If $key exists in the configuration data, its value is returned to the caller.
+     * If the value does not exist, an exception will be raised.
+     *
+     * @param string $key The configuration key to query.
+     * @return mixed Its value
+     * @see midgardmvc_helper_configuration::exists()
+     */
+    public function get($key, $subkey = null)
+    {
+        if (array_key_exists($key, $this->local_configuration))
+        {
+            if (!is_null($subkey))
+            {
+                if (   is_array($this->local_configuration[$key])
+                    && array_key_exists($subkey, $this->local_configuration[$key]))
+                {
+                    return $this->local_configuration[$key][$subkey];
+                }
+            }
+            else
+            {
+                return $this->local_configuration[$key];
+            }
+        }
+        // Build inheritance chain
+        $request = $this->mvc->context->get_request();
+        if (!$request)
+        {
+            $components = array($this->mvc->component->get('midgardmvc_core'));
+        }
+        else
+        {
+            $components = array_reverse($request->get_component_chain());
+        }
+        foreach ($components as $component)
+        {
+            $component_value = $this->get_from_component($component, $key, $subkey);
+            if (!is_null($component_value))
+            {
+                return $component_value;
+            }
+        }
+        throw new OutOfBoundsException("Configuration key '{$key}' does not exist");
+    }
+
+    private function get_from_component(midgardmvc_core_providers_component_component $component, $key, $subkey)
+    {
+        if (!isset(self::$configuration[$component->name]))
+        {
+            self::$configuration[$component->name] = $component->get_configuration();
+        }
+        if (array_key_exists($key, self::$configuration[$component->name]))
+        {
+            if (!is_null($subkey))
+            {
+                if (   is_array(self::$configuration[$component->name][$key])
+                    && array_key_exists($subkey, self::$configuration[$component->name][$key]))
+                {
+                    return self::$configuration[$component->name][$key][$subkey];
+                }
+                return null;
+            }
+            return self::$configuration[$component->name][$key];
+        }
+        return null;
+    }
+
+    public function __get($key)
+    {
+        return $this->get($key);
+    }
+
+    /**
+     * Checks for the existence of a configuration key.
+     *
+     * @param string $key The configuration key to check for.
+     * @return boolean True, if the key is available, false otherwise.
+     */
+    public function exists($key)
+    {
+        if (array_key_exists($key, $this->local_configuration))
+        {
+            return true;
+        }
+        // Build inheritance chain
+        $request = $this->mvc->context->get_request();
+        if (!$request)
+        {
+            $components = array($this->mvc->component->get('midgardmvc_core'));
+        }
+        else
+        {
+            $components = array_reverse($request->get_component_chain());
+        }
+        foreach ($components as $component)
+        {
+            if (!isset(self::$configuration[$component->name]))
+            {
+                self::$configuration[$component->name] = $component->get_configuration();
+            }
+            if (array_key_exists($key, self::$configuration[$component->name]))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function __isset($key)
+    {
+        return $this->exists($key);
+    }
+}
+?>

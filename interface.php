@@ -37,12 +37,7 @@ class midgardmvc_core
         // Load the context helper and initialize first context
         $this->context = new midgardmvc_core_helpers_context();
 
-        $this->configuration = new midgardmvc_core_services_configuration_yaml();
-        $this->configuration->load_component('midgardmvc_core');
-        if (!is_null($local_configuration))
-        {
-            $this->configuration->load_array_to_component('midgardmvc_core', $local_configuration);
-        }
+        $this->configuration = new midgardmvc_core_services_configuration_chain($local_configuration);
     }
     
     /**
@@ -220,9 +215,6 @@ class midgardmvc_core
      */
     public function process()
     {
-        // Load the head helper
-        $this->head = new midgardmvc_core_helpers_head();
-
         try
         {
             $request = $this->_process();
@@ -249,6 +241,9 @@ class midgardmvc_core
 
         // TODO: We give it to context to emulate legacy functionality
         $this->context->create($request);
+
+        // Load the head helper
+        $this->head = new midgardmvc_core_helpers_head();
 
         // Disable cache for now
         $request->set_data_item('cache_enabled', false);

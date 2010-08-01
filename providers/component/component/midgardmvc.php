@@ -1,6 +1,7 @@
 <?php
 class midgardmvc_core_providers_component_component_midgardmvc implements midgardmvc_core_providers_component_component
 {
+    private $manifest = array();
     private $path = '';
     private $parent = null;
     public $name = '';
@@ -10,7 +11,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
     {
         $this->path = MIDGARDMVC_ROOT . "/{$name}";
         $this->name = $name;
-        
+        $this->manifest = $manifest;
         if ($manifest['extends'])
         {
             $this->parent = midgardmvc_core::get_instance()->component->get($manifest['extends']);
@@ -67,7 +68,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
 
     public function get_configuration()
     {
-        $configuration = file_get_contents($th$this->path . "/configuration/defaults.yml");
+        $configuration = file_get_contents($this->path . "/configuration/defaults.yml");
 
         if (!self::$use_yaml)
         {
@@ -86,5 +87,56 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
             return null;
         }
         return file_get_contents($path);
+    }
+
+    public function get_routes(midgardmvc_core_request $request)
+    {
+        static $routes = null;
+        if (!is_null($routes))
+        {
+            return $routes;
+        }
+
+        $node_is_root = false;
+        if ($request->get_node() == $request->get_root_node())
+        {
+            $node_is_root = true;
+        }
+
+        $routes = array();
+        foreach ($this->manifest['routes'] as $route_id => $route)
+        {
+            if (   isset($route['root_only'])
+                && $route['root_only']
+                && !$node_is_root)
+            {
+                // Drop root-only routes from subnodes
+                continue;
+            }
+            
+            // Handle the required route parameters
+            if (!isset($route['controller']))
+            {
+                throw Exception("Route {$route_id} of {$this->name} has no controller defined");
+            }
+
+            if (!isset($route['action']))
+            {
+                throw Exception("Route {$route_id} of {$this->name}  has no action defined");
+            }
+
+            if (!isset($route['path']))
+            {
+                throw Exception("Route {$route_id} of {$this->name}  has no path defined");
+            }
+
+            if (!isset($route['template_aliases']))
+            {
+                $route['template_aliases'] = array();
+            }
+
+            $routes[$route_id] = new midgardmvc_core_route($route_id, $route['path'], $route['controller'], $route['action'], $route['template_aliases']);
+        }
+        return $routes;
     }
 }

@@ -11,7 +11,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
     {
         if (!is_string($component))
         {
-            throw new Exception("foo");
+            throw new InvalidArgumentException('Invalid component name given');
         }
         if (isset($this->components[$component]))
         {
@@ -47,6 +47,21 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         }
 
         return false;
+    }
+
+    public function get_routes(midgardmvc_core_request $request)
+    {
+        $routes = array();
+        $components = array_reverse($request->get_component_chain());
+        foreach ($components as $component)
+        {
+            $component_routes = $component->get_routes($request);
+            foreach ($component_routes as $route_id => $route)
+            {
+                $routes[$route_id] = $route;
+            }
+        }
+        return $routes;
     }
 
     public function inject(midgardmvc_core_request $request, $injector_type)

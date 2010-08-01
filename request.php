@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_helpers_request
+class midgardmvc_core_request
 {
     /**
      * HTTP verb used with request
@@ -49,7 +49,17 @@ class midgardmvc_core_helpers_request
 
     private $prefix = '/';
     
-    private $component = 'midgardmvc_core';
+    /**
+     * The primary component for the request
+     *
+     * @var midgardmvc_core_providers_component_component
+     */
+    private $component = null;
+
+    /**
+     * List of components affecting merging chains of this request
+     */
+    private $components = array();
 
     private $path_for_page = array();
 
@@ -67,10 +77,6 @@ class midgardmvc_core_helpers_request
      */
     private $data = array();
 
-    public function __construct()
-    {
-    }
-
     /**
      * Match an URL path to a page. Remaining path arguments are stored to argv
      *
@@ -80,7 +86,6 @@ class midgardmvc_core_helpers_request
     {
         $node = midgardmvc_core::get_instance()->hierarchy->get_node_by_path($path);
         $this->set_node($node);
-        $this->path = $path;
     }
 
     /**
@@ -88,7 +93,7 @@ class midgardmvc_core_helpers_request
      */
     public function get_path()
     {
-        return $this->path;
+        return "{$this->path}/" . implode('/', $this->argv);
     }
 
     /**
@@ -114,7 +119,15 @@ class midgardmvc_core_helpers_request
     {
         $this->node = $node;
         $this->set_arguments($node->get_arguments());
-        $this->set_component($node->get_component());
+
+        $node_component = $node->get_component();
+        if (!$node_component)
+        {
+            $node_component = 'midgardmvc_core';
+        }
+        $this->set_component(midgardmvc_core::get_instance()->component->get($node_component));
+
+        $this->path = $node->get_path();
     }
 
     public function get_node()
@@ -122,13 +135,47 @@ class midgardmvc_core_helpers_request
         return $this->node;
     }
 
-    public function set_component($component)
+    public function get_component_chain()
+    {
+        return $this->components;
+    }
+
+    public function add_component_to_chain(midgardmvc_core_providers_component_component $component)
+    {
+        $components_array = array
+        (
+            $component,
+        );
+        while (true)
+        {
+            $component = $component->get_parent();
+            if (is_null($component))
+            {
+                break;
+            }
+            if (isset($this->components[$component->name]))
+            {
+                // We have this part of the chain already
+                break;
+            }
+            $components_array[] = $component;
+        }
+        $components_array = array_reverse($components_array);
+        foreach ($components_array as $component)
+        {
+            $this->components[$component->name] = $component;
+        }
+    }
+
+    public function set_component(midgardmvc_core_providers_component_component $component)
     {
         if (!$component)
         {
             return;
         }
         $this->component = $component;
+
+        $this->add_component_to_chain($component);
     }
 
     public function get_component()
@@ -136,7 +183,7 @@ class midgardmvc_core_helpers_request
         return $this->component;
     }
 
-    public function set_route($route)
+    public function set_route(midgardmvc_core_route $route)
     {
         $this->route = $route;
     }
@@ -178,8 +225,6 @@ class midgardmvc_core_helpers_request
             case 'root_node':
             case 'root_page':
                 return $this->set_root_node($value);
-            case 'component':
-                return $this->set_component($value);
             case 'node':
             case 'page':
                 return $this->set_node($value);
@@ -217,7 +262,7 @@ class midgardmvc_core_helpers_request
                 case 'uri':
                     return $this->path;
                 case 'self':
-                    return $this->path;
+                    return $this->prefix;
                 case 'node':
                 case 'page':
                     return $this->node;
@@ -282,11 +327,18 @@ class midgardmvc_core_helpers_request
             return $this->data['cache_request_identifier'];
         }
 
-        $identifier_source  = "URI={$this->path}";
-        $identifier_source .= ";COMP={$this->component}";
+        $identifier_source  = 'URI=' . $this->get_path();
+        $identifier_source .= ";COMP={$this->component->name}";
         
         // TODO: Check language settings
         $identifier_source .= ';LANG=ALL';
+
+        // Template info too
+        if (isset($this->data['template_entry_point']))
+        {
+            $identifier_source .= ';TEMPLATE=' . $this->get_data_item('template_entry_point');
+            $identifier_source .= ';CONTENT=' . $this->get_data_item('content_entry_point');
+        }
         
         if (   isset($this->data['cache_enabled'])
             && $this->data['cache_enabled'])
@@ -329,7 +381,7 @@ class midgardmvc_core_helpers_request
      */
     public static function get_for_intent($intent)
     {
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         if (mgd_is_guid($intent))
         {
             // MgdSchema node GUID given
@@ -337,7 +389,7 @@ class midgardmvc_core_helpers_request
         }
         if (is_object($intent))
         {
-            if ($intent instanceof midgardmvc_core_helpers_request)
+            if ($intent instanceof midgardmvc_core_request)
             {
                 $request = clone $request;
             }
@@ -351,10 +403,6 @@ class midgardmvc_core_helpers_request
             if ($intent instanceof midgardmvc_core_providers_hierarchy_node)
             {
                 $request->set_node($intent);
-            }
-            else
-            {
-                throw new InvalidArgumentException('Received intent object of unknown type');
             }
         }
         elseif (strpos($intent, '/') !== false)

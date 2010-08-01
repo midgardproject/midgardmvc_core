@@ -1,5 +1,5 @@
 component: midgardmvc_core
-version: 9.09.0devel
+version: 10.12.0devel
 authors:
     bergie:
         name: Henri Bergius
@@ -21,3 +21,62 @@ authors:
         name: Arttu Manninen
         email: arttu@kaktus.cc
         url: http://www.kaktus.cc/
+routes:
+    page_read:
+        controller: midgardmvc_core_controllers_page
+        action: read
+        path: /
+        content_entry_point: midgardmvc-show-page
+    cache_invalidate:
+        controller: midgardmvc_core_controllers_cache
+        action: invalidate
+        path: /mgd:cache/invalidate
+        root_only: true
+        content_entry_point: midcom-invalidate-cache
+    midcom_about:
+        controller: midgardmvc_core_controllers_about
+        action: about
+        path: /mgd:about/
+        root_only: true
+        content_entry_point: midcom-show-about
+    midcom_about_database:
+        controller: midgardmvc_core_controllers_about
+        action: database
+        path: /mgd:about/database
+        root_only: true
+        content_entry_point: midcom-show-database
+    midcom_documentation_show:
+        controller: midgardmvc_core_controllers_documentation
+        action: show
+        path: '/mgd:documentation@'
+        root_only: true
+        content_entry_point: midcom-show-documentation_file
+    midcom_documentation_index:
+        controller: midgardmvc_core_controllers_documentation
+        action: index
+        path: '/mgd:documentation/{$component}'
+        root_only: true
+        content_entry_point: midcom-show-documentation_index
+    midcom_documentation_routes:
+        controller: midgardmvc_core_controllers_documentation
+        action: routes
+        path: '/mgd:documentation/{$component}/routes'
+        root_only: true
+        content_entry_point: midcom-show-documentation_routes
+    midcom_documentation_class:
+        controller: midgardmvc_core_controllers_documentation
+        action: class
+        path: '/mgd:documentation/class/{$class}'
+        root_only: true
+        content_entry_point: midcom-show-documentation_class
+    login:
+        controller: midgardmvc_core_controllers_authentication
+        action: login
+        path: /mgd:login
+        root_only: true
+        template_entry_point: midcom-login-form
+    logout:
+        controller: midgardmvc_core_controllers_authentication
+        action: logout
+        path: /mgd:logout
+        root_only: true

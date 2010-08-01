@@ -13,10 +13,6 @@
  */
 interface midgardmvc_core_services_configuration
 {
-    public function load_component($component);
-
-    public function normalize_routes(midgardmvc_core_helpers_request $request, array $routes = null);
-
     /**
      * Retrieve a configuration key
      *
@@ -46,21 +42,5 @@ interface midgardmvc_core_services_configuration
      * @see midgardmvc_helper_configuration::exists()
      */
     public function __isset($key);
-
-    /**
-     * Parses configuration string and returns it in configuration array format
-     *
-     * @param string $configuration Configuration string
-     * @return array The loaded configuration array
-     */
-    public function unserialize($configuration);
-    
-    /**
-     * Dumps configuration array and returns it as a string
-     *
-     * @param array $configuration Configuration array     
-     * @return string Configuration in string format
-     */
-    public function serialize(array $configuration);
 }
 ?>
