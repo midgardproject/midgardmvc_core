@@ -26,11 +26,11 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     /**
      * Parse request URL into components and return a corresponding MVC request object
      *
-     * @return midgardmvc_core_helpers_request
+     * @return midgardmvc_core_request
      */
     public function get_request()
     {
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         return $request;
     }
     
@@ -44,10 +44,9 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     /**
      * Load a component and dispatch the request to it
      */
-    public function dispatch(midgardmvc_core_helpers_request $request)
+    public function dispatch(midgardmvc_core_request $request)
     {
-        $this->midgardmvc->componentloader->load($request->get_component);
-        $this->midgardmvc->templating->prepare_stack($request);
+        $component = $request->get_component();
 
         $route_definitions = $this->get_routes();
         if (!isset($route_definitions[$this->midgardmvc->context->route_id]))

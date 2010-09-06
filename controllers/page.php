@@ -13,25 +13,21 @@
  */
 class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_baseclasses_crud
 {
-    public function __construct()
-    {
-        $this->configuration =& midgardmvc_core::get_instance()->configuration;
-    }
-
     public function load_object(array $args)
     {
-        $this->object = $this->request->get_node();
+        $this->object = $this->request->get_node()->get_object();
     }
     
     public function prepare_new_object(array $args)
     {
+        $parent = $this->request->get_node()->get_object();
         $this->object = new midgardmvc_core_node();
-        $this->object->up = midgardmvc_core::get_instance()->context->page->id;
+        $this->object->up = $parent->id;
     }
     
     public function get_url_read()
     {
-        return midgardmvc_core::get_instance()->context->prefix;
+        return $this->request->get_prefix();
     }
     
     public function get_url_update()

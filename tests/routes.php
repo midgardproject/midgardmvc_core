@@ -24,7 +24,7 @@ class midgardmvc_core_tests_routes extends midgardmvc_core_tests_testcase
             midgardmvc_core::get_instance()->context->create();
             try
             {
-                $request = new midgardmvc_core_helpers_request();
+                $request = new midgardmvc_core_request();
                 $request->set_component($component_name);
                 midgardmvc_core::get_instance()->dispatcher->initialize($request);
             }

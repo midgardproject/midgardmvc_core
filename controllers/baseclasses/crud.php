@@ -19,18 +19,13 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     protected $object = null;
     
     /**
-     * Datamanager instance
-     */
-    protected $datamanager = null;
-    
-    /**
      * Midgard MVC Forms instance
      */
     protected $form = null;
 
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct(midgardmvc_core_request $request)
     {
-        $this->configuration = $instance->configuration;
+        $this->request = $request;
     }
 
     /**
@@ -65,18 +60,18 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     // TODO: Refactor. There is code duplication with edit
     public function get_create(array $args)
     { 
-        if (!isset(midgardmvc_core::get_instance()->context->page))
+        $node = $this->request->get_node();
+        if ($node instanceof midgardmvc_core_providers_hierarchy_node_midgardmvc)
         {
-            throw new midgardmvc_exception_notfound('No Midgard page found');
+            // If we have a Midgard node we can assign that as a "default parent"
+            $this->data['parent'] = $node->get_object();
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         }
         
         $this->data['object'] =& $this->object;
-        $this->data['parent'] = midgardmvc_core::get_instance()->context->page;
         
         // Prepare the new object that form will eventually create
         $this->prepare_new_object($args);
-
-        midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         
         $this->load_form();
         $this->data['form'] =& $this->form;
@@ -104,6 +99,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     {
         $this->load_object($args);
         $this->data['object'] =& $this->object;
+        $this->data['type'] = get_class($this->object);
         
         if (   $this->data['object'] instanceof midgard_db_object
             && midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))

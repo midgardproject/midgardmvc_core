@@ -23,7 +23,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $original_context = $this->_core->context->get_current_context();
         $new_context = $original_context + 1;
         
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
         $this->assertEquals($new_context, $this->_core->context->get_current_context());
         $this->_core->context->delete();
@@ -31,7 +31,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
 
     public function testGet()
     {
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
         $current = $this->_core->context->get_current_context();
         
@@ -51,7 +51,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
     
     public function testDelete()
     {
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
         $current = $this->_core->context->get_current_context();
         $this->_core->context->delete();
@@ -70,7 +70,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
     
     public function testGetSet()
     {
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
         
         $this->_core->context->setted = true;
@@ -86,7 +86,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $node->id = 5;
         $root_node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
         $this->_core->context->root_node = $root_node;
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
         $this->assertEquals($root_node, $this->_core->context->root_node);
         $this->_core->context->delete();

@@ -15,6 +15,7 @@ class midgardmvc_appserv_app
         // setting emulated superglobals
         $_SERVER = $context['env'];
         $_COOKIE = $context['_COOKIE'];
+        $_GET = $context['_GET'];
 
         if (isset($context['_POST']))
         {
