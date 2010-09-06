@@ -28,11 +28,13 @@ class midgardmvc_core_services_cache_midgard extends midgardmvc_core_services_ca
 
     public function put($module, $identifier, $data)
     {
+        return;
         $this->cache_object->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, serialize($data));
     }
 
     public function get($module, $identifier)
     {
+        return;
         $data = $this->cache_object->get_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier);
         if (!$data)
         {

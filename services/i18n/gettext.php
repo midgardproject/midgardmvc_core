@@ -62,7 +62,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
     {
         // If no component name is set, then it's from the core
         // translations are going to get searched.
-        if ($component_name == '')
+        if (!$component_name)
         {
             $component_name = 'midgardmvc_core';
         }
@@ -74,7 +74,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
             $this->tr[$component_name]->useDomain($component_name); 
             return $this->tr[$component_name]; 
         } 
-    
+
         try
         {
             $this->tr[$component_name] = new PHPTAL_GetTextTranslator();

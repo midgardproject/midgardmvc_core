@@ -29,9 +29,8 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
                 'services_dispatcher' => 'manual',
             )
         );
-        $request = new midgardmvc_core_helpers_request();
+        $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
-        $this->_core->componentloader = new midgardmvc_core_component_loader();
     }
     
     public function tearDown()
