@@ -242,8 +242,6 @@ class midgardmvc_core
         // TODO: We give it to context to emulate legacy functionality
         $this->context->create($request);
 
-ob_start();
-include('/home/bergie/Projects/tmp/vtimap.php');
 $this->dispatcher->end_request();
 
         // Load the head helper
