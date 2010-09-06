@@ -1,6 +1,6 @@
 <?php
 
-class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_services_dispatcher_mjolnir
+class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_services_dispatcher_midgard3
 {
     private $appserver_context = null;
     private $headers = array();
@@ -18,12 +18,12 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
     /**
      * Parse request URL into components and return a corresponding MVC request object
      *
-     * @return midgardmvc_core_helpers_request
+     * @return midgardmvc_core_request
      */
     public function get_request()
     {
-        $request = new midgardmvc_core_helpers_request();
-        $request->set_root_page($this->_root_page);
+        $request = new midgardmvc_core_request();
+        $request->set_root_node($this->_root_node);
         $request->set_method($this->appserver_context['env']['REQUEST_METHOD']);
 
         // Parse URL into components (Mjolnir doesn't do this for us)
@@ -37,7 +37,8 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
             $request->set_query($get_parameters);
         }
 
-        $request->resolve_page($url_components['path']);
+        $request->resolve_node($url_components['path']);
+        //midgardmvc_core::get_instance()->log("Path is {$url_components['path']}", 'debug');
 
         return $request;
     }

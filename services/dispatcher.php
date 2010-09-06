@@ -20,14 +20,18 @@ interface midgardmvc_core_services_dispatcher
 
     public function get_request();
     
-    public function get_routes();
+    public function dispatch(midgardmvc_core_request $request);
     
-    public function initialize(midgardmvc_core_helpers_request $request);
-    
-    public function dispatch();    
-    
-    public function generate_url($route_id, array $args);
+    public function generate_url($intent, $route_id, array $args);
     
     public function get_midgard_connection();
+    
+    public function headers_sent();
+    
+    public function session_has_var($name);
+   
+    public function session_get_var($name);
+
+    public function session_set_var($name, $value);
 }
 ?>

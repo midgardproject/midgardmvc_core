@@ -6,17 +6,27 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-require_once(dirname(__FILE__) . '/../../../tests/testcase.php');
-
 /**
- * Test to see if contexts are working
+ * Tests for the configuration stack
+ *
+ * @package midgardmvc_core
  */
-class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_testcase
+class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests_testcase
 {
     public function setUp()
     {
-        $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
-        $this->testConfiguration = yaml_parse(file_get_contents($path));
+        $path = MIDGARDMVC_ROOT. '/midgardmvc_core/configuration/defaults.yml';
+        $yaml = file_get_contents($path);
+        if (!extension_loaded('yaml'))
+        {
+            // YAML PHP extension is not loaded, include the pure-PHP implementation
+            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            $this->testConfiguration = Spyc::YAMLLoad($yaml);
+        }
+        else
+        {
+            $this->testConfiguration = yaml_parse($yaml);
+        }
         parent::setUp();
     }
     
@@ -54,8 +64,18 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
 
     public function test_unserialize()
     {
-        $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
-        $data = yaml_parse(file_get_contents($path));
+        $path = MIDGARDMVC_ROOT. '/midgardmvc_core/configuration/defaults.yml';
+        $yaml = file_get_contents($path);
+        if (!extension_loaded('yaml'))
+        {
+            // YAML PHP extension is not loaded, include the pure-PHP implementation
+            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            $data = Spyc::YAMLLoad($yaml);
+        }
+        else
+        {
+            $data = yaml_parse($yaml);
+        }
         $data2 = $this->_core->configuration->unserialize(file_get_contents($path));
         if ($data === $data2)
         {
@@ -69,9 +89,21 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
 
     public function test_serialization()
     {
-        $path = realpath(dirname(__FILE__)).'/../../configuration/defaults.yml';
-        $data = yaml_parse(file_get_contents($path));
-        $serialized = yaml_emit($data);
+        $path = MIDGARDMVC_ROOT. '/midgardmvc_core/configuration/defaults.yml';
+        $yaml = file_get_contents($path);
+        if (!extension_loaded('yaml'))
+        {
+            // YAML PHP extension is not loaded, include the pure-PHP implementation
+            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            $data = Spyc::YAMLLoad($yaml);
+            $serialized = Spyc::YAMLDump($data);
+        }
+        else
+        {
+            $data = yaml_parse($yaml);
+            $serialized = yaml_emit($data);
+        }
+
         $serialized2 = $this->_core->configuration->serialize($data);
 
         if ($serialized === $serialized2)
@@ -187,11 +219,12 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_tests_test
     public function test_contexts()
     {
         midgardmvc_core::get_instance()->configuration->load_component('midgardmvc_core');
-        $initial_value = midgardmvc_core::get_instance()->configuration->get('log_level');
+        $initial_value = midgardmvc_core::get_instance()->configuration->get('services_authentication');
         
         // Then enter another context
-        midgardmvc_core::get_instance()->context->create();
-        $new_value = midgardmvc_core::get_instance()->configuration->get('log_level');
+        $request = new midgardmvc_core_helpers_request();
+        midgardmvc_core::get_instance()->context->create($request);
+        $new_value = midgardmvc_core::get_instance()->configuration->get('services_authentication');
         midgardmvc_core::get_instance()->context->delete();
         
         $this->assertEquals($initial_value, $new_value);

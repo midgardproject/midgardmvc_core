@@ -8,9 +8,9 @@
                 <th property="doap:name">Midgard MVC</th>
                 <td tal:content="midgardmvc_core/versions/midgardmvc" property="doap:revision">9</td>
             </tr>
-            <tr typeof="doap:Project" about="http://www.midgard-project.org/">
-                <th property="doap:name">Midgard</th>
-                <td tal:content="midgardmvc_core/versions/midgard" property="doap:revision">9</td>
+            <tr typeof="doap:Project" about="http://www.midgard2.org/" tal:condition="exists:midgardmvc_core/versions/midgard2">
+                <th property="doap:name">Midgard2</th>
+                <td tal:content="midgardmvc_core/versions/midgard2" property="doap:revision">9</td>
             </tr>
             <tr typeof="doap:Project" about="http://www.php.net/">
                 <th property="doap:name">PHP</th>

@@ -1,6 +1,6 @@
 <?php
 
-require 'midgardmvc_core/framework.php';
+require realpath(dirname(__FILE__).'/..').'/framework.php';
 
 class StartNewRequestException extends RuntimeException {}
 
@@ -27,14 +27,20 @@ class midgardmvc_appserv_app
 
         // starting processing
         try {
-            $mvc = midgardmvc_core::get_instance('appserv');
+            $config = array
+            (
+                'services_dispatcher' => 'appserv',
+                //'services_authentication' => 'runtime',
+                'providers_component' => 'midgardmvc',
+            );
+            $mvc = midgardmvc_core::get_instance($config);
             $mvc->dispatcher->set_request_data($context);
 
             call_user_func($context['logger'], "-> starting midgardmvc");
             try {
                 ob_start();
-                $mvc->process();
-                $mvc->serve();
+                $request = $mvc->process();
+                $mvc->serve($request);
                 $body = ob_get_clean();
             } catch (StartNewRequestException $e) {
                 $body = ob_get_clean();
@@ -66,7 +72,7 @@ class midgardmvc_appserv_app
             );
         } catch (Exception $e) {
             echo $e;
-            return array(500, array('Content-type', 'text/plain'), "Internal Server Error \n(check log)");
+            return array(500, array('Content-type', 'text/plain'), "Internal Server Error \n" . $e->getMessage());
         }
     }
 }

@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core extends midgardmvc_core_component_baseclass
+class midgardmvc_core
 {
     /**
      * @var midgardmvc_core_services_configuration_yaml
@@ -19,65 +19,25 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     public $configuration;
 
     /**
-     * @var midgardmvc_core_component_loader
-     */
-    public $componentloader;
-
-    /**
-     * @var midgardmvc_core_services dispatcher
-     */
-    public $dispatcher;
-
-    /**
      * @var midgardmvc_core_helpers_context
      */
     public $context;
-    
-    /**
-     * Access to installed FirePHP logger
-     *
-     * @var FirePHP
-     */
-    public $firephp = null;
-    
-    private $track_autoloaded_files = false;
-    private $autoloaded_files = array();
     
     private static $instance = null;
 
     public function __construct()
     {
-        // Register autoloader so we get all Midgard MVC classes loaded automatically
-        spl_autoload_register(array($this, 'autoload'));
     }
     
     /**
      * Load all basic services needed for Midgard MVC usage. This includes configuration, authorization and the component loader.
      */
-    public function load_base_services($dispatcher = 'midgard')
+    public function load_base_services(array $local_configuration = null)
     {
         // Load the context helper and initialize first context
         $this->context = new midgardmvc_core_helpers_context();
 
-        $this->configuration = new midgardmvc_core_services_configuration_yaml();
-        $this->configuration->load_component('midgardmvc_core');
-
-        // Load the request dispatcher
-        $dispatcher_implementation = "midgardmvc_core_services_dispatcher_{$dispatcher}";
-        $this->dispatcher = new $dispatcher_implementation();
-
-        if (    $this->configuration->development_mode
-            and !class_exists('MFS\AppServer\DaemonicHandler') // firephp is not appserver-compatible
-           )
-        {
-            // Load FirePHP logger
-            // TODO: separate setting
-            include('FirePHPCore/FirePHP.class.php');
-            if (class_exists('FirePHP'))
-            {
-                $this->firephp = FirePHP::getInstance(true);
-            }
-        }
+        $this->configuration = new midgardmvc_core_services_configuration_chain($local_configuration);
     }
     
     /**
@@ -104,9 +64,48 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             throw new Exception("No implementation defined for service {$service}");
         }
 
+        if (strpos($service_implementation, '_') === false)
+        {
+            // Built-in service implementation called using the shorthand notation
+            $service_implementation = "midgardmvc_core_services_{$service}_{$service_implementation}";
+        }
+
         $this->$service = new $service_implementation();
     }
-    
+
+    /**
+     * Helper for service initialization. Usually called via getters
+     *
+     * @param string $service Name of service to load
+     */
+    public function load_provider($provider)
+    {
+        if (isset($this->$provider))
+        {
+            return;
+        }
+        
+        $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/providers/{$provider}.php";
+        if (!file_exists($interface_file))
+        {
+            throw new InvalidArgumentException("Provider {$provider} not installed");
+        }
+        
+        $provider_implementation = $this->configuration->get("providers_{$provider}");
+        if (!$provider_implementation)
+        {
+            throw new Exception("No implementation defined for provider {$provider}");
+        }
+
+        if (strpos($provider_implementation, '_') === false)
+        {
+            // Built-in provider implementation called using the shorthand notation
+            $provider_implementation = "midgardmvc_core_providers_{$provider}_{$provider_implementation}";
+        }
+
+        $this->$provider = new $provider_implementation();
+    }
+
     /**
      * Logging interface
      *
@@ -118,71 +117,60 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     {
         if (!extension_loaded('midgard2'))
         {
-            // Temporary non-Midgard logger until midgard_error is backported to Ragnaroek
-            static $logger = null;
-            if (!$logger)
-            {
-                try
-                {
-                    $logger = new midgardmvc_core_helpers_log();
-                }
-                catch (Exception $e)
-                {
-                    // Unable to instantiate logger
-                    return;
-                }
-            }
-            static $log_levels = array
-            (
-                'debug' => 4,
-                'info' => 3,
-                'message' => 2,
-                'warn' => 1,
-            );
-            
-            if ($log_levels[$loglevel] > $log_levels[$this->configuration->get('log_level')])
-            {
-                // Skip logging, too low level
-                return;
-            }
-            $logger->log("{$prefix}: {$message}");
+            $this->log_with_helper($prefix, $message, $loglevel);
             return;
-        }
-
-        $firephp_loglevel = $loglevel;
-        // Handle mismatching loglevels
-        switch ($loglevel)
-        {
-            case 'debug':
-            case 'message':
-                $firephp_loglevel = 'log';
-                break;
-            case 'warn':
-            case 'warning':
-                $loglevel = 'warning';  
-                $firephp_loglevel = 'warn';
-                break;
-            case 'error':
-            case 'critical':
-                $firephp_loglevel = 'error';
-                break;
-        }
-
-        if (   $this->firephp
-            && !$this->dispatcher->headers_sent())
-        {
-            $this->firephp->$firephp_loglevel("{$prefix}: {$message}");
         }
 
         midgard_error::$loglevel("{$prefix}: {$message}");
     }
+
+    private function log_with_helper($prefix, $message, $loglevel)
+    {
+        // Temporary non-Midgard logger until midgard_error is backported to Ragnaroek
+        static $logger = null;
+        if (!$logger)
+        {
+            try
+            {
+                $logger = new midgardmvc_core_helpers_log();
+            }
+            catch (Exception $e)
+            {
+                // Unable to instantiate logger
+                return;
+            }
+        }
+        static $log_levels = array
+        (
+            'debug' => 4,
+            'info' => 3,
+            'message' => 2,
+            'warn' => 1,
+        );
+        
+        if ($log_levels[$loglevel] > $log_levels[$this->configuration->get('log_level')])
+        {
+            // Skip logging, too low level
+            return;
+        }
+        $logger->log("{$prefix}: {$message}");
+    }
     
     /**
-     * Magic getter for service loading
+     * Magic getter for service and provider loading
      */
     public function __get($key)
     {
-        $this->load_service($key);
+        try
+        {
+            // First try loading as a service
+            $this->load_service($key);
+        }
+        catch (InvalidArgumentException $e)
+        {
+            // Load a provider instead
+            $this->load_provider($key);
+        }
         return $this->$key;
     }
     
@@ -191,132 +179,83 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
      *
      * @param string $class_name Name of a missing PHP class
      */
-    public function autoload($class_name)
+    public static function autoload($class_name)
     {
-        static $components = array('midgardmvc_core');
-        if (   count($components) < 2
-            && isset(self::$instance->componentloader))
+        $class_parts = explode('_', $class_name);
+        $component = '';
+        foreach ($class_parts as $i => $part)
         {
-            $components = array_keys(self::$instance->componentloader->manifests);
+            if ($component == '')
+            {
+                $component = $part;
+            }
+            else
+            {
+                $component .= "_{$part}";
+            }
+            unset($class_parts[$i]);
+            if (is_dir(MIDGARDMVC_ROOT . "/{$component}"))
+            {
+                break;
+            }
         }
-
-        foreach ($components as $component)
-        {
-            // Look which component the file is under
-            $component_length = strlen($component);
-            if (substr($class_name, 0, $component_length) != $component)
-            {
-                continue;
-            }
-            
-            if ($class_name == $component)
-            {
-                // Load the interface class
-                self::$instance->componentloader->load($component);
-            }
  
-            $path_under_component = str_replace('_', '/', substr($class_name, $component_length));
-            $path = MIDGARDMVC_ROOT . "/{$component}{$path_under_component}.php";
-            if (!file_exists($path))
-            {
-                return;
-            }
-            
-            if ($this->track_autoloaded_files)
-            {
-                $this->autoloaded_files[] = $path;
-            }
-            require($path);
+        $path_under_component = implode('/', $class_parts);
+        $path = MIDGARDMVC_ROOT . "/{$component}/{$path_under_component}.php";
+        if (!file_exists($path))
+        {
+            return;
         }
+        
+        require($path);
     }
     
     /**
-     * Process the current request, loading the page's component and dispatching the request to it
+     * Process the current request, loading the node's component and dispatching the request to it
      */
     public function process()
     {
-        // Load the head helper
-        $this->head = new midgardmvc_core_helpers_head();
-
-        // php doesn't have "finally" keyword. emulating it
-
         try
         {
-            $this->_process();
+            $request = $this->_process();
         }
         catch (Exception $e)
         {
-        }
-
-        // this will be executed even if _process() had exception
-        $this->_after_process();
-
-        if (isset($e))
-        {
             // ->serve() wouldn't be called — do cleanup here
+            $this->_after_process();
             $this->cleanup_after_request();
 
             // rethrowing exception, if there is one
             throw $e;
         }
+
+        $this->_after_process();
+        return $request;
     }
 
     private function _process()
     {
-        $this->context->create();
-        date_default_timezone_set($this->configuration->get('default_timezone'));
-        
-        $this->dispatcher->get_midgard_connection()->set_loglevel($this->configuration->get('log_level'));
-
-        // Let dispatcher populate request with the page and other information used
+        // Let dispatcher populate request with the node and other information used
         $request = $this->dispatcher->get_request();
-        $request->populate_context();
-        
-        if (isset($this->context->page->guid))
-        {
-            // Load per-folder configuration
-            $this->configuration->load_instance($this->context->component, $this->context->page);
-        }
+        $request->add_component_to_chain($this->component->get('midgardmvc_core'));
 
-        $this->log('Midgard MVC', "Serving " . $request->get_method() . " {$this->context->uri} at " . gmdate('r'), 'info');
+        // TODO: We give it to context to emulate legacy functionality
+        $this->context->create($request);
+
+        // Load the head helper
+        $this->head = new midgardmvc_core_helpers_head();
+
+        // Disable cache for now
+        $request->set_data_item('cache_enabled', false);
+
+        $this->log('Midgard MVC', 'Serving ' . $request->get_method() . ' ' . $request->get_path() . ' at ' . gmdate('r'), 'info');
 
         // Let injectors do their work
-        $this->componentloader = new midgardmvc_core_component_loader();
-        $this->componentloader->inject_process();
+        $this->component->inject($request, 'process');
 
-        // Load the cache service and check for content cache
-        self::$instance->context->cache_enabled = false;
-        /*
-        if (self::$instance->context->cache_enabled)
-        {
-            $request->generate_identifier();
-            $this->cache->register_object($this->context->page);
-            $this->cache->content->check($this->context->cache_request_identifier);
-        }
-        */
-
-        // Show the world this is Midgard
-        $this->head->add_meta
-        (
-            array
-            (
-                'name' => 'generator',
-                'content' => "Midgard/" . mgd_version() . " MidgardMVC/{$this->componentloader->manifests['midgardmvc_core']['version']} PHP/" . phpversion()
-            )
-        );
-
-        if ($this->configuration->enable_attachment_cache)
-        {
-            $classname = $this->configuration->attachment_handler;
-            $handler = new $classname();
-            $handler->connect_to_signals();
-        }
-
-        // Then initialize the component, so it also goes to template stack
-        $this->dispatcher->initialize($request);
         try
         {
-            $this->dispatcher->dispatch();
+            $this->dispatcher->dispatch($request);
         }
         catch (midgardmvc_exception_unauthorized $exception)
         {
@@ -324,7 +263,9 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
             $this->authentication->handle_exception($exception);
         }
 
-        $this->dispatcher->header('Content-Type: ' . $this->context->mimetype);
+        $this->dispatcher->header('Content-Type: ' . $request->get_data_item('mimetype'));
+
+        return $request;
     }
 
     private function _after_process()
@@ -335,45 +276,29 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     /**
      * Serve a request either through templating or the WebDAV server
      */
-    public function serve()
+    public function serve(midgardmvc_core_request $request)
     {
         try
         {
-            $this->_serve();
+            $this->_serve($request);
         }
         catch (Exception $e)
         {
-        }
-
-        // this will be executed even if _serve() had exception
-        $this->_after_serve();
-
-        if (isset($e))
-        {
-            // rethrowing exception, if there is one
+            // this will be executed even if _serve() had exception
+            $this->_after_serve();
             throw $e;
         }
+
+        $this->_after_serve();
     }
 
-    private function _serve()
+    private function _serve(midgardmvc_core_request $request)
     {
-        // Handle HTTP request
-        if (self::$instance->context->webdav_request)
-        {
-            // Start the full WebDAV server instance
-            // FIXME: Figure out how to prevent this with Variants
-            $webdav_server = new midgardmvc_core_helpers_webdav();
-            $webdav_server->serve();
-            // This will exit
-        }
-
         // Prepate the templates
-        $this->templating->template();
+        $this->templating->template($request);
 
         // Read contents from the output buffer and pass to Midgard MVC rendering
-        $this->templating->display();
-        
-        $this->cache->autoload->store($this->context->uri, $this->autoloaded_files);
+        $this->templating->display($request);
     }
 
     private function _after_serve()
@@ -397,97 +322,27 @@ class midgardmvc_core extends midgardmvc_core_component_baseclass
     /**
      * Access to the Midgard MVC instance
      */
-    public static function get_instance($dispatcher = null)
+    public static function get_instance($local_configuration = null)
     {
-        static $dispatcher_used = null;
-        if (is_null($dispatcher_used))
+        if (!is_null(self::$instance))
         {
-            $dispatcher_used = $dispatcher;
-        }
-        if (   !is_null($dispatcher)
-            && $dispatcher != $dispatcher_used)
-        {
-            throw new BadMethodCallException("Dispatcher may be provided only once (using {$dispatcher_used} while you requested {$dispatcher})");
+            return self::$instance;
         }
 
-        if (is_null(self::$instance))
+        if (   !is_null($local_configuration)
+            && !is_array($local_configuration))
         {
-            // Load instance
-            self::$instance = new midgardmvc_core();
-            if (is_null($dispatcher))
-            {
-                self::$instance->load_base_services();
-            }
-            else
-            {
-                self::$instance->load_base_services($dispatcher);
-            }
+            // Ratatoskr-style dispatcher selection fallback
+            $local_configuration = array
+            (
+                'services_dispatcher' => $local_configuration,
+            );
         }
+
+        // Load and return MVC instance
+        self::$instance = new midgardmvc_core();
+        self::$instance->load_base_services($local_configuration);
         return self::$instance;
-    }
-
-    public function get_object_actions(midgardmvc_core_node &$object, $variant = null)
-    {
-        $actions = array();
-        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
-        {
-            // User is not allowed to edit so we have no actions available
-            return $actions;
-        }
-        
-        // This is the general action available for a page: forms-based editing
-        $actions['update'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_update', array(), $object),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('update', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/update.png',
-        );
-        $actions['delete'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_delete', array(), $object),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('delete', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/delete.png',
-        );
-        
-        return $actions;
-    }
-
-    public function get_administer_actions(midgardmvc_core_node $folder)
-    {
-        $actions = array();
-        
-        $actions['logout'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('logout', array()),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('logout', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/exit.png',
-        );
-        
-        return $actions;
-    }
-
-    public function get_create_actions(midgardmvc_core_node $folder)
-    {
-        $actions = array();
-
-        if (!midgardmvc_core::get_instance()->authorization->can_do('midgard:create', $folder))
-        {
-            // User is not allowed to create subfolders so we have no actions available
-            return $actions;
-        }
-        
-        $actions['page_create'] = array
-        (
-            'url' => midgardmvc_core::get_instance()->dispatcher->generate_url('page_create', array()),
-            'method' => 'GET',
-            'label' => midgardmvc_core::get_instance()->i18n->get('create folder', 'midgardmvc_core'),
-            'icon' => 'midgardmvc_core/stock-icons/16x16/folder.png',
-        );
-        
-        return $actions;
     }
 }
 ?>

@@ -28,7 +28,7 @@ class midgardmvc_core_services_authentication_cookie
     public function read_login_session()
     {
         $reset_cookie = false;
-        if (   array_key_exists($this->_cookie_id, midgardmvc_core::get_instance()->dispatcher->get)
+        if (   array_key_exists($this->_cookie_id, midgardmvc_core::get_instance()->context->get_request()->get_query())
             && !array_key_exists($this->_cookie_id, $_COOKIE))
         {
             $reset_cookie = true;

@@ -11,13 +11,13 @@
 // Load Midgard MVC
 // Note: your Midgard MVC base directory has to be in PHP include_path
 require('midgardmvc_core/framework.php');
-$midgardmvc = midgardmvc_core::get_instance('mjolnir');
+$midgardmvc = midgardmvc_core::get_instance('midgard3');
     
 // Process the request
-$midgardmvc->process();
+$request = $midgardmvc->process();
 
 // Serve the request
-$midgardmvc->serve();
+$midgardmvc->serve($request);
 
 // End
 unset($midgardmvc);

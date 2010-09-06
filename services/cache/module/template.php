@@ -33,10 +33,16 @@ class midgardmvc_core_services_cache_module_template
             // FIXME: We need to make configuration more dynamic to support this properly
             $this->cache_directory = $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'];
         }
+        elseif (   extension_loaded('midgard2')
+                && midgard_connection::get_instance()->config->cachedir != '')
+        {
+            $this->cache_directory = midgard_connection::get_instance()->config->cachedir;
+        }
         else
         {
             $this->cache_directory = str_replace('__MIDGARDCACHE__', $this->get_cache_directory(), $configuration['directory']);
         }
+
         if (!file_exists($this->cache_directory))
         {
             $res = mkdir($this->cache_directory, 0777, true);
@@ -57,7 +63,7 @@ class midgardmvc_core_services_cache_module_template
             || empty($_MIDGARD))
         {
             // FIXME: we need a way to access this in Mjolnir
-            return '/var/cache/midgard';
+            return sys_get_temp_dir();
         }
         switch ($_MIDGARD['config']['prefix'])
         {

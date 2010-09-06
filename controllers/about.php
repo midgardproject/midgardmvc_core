@@ -13,7 +13,7 @@
  */
 class midgardmvc_core_controllers_about
 {
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct()
     {
         $this->configuration = midgardmvc_core::get_instance()->configuration;
     }
@@ -25,9 +25,13 @@ class midgardmvc_core_controllers_about
         $this->data['versions'] = array
         (
             'midgardmvc'  => midgardmvc_core::get_instance()->componentloader->manifests['midgardmvc_core']['version'],
-            'midgard' => mgd_version(),
             'php'     => phpversion(),
         );
+
+        if (extension_loaded('midgard2'))
+        {
+            $this->data['versions']['midgard2'] = mgd_version();
+        }
         
         $this->data['components'] = array();
         foreach (midgardmvc_core::get_instance()->componentloader->manifests as $component => $manifest)
@@ -97,10 +101,10 @@ class midgardmvc_core_controllers_about
             else
             {
                 // Midgard2 9.09 or newer
-                if (!midgard_storage::create_base_storage())
+                /*if (!midgard_storage::create_base_storage())
                 {
                     throw new Exception("Could not create Midgard class tables");
-                }
+                }*/
                 // And update as necessary
                 $mgdschema_types = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
                 foreach ($mgdschema_types as $type)
@@ -110,14 +114,14 @@ class midgardmvc_core_controllers_about
                         midgardmvc_core::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Updating storage for type {$type}", 'debug');
                         if (!midgard_storage::update_class_storage($type))
                         {
-                            throw new Exception('Could not update ' . $type . ' storage');
+                            //throw new Exception('Could not update ' . $type . ' storage');
                         }
                         continue;
                     }
                     midgardmvc_core::get_instance()->log('midgardmvc_core_controllers_about::post_database', "Creating storage for type {$type}", 'debug');
                     if (!midgard_storage::create_class_storage($type))
                     {
-                        throw new Exception('Could not create ' . $type . ' storage');
+                        //throw new Exception('Could not create ' . $type . ' storage');
                     }
                 }
             }

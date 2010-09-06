@@ -34,12 +34,7 @@ class midgardmvc_core_exceptionhandler
 
         $midgardmvc = midgardmvc_core::get_instance();
 
-        $midgardmvc->log($message_type, $message, 'warn');
-
-        if ($midgardmvc->firephp)
-        {
-            $midgardmvc->firephp->error($exception);
-        }
+        $midgardmvc->log($message_type, $message, 'warning');
 
         $header = self::header_by_code($http_code);
         if (!isset($midgardmvc->dispatcher))
@@ -83,29 +78,33 @@ class midgardmvc_core_exceptionhandler
                 return;
             }
 
-            if ($midgardmvc->configuration && $midgardmvc->configuration->enable_exception_trace)
+            if (   $midgardmvc->configuration 
+                && $midgardmvc->configuration->enable_exception_trace)
             {
                 $data['trace'] = $exception->getTrace();
             }
 
             try
             {
-                if (!$midgardmvc->context)
+                $request = $midgardmvc->context->get_request();
+                if (!$request)
                 {
-                    throw new Exception('no context found');
+                    throw $exception;
                 }
 
-                $midgardmvc->context->set_item('midgardmvc_core_exceptionhandler', $data);
-                $midgardmvc->context->set_item('template_entry_point', 'midcom-show-error');
-                $midgardmvc->context->set_item('cache_enabled', false);
+                $route = $request->get_route();
+                $route->template_aliases['root'] = 'midcom-show-error';
+                
+                $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
+                $request->set_data_item('cache_enabled', false);
 
                 if (!$midgardmvc->templating)
                 {
                     throw new Exception('no templating found');
                 }
 
-                $midgardmvc->templating->template();
-                $midgardmvc->templating->display();
+                $midgardmvc->templating->template($request);
+                $midgardmvc->templating->display($request);
             }
             catch (Exception $e)
             {
@@ -122,7 +121,7 @@ class midgardmvc_core_exceptionhandler
                 echo "</html>";
             }
             
-            // Clean up the context
+            // Clean up and finish
             $midgardmvc->context->delete();
         }
     }

@@ -105,7 +105,8 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->load_object($args);
         $this->data['object'] =& $this->object;
         
-        if (midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
+        if (   $this->data['object'] instanceof midgard_db_object
+            && midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
         {
             midgardmvc_core::get_instance()->head->add_link_head
             (

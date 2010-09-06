@@ -13,19 +13,14 @@
  */
 class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_baseclasses_crud
 {
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct()
     {
         $this->configuration =& midgardmvc_core::get_instance()->configuration;
     }
 
     public function load_object(array $args)
     {
-        if (!isset(midgardmvc_core::get_instance()->context->page->id))
-        {
-            throw new midgardmvc_exception_notfound('No Midgard MVC node found');
-        }
-        
-        $this->object = midgardmvc_core::get_instance()->context->page;
+        $this->object = $this->request->get_node();
     }
     
     public function prepare_new_object(array $args)
@@ -43,6 +38,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     {
         return midgardmvc_core::get_instance()->dispatcher->generate_url
         (
+            $this->request,
             'mvcadmin_crud_update', array
             (
                 'type' => 'midgardmvc_core_node', 

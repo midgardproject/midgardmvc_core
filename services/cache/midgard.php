@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-include MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
+require_once MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
 
 /**
  * Midgard cache backend.
@@ -18,30 +18,22 @@ include MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
  */
 class midgardmvc_core_services_cache_midgard extends midgardmvc_core_services_cache_base implements midgardmvc_core_services_cache
 {
-    private $_db;
-    private $_table;
-    
+    private $cache_object = null;
+
     public function __construct()
     {
         parent::__construct();
+        $this->cache_object = midgardmvc_core::get_instance()->hierarchy->get_root_node()->get_object();
     }
 
     public function put($module, $identifier, $data)
     {
-        if (!isset($this->_core->context->host))
-        {
-            return;
-        }
-        $this->_core->context->host->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, serialize($data));
+        $this->cache_object->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, serialize($data));
     }
 
     public function get($module, $identifier)
     {
-        if (!isset($this->_core->context->host))
-        {
-            return;
-        }
-        $data = $this->_core->context->host->get_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier);
+        $data = $this->cache_object->get_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier);
         if (!$data)
         {
             return;
@@ -51,20 +43,12 @@ class midgardmvc_core_services_cache_midgard extends midgardmvc_core_services_ca
 
     public function delete($module, $identifier)
     {
-        if (!isset($this->_core->context->host))
-        {
-            return;
-        }
-        $this->_core->context->host->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, '');
+        $this->cache_object->set_parameter("midgardmvc_core_services_cache_midgard:{$module}", $identifier, '');
     }
 
     public function exists($module, $identifier)
     {
-        if (!isset($this->_core->context->host))
-        {
-            return false;
-        }
-        if (is_null ($this->get($module, $identifier)))
+        if (is_null($this->get($module, $identifier)))
         {
             return false;
         }
@@ -73,12 +57,8 @@ class midgardmvc_core_services_cache_midgard extends midgardmvc_core_services_ca
 
     public function delete_all($module)
     {
-        if (!isset($this->_core->context->host))
-        {
-            return;
-        }
         $args = array('domain' => "midgardmvc_core_services_cache_midgard:{$module}");
-        $this->_core->context->host->delete_parameters($args);
+        $this->cache_object->delete_parameters($args);
     }    
 }
 ?>

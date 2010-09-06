@@ -6,12 +6,12 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-require_once(dirname(__FILE__) . '/../../../tests/testcase.php');
-
 /**
  * Test to see if contexts are working
+ *
+ * @package midgardmvc_core
  */
-class midgardmvc_core_tests_helpers_context extends midgardmvc_tests_testcase
+class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testcase
 {
     public function setUp()
     {        
@@ -23,37 +23,36 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_tests_testcase
         $original_context = $this->_core->context->get_current_context();
         $new_context = $original_context + 1;
         
-        $this->_core->context->create();        
-        $context =& $this->_core->context->get();
-        $this->assertEquals($this->_core->context->get_current_context(), $new_context);
-        $this->assertTrue(!empty($context));
-        
+        $request = new midgardmvc_core_helpers_request();
+        $this->_core->context->create($request);
+        $this->assertEquals($new_context, $this->_core->context->get_current_context());
         $this->_core->context->delete();
     }
 
     public function testGet()
     {
-        $this->_core->context->create();
+        $request = new midgardmvc_core_helpers_request();
+        $this->_core->context->create($request);
         $current = $this->_core->context->get_current_context();
         
-        $context = array();
         try
         {
-            $context =& $this->_core->context->get($current);
+            $context = $this->_core->context->get($current);
         }
         catch (OutOfBoundsException $e)
         {
             $this->fail('An unexpected OutOfBoundsException has been raised.');
         }
         
-        $this->assertTrue(!empty($context));
+        $this->assertTrue(is_array($context));
         
         $this->_core->context->delete();
     }
     
     public function testDelete()
     {
-        $this->_core->context->create();
+        $request = new midgardmvc_core_helpers_request();
+        $this->_core->context->create($request);
         $current = $this->_core->context->get_current_context();
         $this->_core->context->delete();
         
@@ -71,21 +70,25 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_tests_testcase
     
     public function testGetSet()
     {
-        $this->_core->context->create();
+        $request = new midgardmvc_core_helpers_request();
+        $this->_core->context->create($request);
         
         $this->_core->context->setted = true;
         
-        $this->assertEquals($this->_core->context->setted, true);
+        $this->assertEquals(true, $this->_core->context->setted);
         
         $this->_core->context->delete();
     }
 
-    public function test_inherited_values()
+    public function testStatic()
     {
-        $this->_core->context->root_page = new midgardmvc_core_node();
-        $this->_core->context->root_page->id = 5;
-        $this->_core->context->create();
-        $this->assertEquals($this->_core->context->root_page->id, 5);
+        $node = new midgardmvc_core_node();
+        $node->id = 5;
+        $root_node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
+        $this->_core->context->root_node = $root_node;
+        $request = new midgardmvc_core_helpers_request();
+        $this->_core->context->create($request);
+        $this->assertEquals($root_node, $this->_core->context->root_node);
         $this->_core->context->delete();
     }
 }

@@ -83,7 +83,7 @@ class midgardmvc_core_services_sessioning_midgard
         }
         catch (Exception $e)
         {
-            midgardmvc_core::get_instance()->log(__CLASS__, "Couldn't start session: ".$e->getMessage(), 'warn');
+            midgardmvc_core::get_instance()->log(__CLASS__, "Couldn't start session: ".$e->getMessage(), 'warning');
             $this->enabled = false;
             return;
         }

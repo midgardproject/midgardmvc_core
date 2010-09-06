@@ -13,7 +13,7 @@
  */
 class midgardmvc_core_controllers_documentation
 {
-    public function __construct(midgardmvc_core_component_interface $instance)
+    public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
         $this->configuration = $this->midgardmvc->configuration;
@@ -142,7 +142,7 @@ class midgardmvc_core_controllers_documentation
             throw new midgardmvc_exception_notfound("File not found");
         }
 
-        require_once 'markdown.php';        
+        require_once MIDGARDMVC_ROOT .'/midgardmvc_core/helpers/markdown.php';
         $this->data['markdown'] = file_get_contents($path);
         $this->data['markdown_formatted'] = Markdown($this->data['markdown']);
     }
@@ -177,7 +177,7 @@ class midgardmvc_core_controllers_documentation
             
             $this->data['routes'][$route_id]['controller_action'] = "{$route_def['controller']}:{$route_def['action']}";
             
-            $this->data['routes'][$route_id]['controller_url'] = $this->midgardmvc->dispatcher->generate_url('midcom_documentation_class', array('class' => $route_def['controller']));
+            $this->data['routes'][$route_id]['controller_url'] = $this->midgardmvc->dispatcher->generate_url($this->request, 'midcom_documentation_class', array('class' => $route_def['controller']));
             $this->data['routes'][$route_id]['controller_url'] .= "#action_{$route_def['action']}";
         }
     }
