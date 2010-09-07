@@ -41,6 +41,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         // Check for possible element aliases
         $route = $request->get_route();
+        var_dump($route);
         if ($route)
         {
             if (isset($route->template_aliases[$element]))
@@ -182,10 +183,10 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
 
         // Register current page to cache
-        $this->midgardmvc->cache->template->register($this->get_cache_identifier($request), array($request->get_component()));
+
+        $this->midgardmvc->cache->template->register($this->get_cache_identifier($request), array($request->get_component()->name));
 
         $element = $this->get_element($element_identifier);
-        
         // Template cache didn't have this template, collect it
         $this->midgardmvc->cache->template->put($this->get_cache_identifier($request), $element);
     }
