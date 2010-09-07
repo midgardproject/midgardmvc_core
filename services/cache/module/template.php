@@ -34,7 +34,7 @@ class midgardmvc_core_services_cache_module_template
             $this->cache_directory = $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'];
         }
         elseif (   extension_loaded('midgard2')
-                && midgard_connection::get_instance()->config->cachedir != '')
+                && isset(midgard_connection::get_instance()->config) && midgard_connection::get_instance()->config->cachedir != '')
         {
             $this->cache_directory = midgard_connection::get_instance()->config->cachedir;
         }
