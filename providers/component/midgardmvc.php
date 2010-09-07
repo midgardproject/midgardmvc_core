@@ -14,9 +14,12 @@
 class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_providers_component
 {
     public $components = array();
+    private $process_injectors = array();
+    private $template_injectors = array();
 
     public function __construct()
     {
+        $this->load_all_manifests();
     }
 
     public function get($component)
@@ -78,6 +81,18 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
     public function inject(midgardmvc_core_request $request, $injector_type)
     {
+        switch ($injector_type)
+        {
+            case 'process':
+                foreach ($this->process_injectors as $key => $val)
+                {
+                    $injector = new $val(); 
+                    $injector->inject_process();
+                }
+                break;
+            case 'template':
+            break;
+        }
     }
 
     private function get_manifest_path($component)
@@ -114,6 +129,17 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             $manifest['extends'] = null;
         }
 
+        if (isset($manifest['process_injector']))
+        {
+            // This component has an injector for the process() phase
+            $this->process_injectors[$manifest['component']] = $manifest['process_injector'];
+        }
+
+        if (isset($manifest['template_injector']))
+        {
+            // This component has an injector for the template() phase
+            $this->template_injectors[$manifest['component']] = $manifest['template_injector'];
+        }
         return $manifest;
     }
 
@@ -129,8 +155,8 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             $cache_identifier = "{$_MIDGARD['sitegroup']}-{$_MIDGARD['host']}";
         }
 
-        $manifests = midgardmvc_core::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
-
+        // $manifests = midgardmvc_core::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
+        $manifests = false;
         $_core = midgardmvc_core::get_instance();
 
         if (   !$manifests
@@ -139,6 +165,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             // Load manifests and cache them
             $manifest_files = array();
             $MIDGARDMVC_ROOT = dir(MIDGARDMVC_ROOT);
+            
             while (false !== ($component = $MIDGARDMVC_ROOT->read())) 
             {
                 if (   substr($component, 0, 1) == '.'
@@ -171,7 +198,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             }
             */
             
-            $_core->cache->put('manifest', $cache_identifier, $this->manifests);
+            //$_core->cache->put('manifest', $cache_identifier, $this->manifests);
             return;
         }
 
