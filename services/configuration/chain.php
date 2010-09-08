@@ -61,6 +61,7 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
                 return $this->local_configuration[$key];
             }
         }
+
         // Build inheritance chain
         $request = $this->mvc->context->get_request();
         if (!$request)

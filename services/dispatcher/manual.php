@@ -33,84 +33,61 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         $request = new midgardmvc_core_request();
         return $request;
     }
-    
-    public function get_routes()
-    {
-        $routes = $this->midgardmvc->configuration->normalize_routes($this->midgardmvc->configuration->get('routes'));
-        $this->midgardmvc->context->component_routes = $routes;
-        return $this->midgardmvc->context->component_routes;
-    }
 
     /**
      * Load a component and dispatch the request to it
      */
     public function dispatch(midgardmvc_core_request $request)
     {
-        $component = $request->get_component();
+        $route = $request->get_route();
 
-        $route_definitions = $this->get_routes();
-        if (!isset($route_definitions[$this->midgardmvc->context->route_id]))
-        {
-            throw new Exception("Route {$route_id} not defined for component {$this->midgardmvc->context->component}");
-        }
-
-        $selected_route_configuration = $route_definitions[$this->midgardmvc->context->route_id];
-
-        $controller_class = $selected_route_configuration['controller'];
-        $controller = new $controller_class($this->midgardmvc->context->component_instance);
+        // Initialize controller and pass it the request object
+        $controller_class = $route->controller;
+        $controller = new $controller_class($request);
         
         // Define the action method for the route_id
-        $action_method = strtolower($this->midgardmvc->context->request_method) . "_{$selected_route_configuration['action']}";
+        $request_method = $request->get_method();
+        $action_method = "{$request_method}_{$route->action}";
+        if ($request_method == 'head')
+        {
+            // HEAD is like GET but returns no data
+            $action_method = "get_{$route->action}";
+        }
 
-        $data = array();
-        if (!method_exists($controller, $action_method))
+        // Run the route and set appropriate data
+        try
         {
-            throw new midgardmvc_exception_httperror("{$this->midgardmvc->context->request_method} not allowed", 405);
+            if (!method_exists($controller, $action_method))
+            {
+                throw new midgardmvc_exception_httperror("{$request_method} method not allowed", 405);
+            }
+            $controller->data = array();
+            $controller->$action_method($request->get_arguments());
         }
-        $controller->data =& $data;
-        $controller->$action_method($this->action_arguments);
+        catch (Exception $e)
+        {
+            // Read controller's returned data to context before carrying on with exception handling
+            $this->data_to_request($request, $controller->data);
+            throw $e;
+        }
 
-        if ($this->is_core_route($this->midgardmvc->context->route_id))
-        {
-            $component_name = 'midgardmvc_core';
-        }
-        else
-        {
-            $component_name = $this->midgardmvc->context->component;
-        }
-        $this->midgardmvc->context->set_item($component_name, $data);
-        
-        // Set other context data from route
-        if (isset($selected_route_configuration['mimetype']))
-        {
-            $this->midgardmvc->context->mimetype = $selected_route_configuration['mimetype'];
-        }
-        if (isset($selected_route_configuration['template_entry_point']))
-        {
-            $this->midgardmvc->context->template_entry_point = $selected_route_configuration['template_entry_point'];
-        }
-        if (isset($selected_route_configuration['content_entry_point']))
-        {
-            $this->midgardmvc->context->content_entry_point = $selected_route_configuration['content_entry_point'];
-        }
+        $this->data_to_request($request, $controller->data);
     }
 
-    private function is_core_route($route_id)
+    private function data_to_request(midgardmvc_core_request $request, array $data)
     {
-        $context = $this->midgardmvc->context;
-
-        if (!isset($context->component_routes))
+        $components = $request->get_component_chain();
+        foreach ($components as $component)
         {
-            return false;
+            $request->set_data_item($component->name, $data);
         }
-        if (isset($context->component_routes[$route_id]))
-        {
-            return false;
-        }
+        $request->set_data_item('current_component', $data);
         
-        return true;
+        // Set other request data from route
+        $route = $request->get_route();
+        $request->set_data_item('mimetype', $route->mimetype);
     }
-
+    
     /**
      * Generates an URL for given route_id with given arguments
      *

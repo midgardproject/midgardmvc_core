@@ -19,6 +19,8 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     
     private $midgardmvc = null;
 
+    private $stacks = array();
+
     public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
@@ -41,7 +43,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         // Check for possible element aliases
         $route = $request->get_route();
-        var_dump($route);
+
         if ($route)
         {
             if (isset($route->template_aliases[$element]))
@@ -54,6 +56,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         foreach ($component_chain as $component)
         {
             $element_content = $component->get_template_contents($element);
+            
             if (is_null($element_content))
             {
                 // This component didn't provide the necessary element, go to next one in stack
@@ -67,9 +70,33 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
             return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
         }
-
+        var_dump($route);
+        var_dump($component_chain);
+        die($element);
         throw new OutOfBoundsException("Element {$element} not found in Midgard MVC component chain.");
     }
+    
+    public function append_directory($directory)
+    {
+        if (!file_exists($directory))
+        {
+            throw new Exception("Template directory {$directory} not found.");
+        }
+        $stack = $this->midgardmvc->context->get_current_context();
+        if (!isset($this->stacks[$stack]))
+        {
+            $this->stacks[$stack] = array();
+        }
+        $this->stacks[$stack][$directory] = 'directory';
+        
+        if (   isset($this->midgardmvc->context->subtemplate)
+            && $this->midgardmvc->context->subtemplate
+            && file_exists("{$directory}/{$this->midgardmvc->context->subtemplate}"))
+        {
+            $this->stacks[$stack]["{$directory}/{$this->midgardmvc->context->subtemplate}"] = 'directory';
+        }
+    }
+    
 
     /**
      * Call a route of a component with given arguments and return the data it generated
@@ -104,6 +131,12 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
 
         $request = midgardmvc_core_request::get_for_intent($intent);
+        $request->add_component_to_chain($this->midgardmvc->component->get('midgardmvc_core'));
+        
+        if ($switch_context)
+        {        
+            $this->midgardmvc->context->create($request);
+        }
         
         // Dynamic call with GET
         $request->set_method('get');
@@ -111,15 +144,24 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // Run process injector for this request too
         $this->midgardmvc->component->inject($request, 'process');
 
-        $this->dispatcher->set_route($route_id, $arguments);
+        // Find the matching route
+        $routes = $this->midgardmvc->component->get_routes($request);
+        if (!isset($routes[$route_id]))
+        {
+            throw new Exception("Route {$route_id} not defined");
+        }
+        $request->set_route($routes[$route_id]);
+        $request->set_arguments($arguments);
         $this->dispatcher->dispatch($request);
+
+        $data = $request->get_data_item('current_component');
 
         if ($switch_context)
         {        
             $this->midgardmvc->context->delete();
         }
         
-        return $request->get_data_item($request->get_component());
+        return $data;
     }
     
     /**
@@ -142,17 +184,18 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
      */
     public function dynamic_load($intent, $route_id, array $arguments, $return_html = false)
     { 
-        $this->midgardmvc->context->create();
-        $data = $this->dynamic_call($intent, $route_id, $arguments, false);
+        $request = midgardmvc_core_request::get_for_intent($intent);
+        $this->midgardmvc->context->create($request);        
+        $data = $this->dynamic_call($request, $route_id, $arguments, false);
 
-        $this->template('content_entry_point');
+        $this->template($request, 'content');
         if ($return_html)
         {
-            $output = $this->display($return_html);
+            $output = $this->display($request, $return_html);
         }
         else
         {
-            $this->display();
+            $this->display($request);
         }
 
         /* 

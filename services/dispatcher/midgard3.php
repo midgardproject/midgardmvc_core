@@ -140,6 +140,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
     public function dispatch(midgardmvc_core_request $request)
     {
         $routes = $this->midgardmvc->component->get_routes($request);
+        
         $matched_routes = array();
         // make a normalized string of $argv
         $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $request->get_arguments()) . '/');
@@ -159,6 +160,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         }
         //unset($route_id_map);
 
+        $matched_routes = array_reverse($matched_routes);
         $success_flag = true; // Flag to tell if route ran successfully
         foreach ($matched_routes as $route_id => $arguments)
         {
@@ -178,11 +180,14 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
                 }
                 $this->exceptions_stack[] = $e; // Adding exception to exceptions stack
                 $success_flag = false; // route failed
+                var_dump($e);
+                die("here");
             }
             if ($success_flag) // Checking for success
             {
                 break; // if we get here, controller run succesfully so bailing out from the loop
             }
+            var_dump($routes[$route_id]);
         } // ending foreach
 
         if (!$success_flag) 
@@ -221,7 +226,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         // Initialize controller and pass it the request object
         $controller_class = $route->controller;
         $controller = new $controller_class($request);
-    
+        
         // Define the action method for the route_id
         $request_method = $request->get_method();
         $action_method = "{$request_method}_{$route->action}";
