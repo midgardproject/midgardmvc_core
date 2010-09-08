@@ -14,8 +14,11 @@
 class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_providers_component
 {
     public $components = array();
-    private $process_injectors = array();
-    private $template_injectors = array();
+    private $injectors = array
+    (
+        'process' => array(),
+        'template' => array(),
+    );
 
     public function __construct()
     {
@@ -81,17 +84,11 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
     public function inject(midgardmvc_core_request $request, $injector_type)
     {
-        switch ($injector_type)
+        $inject_method = "inject_{$injector_type}";
+        foreach ($this->injectors[$injector_type] as $key => $injector_class)
         {
-            case 'process':
-                foreach ($this->process_injectors as $key => $val)
-                {
-                    $injector = new $val(); 
-                    $injector->inject_process();
-                }
-                break;
-            case 'template':
-            break;
+            $injector = new $injector_class(); 
+            $injector->$inject_method();
         }
     }
 
@@ -132,13 +129,13 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         if (isset($manifest['process_injector']))
         {
             // This component has an injector for the process() phase
-            $this->process_injectors[$manifest['component']] = $manifest['process_injector'];
+            $this->injectors['process'][$manifest['component']] = $manifest['process_injector'];
         }
 
         if (isset($manifest['template_injector']))
         {
             // This component has an injector for the template() phase
-            $this->template_injectors[$manifest['component']] = $manifest['template_injector'];
+            $this->injectors['template'][$manifest['component']] = $manifest['template_injector'];
         }
         return $manifest;
     }
@@ -170,7 +167,6 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             {
                 if (   substr($component, 0, 1) == '.'
                     || $component == 'scaffold'
-                    || $component == 'tests'
                     || $component == 'PHPTAL'
                     || $component == 'PHPTAL.php')
                 {
