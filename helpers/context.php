@@ -48,8 +48,12 @@ class midgardmvc_core_helpers_context
         return $this->current_request;
     }
 
-    public function get_request()
+    public function get_request($id = null)
     {
+        if (!is_null($id))
+        {
+            return $this->requests[$id];
+        }
         if (!isset($this->requests[$this->current_request]))
         {
             return null;
