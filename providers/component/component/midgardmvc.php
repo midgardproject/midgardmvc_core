@@ -28,7 +28,6 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         {
             $this->parent = midgardmvc_core::get_instance()->component->get($manifest['extends']);
         }
-
         if (is_null(self::$use_yaml))
         {
             // Check for YAML extension
@@ -106,7 +105,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         static $routes = null;
         if (!is_null($routes))
         {
-            return $routes;
+           // return $routes;
         }
 
         $node_is_root = false;
@@ -116,6 +115,10 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         }
 
         $routes = array();
+        if (!isset($this->manifest['routes']))
+        {
+            return $routes;
+        }
         foreach ($this->manifest['routes'] as $route_id => $route)
         {
             if (   isset($route['root_only'])
@@ -129,17 +132,17 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
             // Handle the required route parameters
             if (!isset($route['controller']))
             {
-                throw Exception("Route {$route_id} of {$this->name} has no controller defined");
+                throw new Exception("Route {$route_id} of {$this->name} has no controller defined");
             }
 
             if (!isset($route['action']))
             {
-                throw Exception("Route {$route_id} of {$this->name}  has no action defined");
+                throw new Exception("Route {$route_id} of {$this->name}  has no action defined");
             }
 
             if (!isset($route['path']))
             {
-                throw Exception("Route {$route_id} of {$this->name}  has no path defined");
+                throw new Exception("Route {$route_id} of {$this->name}  has no path defined");
             }
 
             if (!isset($route['template_aliases']))
@@ -148,6 +151,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
             }
 
             $routes[$route_id] = new midgardmvc_core_route($route_id, $route['path'], $route['controller'], $route['action'], $route['template_aliases']);
+            //var_dump($route_id);
         }
         return $routes;
     }
