@@ -123,7 +123,6 @@ class midgardmvc_core_request
     {
         $this->node = $node;
         $this->set_arguments($node->get_arguments());
-
         $node_component = $node->get_component();
         if (!$node_component)
         {
@@ -395,7 +394,7 @@ class midgardmvc_core_request
         {
             if ($intent instanceof midgardmvc_core_request)
             {
-                $request = clone $request;
+                $request = $intent;
             }
 
             if ($intent instanceof midgardmvc_core_node)
@@ -417,7 +416,8 @@ class midgardmvc_core_request
         else
         {
             // Component name -based intent
-            $request->set_component($intent);
+            $component = midgardmvc_core::get_instance()->component->get($intent);
+            $request->set_component($component);
         }
 
         return $request;
