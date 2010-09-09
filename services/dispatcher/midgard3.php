@@ -187,7 +187,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
             {
                 break; // if we get here, controller run succesfully so bailing out from the loop
             }
-            var_dump($routes[$route_id]);
         } // ending foreach
 
         if (!$success_flag) 
@@ -278,7 +277,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
      * @param array $args associative arguments array
      * @return string url
      */
-    public function generate_url($intent, $route_id, array $args)
+    public function generate_url($route_id, array $args, $intent)
     {
         // Create a request from the intent and assign it to a context
         $request = midgardmvc_core_request::get_for_intent($intent);

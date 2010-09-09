@@ -95,7 +95,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
      * @param array $args associative arguments array
      * @return string url
      */
-    public function generate_url($intent, $route_id, array $args)
+    public function generate_url($route_id, array $args, $intent)
     {
         return '';
     }

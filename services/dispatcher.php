@@ -22,7 +22,7 @@ interface midgardmvc_core_services_dispatcher
     
     public function dispatch(midgardmvc_core_request $request);
     
-    public function generate_url($intent, $route_id, array $args);
+    public function generate_url($route_id, array $args, $intent);
     
     public function get_midgard_connection();
     
