@@ -180,8 +180,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
                 }
                 $this->exceptions_stack[] = $e; // Adding exception to exceptions stack
                 $success_flag = false; // route failed
-                var_dump($e);
-                die("here");
             }
             if ($success_flag) // Checking for success
             {
