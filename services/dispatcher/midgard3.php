@@ -280,13 +280,15 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         // Create a request from the intent and assign it to a context
         $request = midgardmvc_core_request::get_for_intent($intent);
         $this->midgardmvc->context->create($request);
-
         $routes = $this->midgardmvc->component->get_routes($request);
         if (!isset($routes[$route_id]))
         {
+            if (empty($routes))
+            {
+                throw new OutOfBoundsException("Route ID '{$route_id}' not found in routes of request. Routes configuration is also empty " . $request->get_identifier());
+            }
             throw new OutOfBoundsException("Route ID '{$route_id}' not found in routes of request " . $request->get_identifier());
         }
-
         $route = $routes[$route_id];
         $link = $route->path;
         foreach ($args as $key => $value)
@@ -317,6 +319,8 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
             throw new UnexpectedValueException("Missing arguments matching route '{$route_id}' of {$this->midgardmvc->core->component}: " . implode(', ', $link_remaining_args));
         }
 
+        //echo ("Deleting context " . $this->midgardmvc->context->get_current_context());
+        $this->midgardmvc->context->delete();
         return preg_replace('%/{2,}%', '/', $request->get_path() . $link);
     }
 
