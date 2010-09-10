@@ -125,7 +125,7 @@ class midgardmvc_core_route
                 $matched[$varname] = $route_path_regex_matches[$index + 1];
             }
             
-            if (preg_match('%@%', $route->path, $match)) // Route @ set
+            if (preg_match('%@%', $this->path, $match)) // Route @ set
             {
                 $path = explode('@', $route_path);
                 if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
