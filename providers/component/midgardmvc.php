@@ -19,6 +19,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         'process' => array(),
         'template' => array(),
     );
+    private $manifests = array();
 
     public function __construct()
     {
@@ -29,21 +30,23 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
     {
         if (!is_string($component))
         {
-            throw new InvalidArgumentException('Invalid component name given');
+            throw new InvalidArgumentException('Invalid component name given, expected string but got ' . gettype($component));
         }
         if (isset($this->components[$component]))
         {
             // Component is installed and already loaded
             return $this->components[$component];
         }
-
-        $manifest_path = $this->get_manifest_path($component);
-        if (!file_exists($manifest_path))
+        if (!isset($this->manifests[$component]))
         {
-            throw new OutOfRangeException("Component {$component} is not installed");
+            $manifest_path = $this->get_manifest_path($component);
+            if (!file_exists($manifest_path))
+            {
+                throw new OutOfRangeException("Component {$component} is not installed");
+            }
+            $this->manifests[$component] = $this->load_manifest_file($manifest_path);
         }
-        $manifest = $this->load_manifest_file($manifest_path);
-        $this->components[$component] = new midgardmvc_core_providers_component_component_midgardmvc($component, $manifest);
+        $this->components[$component] = new midgardmvc_core_providers_component_component_midgardmvc($component, $this->manifests[$component]);
 
         midgardmvc_core::get_instance()->i18n->set_translation_domain($component);
 
@@ -178,7 +181,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
                     continue;
                 }
                 
-                $this->load_manifest_file("{$component_path}/manifest.yml");
+                $this->manifests[$component] = $this->load_manifest_file("{$component_path}/manifest.yml");
             }
             $MIDGARDMVC_ROOT->close();
             
