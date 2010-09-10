@@ -46,6 +46,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         if ($route)
         {
+            $orig_element = $element;
             if (isset($route->template_aliases[$element]))
             {
                 $element = $route->template_aliases[$element];
@@ -70,9 +71,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
             return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
         }
-        var_dump($route);
-        var_dump($component_chain);
-        die($element);
+        $routes = $this->midgardmvc->component->get_routes($request);
         throw new OutOfBoundsException("Element {$element} not found in Midgard MVC component chain.");
     }
     
@@ -148,10 +147,10 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $routes = $this->midgardmvc->component->get_routes($request);
         if (!isset($routes[$route_id]))
         {
-            throw new Exception("Route {$route_id} not defined");
+            throw new Exception("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
         }
+        $routes[$route_id]->request_arguments = $arguments;
         $request->set_route($routes[$route_id]);
-        $request->set_arguments($arguments);
         $this->dispatcher->dispatch($request);
 
         $data = $request->get_data_item('current_component');
@@ -257,7 +256,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
         // TODO: Support for other templating engines like Smarty or plain PHP
 
-        if ($data['cache_enabled'])
+        if (isset($data['cache_enabled']) && $data['cache_enabled'])
         {
             ob_start();
         }
@@ -288,7 +287,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             echo $content;
         }
         
-        if ($data['cache_enabled'])
+        if (isset($data['cache_enabled']) && $data['cache_enabled'])
         {
             // Store the contents to content cache and display them
             $this->midgardmvc->cache->content->put($this->midgardmvc->context->cache_request_identifier, ob_get_contents());
