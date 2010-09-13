@@ -80,6 +80,13 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
                 return $component_value;
             }
         }
+        $components = array($this->mvc->component->get('midgardmvc_core'));
+        $component_value = $this->get_from_component($components[0], $key, $subkey);
+        if (!is_null($component_value))
+        {
+            return $component_value;
+        }
+
         throw new OutOfBoundsException("Configuration key '{$key}' does not exist");
     }
 
