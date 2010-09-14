@@ -24,7 +24,12 @@ The folder `midgardmvc_core/httpd` contains example rootfiles for different setu
     // Load Midgard MVC
     // Note: your Midgard MVC base directory has to be in PHP include_path
     require('midgardmvc_core/framework.php');
-    $midgardmvc = midgardmvc_core::get_instance('midgard3');
+    $config = array
+    (
+        'services_dispatcher' => 'midgard3',
+        'providers_component' => 'midgardmvc',
+    );
+    $midgardmvc = midgardmvc_core::get_instance($config);
         
     // Process the request
     $request = $midgardmvc->process();
