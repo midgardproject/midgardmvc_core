@@ -11,6 +11,16 @@ Basic building blocks:
 * Service: a standardized interface to access a given functionality. For example: authentication
 * Provider: a standardized interface to access given information. For example: hierarchy. The difference between Services and Providers is that Services perform tasks while Providers merely provide access to a particular type of data
 
+Installation
+------------
+
+* Download Midgard MVC and copy it to a place where your web server can access the files
+* Download and [install PHPTAL](http://phptal.org/download.html) for TAL templating support
+* If you're using Midgard MVC with the Midgard Content Repository, as you probably are:
+  - [Install php5-midgard2](http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/) for your distribution (or compile from sources)
+  - Enable the Midgard2 extension in your `php.ini` with an `extension=midgard2.so`
+  - Copy Midgard MVC database definitions (`midgardmvc_core/configuration/mgdschema.xml`) to the Midgard schema directory (by default `/usr/share/midgard2/schema/`)
+
 Running Midgard MVC
 -------------------
 
