@@ -5,6 +5,16 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
 
     public function __construct()
     {
+        if (!extension_loaded('midgard2'))
+        {
+            throw new Exception('The midgardmvc hierarchy provider requires Midgard2 PHP extension to be present. If you\'re not running MVC with Midgard2 then use the configuration node provider');
+        }
+
+        if (!class_exists('midgardmvc_core_node', false))
+        {
+            throw new Exception('The Midgard2 schemas needed for the midgardmvc hierarchy provider are not loaded. Check your Midgard2 schema directory');
+        }
+
         $this->midgardmvc = midgardmvc_core::get_instance();
         try
         {
