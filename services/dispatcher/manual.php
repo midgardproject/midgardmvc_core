@@ -144,6 +144,11 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         return headers_sent();
     }
 
+    public function header($string, $replace = true, $http_response_code = null)
+    {
+        return;
+    }
+
     public function session_has_var($name)
     {
         return isset($_SESSION[$name]);
