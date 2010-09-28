@@ -32,6 +32,7 @@ $commands = array
 (
     'call' => 'mvcshell_call',
     'display' => 'mvcshell_display',
+    'profile' => 'mvcshell_profile',
 );
 $command = null;
 $remaining_arguments = array();
@@ -197,5 +198,34 @@ function mvcshell_display(array $arguments)
 
     $content = $mvc->templating->dynamic_load($intent, $route_id, $route_args, true);
     mvcshell_print($content);
+}
+
+function mvcshell_profile(array $arguments)
+{
+    if (!extension_loaded('xhprof'))
+    {
+        mvcshell_print("Profiling command requires the XHProf PHP extension to be installed. Get it from http://pecl.php.net/package/xhprof");
+    }
+
+    if (count($arguments) < 2)
+    {
+        mvcshell_print("Missing arguments for a profiling run. Run with arguments '<intent> <route_id> <arg1>, <arg2>'");
+    }
+
+    $intent = $arguments[0];
+    $route_id = $arguments[1];
+    $route_args = array_slice($arguments, 2);
+
+    $mvc = midgardmvc_core::get_instance();
+    $mvc->head = new midgardmvc_core_helpers_head();
+    $request = new midgardmvc_core_request();
+    $mvc->context->create($request);
+
+    xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+
+    $content = $mvc->templating->dynamic_load($intent, $route_id, $route_args, true);
+
+    $xhprof_data = xhprof_disable();
+    mvcshell_dump(array_reverse($xhprof_data));
 }
 ?>
