@@ -31,6 +31,7 @@ if (count($arguments) == 1)
 $commands = array
 (
     'call' => 'mvcshell_call',
+    'display' => 'mvcshell_display',
 );
 $command = null;
 $remaining_arguments = array();
@@ -176,5 +177,25 @@ function mvcshell_call(array $arguments)
 
     $data = midgardmvc_core::get_instance()->templating->dynamic_call($intent, $route_id, $route_args);
     mvcshell_dump($data);
+}
+
+function mvcshell_display(array $arguments)
+{
+    if (count($arguments) < 2)
+    {
+        mvcshell_print("Missing arguments for a display. Run with arguments '<intent> <route_id> <arg1>, <arg2>'");
+    }
+
+    $intent = $arguments[0];
+    $route_id = $arguments[1];
+    $route_args = array_slice($arguments, 2);
+
+    $mvc = midgardmvc_core::get_instance();
+    $mvc->head = new midgardmvc_core_helpers_head();
+    $request = new midgardmvc_core_request();
+    $mvc->context->create($request);
+
+    $content = $mvc->templating->dynamic_load($intent, $route_id, $route_args, true);
+    mvcshell_print($content);
 }
 ?>

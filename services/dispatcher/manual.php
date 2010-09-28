@@ -149,6 +149,11 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         return;
     }
 
+    public function session_start()
+    {
+        return;
+    }
+
     public function session_has_var($name)
     {
         return isset($_SESSION[$name]);

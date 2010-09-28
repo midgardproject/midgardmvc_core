@@ -202,7 +202,11 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
          * because in dynamic call the new component may change it
          */
         $this->midgardmvc->context->delete();
-        $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component->name);
+        if ($this->midgardmvc->context->component)
+        {
+            $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component->name);
+        }
+
         if ($return_html)
         {
             return $output;
