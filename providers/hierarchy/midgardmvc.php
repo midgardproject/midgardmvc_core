@@ -72,6 +72,11 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
 
     public function get_node_by_component($component)
     {
+        if (isset(midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes_by_component[$component]))
+        {
+            return midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes_by_component[$component];
+        }
+
         $qb = new midgard_query_builder('midgardmvc_core_node');
         $qb->add_constraint('component', '=', $component);
         $qb->begin_group('OR');

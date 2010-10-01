@@ -25,6 +25,7 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
      * List of nodes indexed by database ID
      */
     static $nodes = array();
+    static $nodes_by_component = array();
 
     public function __construct(midgardmvc_core_node $node)
     {
@@ -35,6 +36,7 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
 
         // Store the node to local cache to speed up parent requests
         midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$node->id] = $this;
+        midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes_by_component[$node->component] = $this;
     }
 
     public function get_object()
