@@ -34,56 +34,56 @@ routes:
         path: /mgd:cache/invalidate
         root_only: true
         template_aliases: 
-            content: midcom-invalidate-cache
-    midcom_about:
+            content: midgardmvc-invalidate-cache
+    midgardmvc_about:
         controller: midgardmvc_core_controllers_about
         action: about
         path: /mgd:about/
         root_only: true
         template_aliases: 
-            content: midcom-show-about
-    midcom_about_database:
+            content: midgardmvc-show-about
+    midgardmvc_about_database:
         controller: midgardmvc_core_controllers_about
         action: database
         path: /mgd:about/database
         root_only: true
         template_aliases: 
-            content: midcom-show-database
-    midcom_documentation_show:
+            content: midgardmvc-show-database
+    midgardmvc_documentation_show:
         controller: midgardmvc_core_controllers_documentation
         action: show
         path: '/mgd:documentation@'
         root_only: true
         template_aliases: 
-            content: midcom-show-documentation_file
-    midcom_documentation_index:
+            content: midgardmvc-show-documentation_file
+    midgardmvc_documentation_index:
         controller: midgardmvc_core_controllers_documentation
         action: index
         path: '/mgd:documentation/{$component}'
         root_only: true
         template_aliases: 
-            content: midcom-show-documentation_index
-    midcom_documentation_routes:
+            content: midgardmvc-show-documentation_index
+    midgardmvc_documentation_routes:
         controller: midgardmvc_core_controllers_documentation
         action: routes
         path: '/mgd:documentation/{$component}/routes'
         root_only: true
         template_aliases: 
-            content: midcom-show-documentation_routes
-    midcom_documentation_class:
+            content: midgardmvc-show-documentation_routes
+    midgardmvc_documentation_class:
         controller: midgardmvc_core_controllers_documentation
         action: class
         path: '/mgd:documentation/class/{$class}'
         root_only: true
         template_aliases: 
-            content: midcom-show-documentation_class
+            content: midgardmvc-show-documentation_class
     login:
         controller: midgardmvc_core_controllers_authentication
         action: login
         path: /mgd:login
         root_only: true
         template_aliases: 
-            root: midcom-login-form
+            root: midgardmvc-login-form
     logout:
         controller: midgardmvc_core_controllers_authentication
         action: logout

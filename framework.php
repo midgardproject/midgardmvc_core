@@ -14,17 +14,14 @@ if (!defined('MIDGARDMVC_ROOT'))
 
 if (!defined('MIDGARDMVC_STATIC_URL'))
 {
-    define('MIDGARDMVC_STATIC_URL', '/midcom-static');
+    define('MIDGARDMVC_STATIC_URL', '/midgardmvc-static');
 }
 
 /**
- * Make sure the URLs not having query string (or midcom-xxx- -method signature)
- * have trailing slash or some extension in the "filename".
- *
+ * Make sure the URLs not having query string have trailing slash or some extension in the "filename".
  * This makes life much, much better when making static copies for whatever reason
  */
 if (   isset($_SERVER['REQUEST_URI'])
-    && !preg_match('%\?|/$|midgardmvc-.+-|/.+\..+$%', $_SERVER['REQUEST_URI']) 
     && $_SERVER['REQUEST_METHOD'] == 'GET'
     && !class_exists('MFS\AppServer\DaemonicHandler')
     && !class_exists('MFS_AppServer_DaemonicHandler'))

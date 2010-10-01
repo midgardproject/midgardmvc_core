@@ -26,7 +26,7 @@ Running Midgard MVC
 
 Midgard MVC is usually run from a _rootfile_ that is set as the target of a rewrite rule on your web server. With lighttpd, the rule might look like the following:
 
-    url.rewrite-once = ( "^/midcom-static/(.*)$" => "/midcom-static/$1",   "^(.*)\.*" => "midgard-root.php")
+    url.rewrite-once = ( "^/midgardmvc-static/(.*)$" => "/midgardmvc-static/$1",   "^(.*)\.*" => "midgard-root.php")
 
 The folder `midgardmvc_core/httpd` contains example rootfiles for different setups. A barebones rootfile would look like the following:
 
@@ -57,7 +57,7 @@ If you want to use Midgard content repository together with Midgard MVC, ensure 
 
 It is also possible to run Midgard MVC using the PHP-based AppServer as your web server. In that case you need an installation of the AppServer in your PHP include path, and just have to run the following command:
 
-    $ php midgardmvc_core/httpd/midcom-root-mjolnir-appserv.php
+    $ php midgardmvc_core/httpd/midgardmvc-root-appserv.php
 
 ### Midgard MVC request process
 
@@ -96,7 +96,7 @@ The Midgard MVC Dispatcher receives a Request object and instantiates and calls 
 
 The Dispatcher is accessible via:
 
-    $dispatcher = midgardmvc_core::get_instance->dispatcher;
+    $dispatcher = midgardmvc_core::get_instance()->dispatcher;
     $dispatcher->dispatch($request);
 
 Depending on what Controllers and action methods were called (if any), this will either return the Request object with some new data populated or cause an Exception to be thrown.
@@ -250,6 +250,14 @@ Within any stage of Midgard MVC execution you can make a sub-request in the foll
     $component_data = $request->get_data_item('current_component');
     echo $component_data['date'];
     ?>
+
+For convenience purposes there are two helpers for subrequest handling in the templating class. Dynamic call will perform the subrequest and return its data:
+
+    $data = midgardmvc_core::get_instance()->templating->dynamic_call($intent, $route_id, $route_args);
+
+Dynamic load will perform the subrequest and return its templated output:
+
+    $content = midgardmvc_core::get_instance()->templating->dynamic_load($intent, $route_id, $route_args, true);
 
 Error handling
 --------------

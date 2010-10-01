@@ -177,7 +177,7 @@ class midgardmvc_core_controllers_documentation
             
             $this->data['routes'][$route_id]['controller_action'] = "{$route_def['controller']}:{$route_def['action']}";
             
-            $this->data['routes'][$route_id]['controller_url'] = $this->midgardmvc->dispatcher->generate_url($this->request, 'midcom_documentation_class', array('class' => $route_def['controller']));
+            $this->data['routes'][$route_id]['controller_url'] = $this->midgardmvc->dispatcher->generate_url($this->request, 'midgardmvc_documentation_class', array('class' => $route_def['controller']));
             $this->data['routes'][$route_id]['controller_url'] .= "#action_{$route_def['action']}";
         }
     }

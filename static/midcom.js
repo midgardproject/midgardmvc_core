@@ -10,7 +10,7 @@
     $.midgardmvc = {
         _inited: false,
         config: {
-            MIDGARDMVC_STATIC_URL: '/midcom-static',
+            MIDGARDMVC_STATIC_URL: '/midgardmvc-static',
             MIDGARDMVC_PAGE_PREFIX: '/',
             enable_watchers: false,
             debug: false

@@ -401,7 +401,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         $data['exception'] = $exception;
 
         $route = $request->get_route();
-        $route->template_aliases['root'] = 'midcom-login-form';
+        $route->template_aliases['root'] = 'midgardmvc-login-form';
         $request->set_route($route);
         
         $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
