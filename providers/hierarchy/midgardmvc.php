@@ -2,6 +2,7 @@
 class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_providers_hierarchy
 {
     private $root_node = null;
+    private $root_node_id = null;
 
     public function __construct()
     {
@@ -25,6 +26,7 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
             $node = new midgardmvc_core_node();
             $node->get_by_path('/midgardmvc_root');
         }
+        $this->root_node_id = $node->id;
 
         $this->root_node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
     }
@@ -65,6 +67,24 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
         }
         $node->set_arguments($argv);
         $node->set_path(implode('/', $real_path));
+        return $node;
+    }
+
+    public function get_node_by_component($component)
+    {
+        $qb = new midgard_query_builder('midgardmvc_core_node');
+        $qb->add_constraint('component', '=', $component);
+        $qb->begin_group('OR');
+            $qb->add_constraint('up', 'INTREE', $this->root_node_id);
+            $qb->add_constraint('id', '=', $this->root_node_id);
+        $qb->end_group();
+        $qb->set_limit(1);
+        $nodes = $qb->execute();
+        if (count($nodes) == 0)
+        {
+            return null;
+        }
+        $node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($nodes[0]);
         return $node;
     }
 }

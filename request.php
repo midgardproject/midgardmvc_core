@@ -416,8 +416,19 @@ class midgardmvc_core_request
         else
         {
             // Component name -based intent
-            $component = midgardmvc_core::get_instance()->component->get($intent);
-            $request->set_component($component);
+            // Try to find node matching the component
+            $node = midgardmvc_core::get_instance()->hierarchy->get_node_by_component($intent);
+            if (is_null($node))
+            {
+                // Instanceless component
+                $component = midgardmvc_core::get_instance()->component->get($intent);
+                $request->set_component($component);
+            }
+            else
+            {
+                // Found instance, set it for the request
+                $request->set_node($node);
+            }
         }
 
         return $request;
