@@ -25,18 +25,16 @@ class midgardmvc_core_route
     public $mimetype = 'text/html';
     //public $mimetype = 'application/xhtml+xml';
 
-    public function __construct($id, $path, $controller, $action, array $template_aliases = null)
+    public function __construct($id, $path, $controller, $action, array $template_aliases)
     {
         $this->id = $id;
         $this->path = $path;
         $this->controller = $controller;
         $this->action = $action;
-        if (!is_null($template_aliases))
+
+        foreach ($template_aliases as $alias => $template)
         {
-            foreach ($template_aliases as $alias => $template)
-            {
-                $this->template_aliases[$alias] = $template;
-            }
+            $this->template_aliases[$alias] = $template;
         }
     }
 

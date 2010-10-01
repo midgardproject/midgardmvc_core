@@ -153,7 +153,6 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
             }
 
             $routes[$route_id] = new midgardmvc_core_route($route_id, $route['path'], $route['controller'], $route['action'], $route['template_aliases']);
-            //var_dump($route_id);
         }
         return $routes;
     }
