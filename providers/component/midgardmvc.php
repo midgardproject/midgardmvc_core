@@ -107,6 +107,12 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
      */
     private function load_manifest_file($manifest_file)
     {
+        static $loaded_manifests = array();
+        if (isset($loaded_manifests[$manifest_file]))
+        {
+            $loaded_manifests[$manifest_file];
+        }
+
         $manifest_yaml = file_get_contents($manifest_file);
         if (!extension_loaded('yaml'))
         {
@@ -140,6 +146,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             // This component has an injector for the template() phase
             $this->injectors['template'][$manifest['component']] = $manifest['template_injector'];
         }
+        $loaded_manifests[$manifest_file] = $manifest;
         return $manifest;
     }
 
