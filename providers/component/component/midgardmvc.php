@@ -16,6 +16,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
     private $manifest = array();
     private $path = '';
     private $parent = null;
+    private $configuration = null;
     public $name = '';
     static $use_yaml = null;
 
@@ -79,25 +80,24 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
 
     public function get_configuration()
     {
-        $configuration = file_get_contents($this->path . "/configuration/defaults.yml");
-
-        if (!self::$use_yaml)
+        if (is_null($this->configuration))
         {
-            return Spyc::YAMLLoad($configuration);
+            // Called for first time, load from YAML file
+            $configuration = file_get_contents($this->path . "/configuration/defaults.yml");
+
+            if (!self::$use_yaml)
+            {
+                $this->configuration = Spyc::YAMLLoad($configuration);
+            }
+
+            $this->configuration = yaml_parse($configuration);
         }
-
-        return yaml_parse($configuration);
-
+        return $this->configuration;
     }
 
     public function get_configuration_contents()
     {
-        $path = $this->get_configuration();
-        if (!file_exists($path))
-        {
-            return null;
-        }
-        return file_get_contents($path);
+        return file_get_contents($this->path . "/configuration/defaults.yml");
     }
 
     public function get_routes(midgardmvc_core_request $request)
