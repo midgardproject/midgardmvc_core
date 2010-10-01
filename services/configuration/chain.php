@@ -44,22 +44,11 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
      * @return mixed Its value
      * @see midgardmvc_helper_configuration::exists()
      */
-    public function get($key, $subkey = null)
+    public function get($key)
     {
         if (array_key_exists($key, $this->local_configuration))
         {
-            if (!is_null($subkey))
-            {
-                if (   is_array($this->local_configuration[$key])
-                    && array_key_exists($subkey, $this->local_configuration[$key]))
-                {
-                    return $this->local_configuration[$key][$subkey];
-                }
-            }
-            else
-            {
-                return $this->local_configuration[$key];
-            }
+            return $this->local_configuration[$key];
         }
 
         // Build inheritance chain
@@ -74,14 +63,14 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         }
         foreach ($components as $component)
         {
-            $component_value = $this->get_from_component($component, $key, $subkey);
+            $component_value = $this->get_from_component($component, $key);
             if (!is_null($component_value))
             {
                 return $component_value;
             }
         }
         $components = array($this->mvc->component->get('midgardmvc_core'));
-        $component_value = $this->get_from_component($components[0], $key, $subkey);
+        $component_value = $this->get_from_component($components[0], $key);
         if (!is_null($component_value))
         {
             return $component_value;
@@ -90,7 +79,7 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         throw new OutOfBoundsException("Configuration key '{$key}' does not exist");
     }
 
-    private function get_from_component(midgardmvc_core_providers_component_component $component, $key, $subkey)
+    private function get_from_component(midgardmvc_core_providers_component_component $component, $key)
     {
         if (!isset(self::$configuration[$component->name]))
         {
@@ -98,15 +87,6 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         }
         if (array_key_exists($key, self::$configuration[$component->name]))
         {
-            if (!is_null($subkey))
-            {
-                if (   is_array(self::$configuration[$component->name][$key])
-                    && array_key_exists($subkey, self::$configuration[$component->name][$key]))
-                {
-                    return self::$configuration[$component->name][$key][$subkey];
-                }
-                return null;
-            }
             return self::$configuration[$component->name][$key];
         }
         return null;

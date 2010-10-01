@@ -23,7 +23,7 @@ interface midgardmvc_core_services_configuration
      * @return mixed Its value
      * @see midgardmvc_helper_configuration::exists()
      */
-    public function get($key, $subkey = false);
+    public function get($key);
 
     /**
      * @see midgardmvc_helper_configuration::get()
