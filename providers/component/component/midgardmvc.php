@@ -89,8 +89,10 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
             {
                 $this->configuration = Spyc::YAMLLoad($configuration);
             }
-
-            $this->configuration = yaml_parse($configuration);
+            else
+            {
+                $this->configuration = yaml_parse($configuration);
+            }
         }
         return $this->configuration;
     }

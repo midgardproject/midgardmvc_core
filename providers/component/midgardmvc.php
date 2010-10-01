@@ -20,6 +20,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         'template' => array(),
     );
     private $manifests = array();
+    static $use_yaml = null;
 
     public function __construct()
     {
@@ -108,10 +109,20 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
     private function load_manifest_file($manifest_file)
     {
         $manifest_yaml = file_get_contents($manifest_file);
-        if (!extension_loaded('yaml'))
+
+        if (is_null(self::$use_yaml))
         {
-            // YAML PHP extension is not loaded, include the pure-PHP implementation
-            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            // Check for YAML extension
+            self::$use_yaml = extension_loaded('yaml');
+            if (!self::$use_yaml)
+            {
+                // YAML PHP extension is not loaded, include the pure-PHP implementation
+                require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
+            }
+        }
+
+        if (!self::$use_yaml)
+        {
             $manifest = Spyc::YAMLLoad($manifest_yaml);
         }
         else
