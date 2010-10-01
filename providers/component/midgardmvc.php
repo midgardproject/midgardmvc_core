@@ -107,12 +107,6 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
      */
     private function load_manifest_file($manifest_file)
     {
-        static $loaded_manifests = array();
-        if (isset($loaded_manifests[$manifest_file]))
-        {
-            $loaded_manifests[$manifest_file];
-        }
-
         $manifest_yaml = file_get_contents($manifest_file);
         if (!extension_loaded('yaml'))
         {
@@ -146,71 +140,32 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             // This component has an injector for the template() phase
             $this->injectors['template'][$manifest['component']] = $manifest['template_injector'];
         }
-        $loaded_manifests[$manifest_file] = $manifest;
         return $manifest;
     }
 
     private function load_all_manifests()
     {
-        if (   !isset($_MIDGARD)
-            || empty($_MIDGARD))
+        // Load manifests and cache them
+        $manifest_files = array();
+        $MIDGARDMVC_ROOT = dir(MIDGARDMVC_ROOT);
+        
+        while (false !== ($component = $MIDGARDMVC_ROOT->read())) 
         {
-            $cache_identifier = 'CLI';
-        }
-        else
-        {
-            $cache_identifier = "{$_MIDGARD['sitegroup']}-{$_MIDGARD['host']}";
-        }
-
-        // $manifests = midgardmvc_core::get_instance()->cache->get('manifest', $cache_identifier); // FIXME: Take account midgard configuration as it's possible
-        $manifests = false;
-        $_core = midgardmvc_core::get_instance();
-
-        if (   !$manifests
-            || !is_array($manifests))
-        {
-            // Load manifests and cache them
-            $manifest_files = array();
-            $MIDGARDMVC_ROOT = dir(MIDGARDMVC_ROOT);
-            
-            while (false !== ($component = $MIDGARDMVC_ROOT->read())) 
+            if (   substr($component, 0, 1) == '.'
+                || $component == 'scaffold'
+                || $component == 'PHPTAL'
+                || $component == 'PHPTAL.php')
             {
-                if (   substr($component, 0, 1) == '.'
-                    || $component == 'scaffold'
-                    || $component == 'PHPTAL'
-                    || $component == 'PHPTAL.php')
-                {
-                    continue;
-                }
-                $component_path = MIDGARDMVC_ROOT . "/{$component}";
-                if (!file_exists("{$component_path}/manifest.yml"))
-                {
-                    continue;
-                }
-                
-                $this->manifests[$component] = $this->load_manifest_file("{$component_path}/manifest.yml");
+                continue;
             }
-            $MIDGARDMVC_ROOT->close();
-            
-            /*
-            exec('find ' . escapeshellarg(MIDGARDMVC_ROOT) . ' -follow -type f -name ' . escapeshellarg('manifest.yml'), $manifest_files);
-            foreach ($manifest_files as $manifest)
+            $component_path = MIDGARDMVC_ROOT . "/{$component}";
+            if (!file_exists("{$component_path}/manifest.yml"))
             {
-                if (strpos($manifest, 'scaffold') !== false)
-                {
-                    continue;
-                }
-                $this->load_manifest_file($manifest);
+                continue;
             }
-            */
             
-            //$_core->cache->put('manifest', $cache_identifier, $this->manifests);
-            return;
+            $this->manifests[$component] = $this->load_manifest_file("{$component_path}/manifest.yml");
         }
-
-        foreach ($manifests as $manifest)
-        {
-            $this->load_manifest($manifest);
-        }
+        $MIDGARDMVC_ROOT->close();
     }
 }
