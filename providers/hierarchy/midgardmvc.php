@@ -66,7 +66,7 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
             array_shift($argv);
         }
         $node->set_arguments($argv);
-        $node->set_path(implode('/', $real_path));
+        $node->set_path('/' . implode('/', $real_path));
         return $node;
     }
 
