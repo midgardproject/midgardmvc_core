@@ -15,11 +15,16 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
 {
     private $node = null;
     private $argv = array();
-    private $path = '/';
+    private $path = null;
 
     public $name = '';
     public $title = '';
     public $content = '';
+
+    /**
+     * List of nodes indexed by database ID
+     */
+    static $nodes = array();
 
     public function __construct(midgardmvc_core_node $node)
     {
@@ -27,6 +32,7 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         $this->name =& $node->name;
         $this->title =& $node->title;
         $this->content =& $node->content;
+        midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$node->id] = $this;
     }
 
     public function get_object()
@@ -49,8 +55,24 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         $this->argv = $argv;
     }
 
+    private function construct_path()
+    {
+    }
+
     public function get_path()
     {
+        if (is_null($this->path))
+        {
+            $parent = $this->get_parent_node();
+            if (!$parent)
+            {
+                $this->path = '/';
+            }
+            else
+            {
+                $this->path = $parent->get_path() . $this->name . '/';
+            }
+        }
         return $this->path;
     }
 
@@ -104,8 +126,12 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         {
             return null;
         }
-        $node = new midgardmvc_core_node($this->node->up);
-        $parent = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
+
+        if (!isset(midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$this->node->up]))
+        {
+            $node = new midgardmvc_core_node($this->node->up);
+            $parent = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
+        }
         return $parent;
     }
 }
