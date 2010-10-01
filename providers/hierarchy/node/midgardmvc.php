@@ -32,6 +32,8 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         $this->name =& $node->name;
         $this->title =& $node->title;
         $this->content =& $node->content;
+
+        // Store the node to local cache to speed up parent requests
         midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$node->id] = $this;
     }
 
@@ -129,9 +131,16 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
 
         if (!isset(midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$this->node->up]))
         {
+            // Get from database
             $node = new midgardmvc_core_node($this->node->up);
             $parent = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
         }
+        else
+        {
+            // Get from local cache
+            $parent = midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$this->node->up];
+        }
+
         return $parent;
     }
 }
