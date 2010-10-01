@@ -22,7 +22,7 @@ if (!defined('MIDGARDMVC_STATIC_URL'))
  * This makes life much, much better when making static copies for whatever reason
  */
 if (   isset($_SERVER['REQUEST_URI'])
-    && !preg_match('%\?|/$/.+\..+$%', $_SERVER['REQUEST_URI']) 
+    && !preg_match('%\?|/$|midgardmvc-.+-|/.+\..+$%', $_SERVER['REQUEST_URI'])
     && $_SERVER['REQUEST_METHOD'] == 'GET'
     && !class_exists('MFS\AppServer\DaemonicHandler')
     && !class_exists('MFS_AppServer_DaemonicHandler'))
