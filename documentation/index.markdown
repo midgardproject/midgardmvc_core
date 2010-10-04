@@ -37,6 +37,10 @@ The application configuration is by default located in the root of your Midgard 
     services_dispatcher: midgard3
     providers_component: midgardmvc
 
+You can also define a custom location for your application configuration file by setting `midgardmvc.application_config` in your `php.ini`. Example:
+
+    midgardmvc.application_config=/etc/midgard2/example.yml
+
 Running Midgard MVC
 -------------------
 

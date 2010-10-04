@@ -28,7 +28,12 @@ class midgardmvc_appserv_app
 
         // starting processing
         try {
-            $mvc = midgardmvc_core::get_instance(MIDGARDMVC_ROOT . '/application.yml');
+            $application_config = get_cfg_var('midgardmvc.application_config');
+            if (!$application_config)
+            {
+                $application_config = MIDGARDMVC_ROOT . '/application.yml';
+            }
+            $mvc = midgardmvc_core::get_instance($application_config);
             $mvc->dispatcher->set_request_data($context);
 
             call_user_func($context['logger'], "-> starting midgardmvc");

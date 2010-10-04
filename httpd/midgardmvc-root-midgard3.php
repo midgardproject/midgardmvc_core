@@ -11,7 +11,12 @@
 // Load Midgard MVC
 // Note: your Midgard MVC base directory has to be in PHP include_path
 require('midgardmvc_core/framework.php');
-$midgardmvc = midgardmvc_core::get_instance(MIDGARDMVC_ROOT . '/application.yml');
+$application_config = get_cfg_var('midgardmvc.application_config');
+if (!$application_config)
+{
+    $application_config = MIDGARDMVC_ROOT . '/application.yml';
+}
+$midgardmvc = midgardmvc_core::get_instance($application_config);
     
 // Process the request
 $request = $midgardmvc->process();
