@@ -321,7 +321,7 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
 
         //echo ("Deleting context " . $this->midgardmvc->context->get_current_context());
         $this->midgardmvc->context->delete();
-        return preg_replace('%/{2,}%', '/', $request->get_path() . $link);
+        return preg_replace('%/{2,}%', '/', $request->get_path(false) . $link);
     }
 
     public function get_midgard_connection()

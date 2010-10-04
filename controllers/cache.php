@@ -13,9 +13,9 @@
  */
 class midgardmvc_core_controllers_cache
 {
-    public function __construct()
+    public function __construct($request)
     {
-        $this->configuration = midgardmvc_core::get_instance()->configuration;
+        $this->request = $request;
     }
     
     public function get_invalidate(array $args)
@@ -25,7 +25,7 @@ class midgardmvc_core_controllers_cache
         midgardmvc_core::get_instance()->context->cache_enabled = false;
         midgardmvc_core::get_instance()->head->relocate
         (
-            midgardmvc_core::get_instance()->dispatcher->generate_url($this->request, 'page_read', array())
+            midgardmvc_core::get_instance()->dispatcher->generate_url('page_read', array(), $this->request)
         );
     }
 

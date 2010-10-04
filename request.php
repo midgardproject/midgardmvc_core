@@ -91,11 +91,15 @@ class midgardmvc_core_request
     /**
      * Get the request path
      */
-    public function get_path()
+    public function get_path($include_arguments = true)
     {
         if (substr($this->path, -1, 1) !== '/')
         {
             $this->path .= '/';
+        }
+        if (!$include_arguments)
+        {
+            return $this->path;
         }
         return $this->path . implode('/', $this->argv);
     }
