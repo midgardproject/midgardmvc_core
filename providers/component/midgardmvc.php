@@ -14,6 +14,7 @@
 class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_providers_component
 {
     public $components = array();
+    private $components_enabled = array();
     private $injectors = array
     (
         'process' => array(),
@@ -24,6 +25,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
     public function __construct()
     {
+        $this->components_enabled = midgardmvc_core::get_instance()->configuration->components;
         $this->load_all_manifests();
     }
 
@@ -38,6 +40,12 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             // Component is installed and already loaded
             return $this->components[$component];
         }
+
+        if (!isset($this->components_enabled[$component]))
+        {
+            throw new OutOfRangeException("Component {$component} is not enabled in application configuration");
+        }
+
         if (!isset($this->manifests[$component]))
         {
             $manifest_path = $this->get_manifest_path($component);
@@ -156,27 +164,17 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
     private function load_all_manifests()
     {
-        // Load manifests and cache them
-        $manifest_files = array();
-        $MIDGARDMVC_ROOT = dir(MIDGARDMVC_ROOT);
-        
-        while (false !== ($component = $MIDGARDMVC_ROOT->read())) 
+        // Load manifests enabled in site configuration and cache them
+        $components = midgardmvc_core::get_instance()->configuration->components;
+        foreach ($components as $component => $setup_info)
         {
-            if (   substr($component, 0, 1) == '.'
-                || $component == 'scaffold'
-                || $component == 'PHPTAL'
-                || $component == 'PHPTAL.php')
-            {
-                continue;
-            }
             $component_path = MIDGARDMVC_ROOT . "/{$component}";
             if (!file_exists("{$component_path}/manifest.yml"))
             {
-                continue;
+                throw new Exception("Component {$component} specified in application configuration is not installed");
             }
             
             $this->manifests[$component] = $this->load_manifest_file("{$component_path}/manifest.yml");
         }
-        $MIDGARDMVC_ROOT->close();
     }
 }

@@ -33,6 +33,10 @@ class midgardmvc_appserv_app
                 'services_dispatcher' => 'appserv',
                 //'services_authentication' => 'runtime',
                 'providers_component' => 'midgardmvc',
+                'components' => array
+                (
+                    'midgardmvc_core' => array(),
+                ),
             );
             $mvc = midgardmvc_core::get_instance($config);
             $mvc->dispatcher->set_request_data($context);
