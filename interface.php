@@ -345,6 +345,10 @@ class midgardmvc_core
                 if (substr($local_configuration, 0, 1) == '/')
                 {
                     // Application YAML file provided, load configuration from it
+                    if (!file_exists($local_configuration))
+                    {
+                        throw new Exception("Application configuration file {$local_configuration} not found");
+                    }
                     $configuration = yaml_parse_file($local_configuration);
                 }
                 else
