@@ -329,19 +329,42 @@ class midgardmvc_core
             return self::$instance;
         }
 
-        if (   !is_null($local_configuration)
-            && !is_array($local_configuration))
+        if (is_null($local_configuration))
         {
-            // Ratatoskr-style dispatcher selection fallback
-            $local_configuration = array
-            (
-                'services_dispatcher' => $local_configuration,
-            );
+            $configuration = array();
+        }
+        else
+        {
+            if (is_array($local_configuration))
+            {
+                // Configuration passed as a PHP array
+                $configuration = $local_configuration;
+            }
+            elseif (is_string($local_configuration))
+            {
+                if (substr($local_configuration, 0, 1) == '/')
+                {
+                    // Application YAML file provided, load configuration from it
+                    $configuration = yaml_parse_file($local_configuration);
+                }
+                else
+                {
+                    // Ratatoskr-style dispatcher selection fallback
+                    $configuration = array
+                    (
+                        'services_dispatcher' => $local_configuration,
+                    );
+                }
+            }
+            else
+            {
+                throw new Exception('Unrecognized configuration given for Midgard MVC initialization');
+            }
         }
 
         // Load and return MVC instance
         self::$instance = new midgardmvc_core();
-        self::$instance->load_base_services($local_configuration);
+        self::$instance->load_base_services($configuration);
         return self::$instance;
     }
 }

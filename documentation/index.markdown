@@ -6,6 +6,7 @@ Midgard MVC applications are written in the PHP language, and consist of a colle
 Basic building blocks:
 ----------------------
 
+* Application: a configuration file describing the components and other settings used in a Midgard MVC website
 * Component: a PHP module intended to run as part of a web application. For example: a news listing. Provides routes, controllers and templates
 * Library: a PHP module that can be called by other modules to perform some task. Does not run as part of a website. For example: a form validation library
 * Service: a standardized interface to access a given functionality. For example: authentication
@@ -20,6 +21,21 @@ Installation
   - [Install php5-midgard2](http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/) for your distribution (or compile from sources)
   - Enable the Midgard2 extension in your `php.ini` with an `extension=midgard2.so`
   - Copy Midgard MVC database definitions (`midgardmvc_core/configuration/mgdschema.xml`) to the Midgard schema directory (by default `/usr/share/midgard2/schema/`)
+
+Application configuration
+-------------------------
+
+Application configuration is a configuration file read before Midgard MVC starts where you can define application-wide shared configuration settings, including overriding Midgard MVC default configurations. The components used with an application are defined in the application configuration file.
+
+The application configuration is by default located in the root of your Midgard MVC installation directory in a YAML file called `application.yml`. Example:
+
+    name: Example Blog
+    components:
+        midgardmvc_core
+            source: git://github.com/midgardproject/midgardmvc_core.git
+        midgardmvc_create
+    services_dispatcher: midgard3
+    providers_component: midgardmvc
 
 Running Midgard MVC
 -------------------
