@@ -349,7 +349,8 @@ class midgardmvc_core
                     {
                         throw new Exception("Application configuration file {$local_configuration} not found");
                     }
-                    $configuration = yaml_parse_file($local_configuration);
+                    $configuration_yaml = file_get_contents($local_configuration);
+                    $configuration = midgardmvc_core::read_yaml($configuration_yaml);
                 }
                 else
                 {
@@ -370,6 +371,27 @@ class midgardmvc_core
         self::$instance = new midgardmvc_core();
         self::$instance->load_base_services($configuration);
         return self::$instance;
+    }
+
+    public static function read_yaml($yaml_string)
+    {
+        static $use_yaml = null;
+        if (is_null($use_yaml))
+        {
+            // Check for YAML extension
+            $use_yaml = extension_loaded('yaml');
+            if (!$use_yaml)
+            {
+                // YAML PHP extension is not loaded, include the pure-PHP implementation
+                require_once MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/spyc.php';
+            }
+        }
+
+        if (!$use_yaml)
+        {
+            return Spyc::YAMLLoad($yaml_string);
+        }
+        return yaml_parse($yaml_string);
     }
 }
 ?>

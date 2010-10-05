@@ -18,7 +18,6 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
     private $parent = null;
     private $configuration = null;
     public $name = '';
-    static $use_yaml = null;
 
     public function __construct($name, array $manifest)
     {
@@ -28,16 +27,6 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         if ($manifest['extends'])
         {
             $this->parent = midgardmvc_core::get_instance()->component->get($manifest['extends']);
-        }
-        if (is_null(self::$use_yaml))
-        {
-            // Check for YAML extension
-            self::$use_yaml = extension_loaded('yaml');
-            if (!self::$use_yaml)
-            {
-                // YAML PHP extension is not loaded, include the pure-PHP implementation
-                require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
-            }
         }
     }
 
@@ -84,15 +73,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         {
             // Called for first time, load from YAML file
             $configuration = file_get_contents($this->path . "/configuration/defaults.yml");
-
-            if (!self::$use_yaml)
-            {
-                $this->configuration = Spyc::YAMLLoad($configuration);
-            }
-            else
-            {
-                $this->configuration = yaml_parse($configuration);
-            }
+            $this->configuration = midgardmvc_core::read_yaml($configuration);
         }
         return $this->configuration;
     }

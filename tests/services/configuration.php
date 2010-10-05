@@ -17,16 +17,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         $path = MIDGARDMVC_ROOT. '/midgardmvc_core/configuration/defaults.yml';
         $yaml = file_get_contents($path);
-        if (!extension_loaded('yaml'))
-        {
-            // YAML PHP extension is not loaded, include the pure-PHP implementation
-            require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
-            $this->testConfiguration = Spyc::YAMLLoad($yaml);
-        }
-        else
-        {
-            $this->testConfiguration = yaml_parse($yaml);
-        }
+        $this->testConfiguration = midgardmvc_core::read_yaml($yaml);
         parent::setUp();
     }
     

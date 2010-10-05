@@ -21,7 +21,6 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         'template' => array(),
     );
     private $manifests = array();
-    static $use_yaml = null;
 
     public function __construct()
     {
@@ -117,35 +116,22 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
     private function load_manifest_file($manifest_file)
     {
         $manifest_yaml = file_get_contents($manifest_file);
-
-        if (is_null(self::$use_yaml))
-        {
-            // Check for YAML extension
-            self::$use_yaml = extension_loaded('yaml');
-            if (!self::$use_yaml)
-            {
-                // YAML PHP extension is not loaded, include the pure-PHP implementation
-                require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
-            }
-        }
-
-        if (!self::$use_yaml)
-        {
-            $manifest = Spyc::YAMLLoad($manifest_yaml);
-        }
-        else
-        {
-            $manifest = yaml_parse($manifest_yaml);
-        }
+        $manifest = midgardmvc_core::read_yaml($manifest_yaml);
 
         // Normalize manifest
         if (!isset($manifest['version']))
         {
             $manifest['version'] = '0.0.1devel';
         }
+
         if (!isset($manifest['extends']))
         {
             $manifest['extends'] = null;
+        }
+        elseif (!isset($this->components_enabled[$manifest['extends']]))
+        {
+            // Ensure the parent component is always enabled
+            $this->components_enabled[$manifest['extends']] = array();
         }
 
         if (isset($manifest['process_injector']))
