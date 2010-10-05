@@ -7,6 +7,10 @@ interface midgardmvc_core_providers_hierarchy_node
 
     public function get_arguments();
 
+    public function get_path();
+
+    public function set_path($path);
+
     public function get_child_nodes();
 
     public function get_child_by_name($name);

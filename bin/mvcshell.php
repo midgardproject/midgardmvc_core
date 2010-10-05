@@ -24,6 +24,8 @@ $commands = array
     'call' => 'mvcshell_call',
     'display' => 'mvcshell_display',
     'profile' => 'mvcshell_profile',
+    'setup' => 'mvcshell_setup',
+    'dbupdate' => 'mvcshell_dbupdate',
 );
 $command = null;
 $remaining_arguments = array();
@@ -85,7 +87,7 @@ for ($i = 1; $i < count($arguments); $i++)
     // This argument is neither config nor command, add it to the arg list
     $remaining_arguments[] = $arguments[$i];
 }
-$config = mvcshell_check_config($config);
+$config = mvcshell_check_config($command, $config);
 $midgardmvc = midgardmvc_core::get_instance($config);
 
 call_user_func($commands[$command], $remaining_arguments);
@@ -116,7 +118,7 @@ function mvcshell_help()
     return "Foo";
 }
 
-function mvcshell_check_config(array $config)
+function mvcshell_check_config($command, array $config)
 {
 
     // Check for application config file defined in php.ini
@@ -142,6 +144,10 @@ function mvcshell_check_config(array $config)
     $requires_midgard = false;
     if (   $config['providers_hierarchy'] == 'midgardmvc_core_providers_hierarchy_midgardmvc'
         || $config['providers_hierarchy'] == 'midgardmvc')
+    {
+        $requires_midgard = true;
+    }
+    if ($command == 'dbupdate')
     {
         $requires_midgard = true;
     }
@@ -241,5 +247,62 @@ function mvcshell_profile(array $arguments)
 
     $xhprof_data = xhprof_disable();
     mvcshell_dump(array_reverse($xhprof_data));
+}
+
+function mvcshell_setup(array $arguments)
+{
+    mvcshell_dbupdate(array(), false);
+
+    $mvc = midgardmvc_core::get_instance();
+    $mvc->hierarchy->prepare_nodes($mvc->configuration->nodes, false);
+
+    // TODO: Install required components
+}
+
+function mvcshell_dbupdate(array $arguments, $print = true)
+{
+    if (!empty($arguments))
+    {
+        $mgdschema_types = $arguments;
+    }
+    else
+    {
+        // DBupdate for all types
+        $mgdschema_types = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
+    }
+
+    if (!midgard_storage::create_base_storage())
+    {
+        //mvcshell_print("Could not create Midgard base storage tables");
+    }
+
+    $created = 0;
+    $updated = 0;
+
+    // And update as necessary
+    foreach ($mgdschema_types as $type)
+    {
+        if (midgard_storage::class_storage_exists($type))
+        {
+            if (!midgard_storage::update_class_storage($type))
+            {
+                //mvcshell_print("Could not update Midgard storage for type {$type}");
+            }
+            $updated++;
+            continue;
+        }
+
+        if (!midgard_storage::create_class_storage($type))
+        {
+            mvcshell_print("Could not create Midgard storage for type {$type}");
+        }
+        $created++;
+    }
+
+    if (!$print)
+    {
+        return;
+    }
+    mvcshell_print("Created Midgard storage for {$created} types and updated storage for {$updated} types.");
 }
 ?>

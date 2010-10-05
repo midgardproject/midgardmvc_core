@@ -92,4 +92,8 @@ class midgardmvc_core_providers_hierarchy_midgardmvc implements midgardmvc_core_
         $node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($nodes[0]);
         return $node;
     }
+
+    public function prepare_nodes(array $nodes, $destructive = false)
+    {
+    }
 }

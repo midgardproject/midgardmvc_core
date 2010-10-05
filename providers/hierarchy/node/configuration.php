@@ -4,11 +4,13 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
     private $argv = array();
     private $parent = null;
 
+    public $guid = '';
     public $name = '';
     public $title = '';
     public $content = '';
     private $component = null;
     private $children = array();
+    private $path = null;
 
     public function __construct($name, array $configuration, midgardmvc_core_providers_hierarchy_node_configuration $parent = null)
     {
@@ -16,6 +18,12 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
         $this->title =& $configuration['title'];
         $this->content =& $configuration['content'];
         $this->component =& $configuration['component'];
+
+        if (isset($configuration['children']))
+        {
+            $this->children = $configuration['children'];
+        }
+
         $this->parent =& $parent;
     }
 
@@ -37,6 +45,28 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
     public function set_arguments(array $argv)
     {
         $this->argv = $argv;
+    }
+
+    public function get_path()
+    {
+        if (is_null($this->path))
+        {
+            $parent = $this->get_parent_node();
+            if (!$parent)
+            {
+                $this->path = '/';
+            }
+            else
+            {
+                $this->path = $parent->get_path() . $this->name . '/';
+            }
+        }
+        return $this->path;
+    }
+
+    public function set_path($path)
+    {
+        $this->path = $path;
     }
 
     public function get_child_nodes()
