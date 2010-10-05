@@ -6,16 +6,7 @@ require('midgardmvc_core/framework.php');
 
 // Defaults for configuration
 $mvc_config_yaml = file_get_contents(MIDGARDMVC_ROOT. '/midgardmvc_core/configuration/defaults.yml');
-if (!extension_loaded('yaml'))
-{
-    // YAML PHP extension is not loaded, include the pure-PHP implementation
-    require_once MIDGARDMVC_ROOT. '/midgardmvc_core/helpers/spyc.php';
-    $config = Spyc::YAMLLoad($mvc_config_yaml);
-}
-else
-{
-    $config = yaml_parse($mvc_config_yaml);
-}
+$config = midgardmvc_core::read_yaml($mvc_config_yaml);
 
 $config['services_dispatcher'] = 'manual';
 $config['providers_component'] = 'midgardmvc';
@@ -60,7 +51,8 @@ for ($i = 1; $i < count($arguments); $i++)
         }
 
         if (   !isset($config[$config_key])
-            && $config_key != 'midgard')
+            && $config_key != 'midgard'
+            && $config_key != 'application_config')
         {
             mvcshell_print("Unrecognized configuration parameter '{$config_key}'");
         }
@@ -93,7 +85,7 @@ for ($i = 1; $i < count($arguments); $i++)
     // This argument is neither config nor command, add it to the arg list
     $remaining_arguments[] = $arguments[$i];
 }
-mvcshell_check_config($config);
+$config = mvcshell_check_config($config);
 $midgardmvc = midgardmvc_core::get_instance($config);
 
 call_user_func($commands[$command], $remaining_arguments);
@@ -126,6 +118,27 @@ function mvcshell_help()
 
 function mvcshell_check_config(array $config)
 {
+
+    // Check for application config file defined in php.ini
+    $application_config = get_cfg_var('midgardmvc.application_config');
+    if (isset($config['application_config']))
+    {
+        $application_config = $config['application_config'];
+        unset($config['application_config']);
+    }
+    if ($application_config)
+    {
+        if (!file_exists($application_config))
+        {
+            mvcshell_print("Specified application configuration file {$application_config} not found.");
+        }
+        $local_config = midgardmvc_core::read_yaml(file_get_contents($application_config));
+        foreach ($local_config as $key => $value)
+        {
+            $config[$key] = $value;
+        }
+    }
+
     $requires_midgard = false;
     if (   $config['providers_hierarchy'] == 'midgardmvc_core_providers_hierarchy_midgardmvc'
         || $config['providers_hierarchy'] == 'midgardmvc')
@@ -163,6 +176,7 @@ function mvcshell_check_config(array $config)
         }
         unset($config['midgard']);
     }
+    return $config;
 }
 
 function mvcshell_call(array $arguments)
