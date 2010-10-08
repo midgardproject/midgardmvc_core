@@ -87,6 +87,16 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         return file_get_contents($configuration_file);
     }
 
+    public function get_description()
+    {
+        $readme_file = $this->path . "/README.markdown";
+        if (!file_exists($readme_file))
+        {
+            return '';
+        }
+        return file_get_contents($readme_file);
+    }
+
     public function get_routes(midgardmvc_core_request $request)
     {
         static $routes = null;
