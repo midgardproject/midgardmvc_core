@@ -74,6 +74,16 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         return false;
     }
 
+    public function get_components()
+    {
+        $components = array();
+        foreach ($this->components_enabled as $component => $data)
+        {
+            $components[] = $this->get($component);
+        }
+        return $components;
+    }
+
     public function get_routes(midgardmvc_core_request $request)
     {
         $routes = array();
