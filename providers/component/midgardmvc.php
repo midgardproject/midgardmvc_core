@@ -48,10 +48,6 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         if (!isset($this->manifests[$component]))
         {
             $manifest_path = $this->get_manifest_path($component);
-            if (!file_exists($manifest_path))
-            {
-                throw new OutOfRangeException("Component {$component} is not installed");
-            }
             $this->manifests[$component] = $this->load_manifest_file($manifest_path);
         }
         $this->components[$component] = new midgardmvc_core_providers_component_component_midgardmvc($component, $this->manifests[$component]);
@@ -99,7 +95,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         foreach ($this->injectors[$injector_type] as $key => $injector_class)
         {
             $injector = new $injector_class(); 
-            $injector->$inject_method();
+            $injector->$inject_method($request);
         }
     }
 
@@ -115,6 +111,10 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
      */
     private function load_manifest_file($manifest_file)
     {
+        if (!file_exists($manifest_file))
+        {
+            throw new OutOfRangeException("Component manifest {$manifest_file} is not installed");
+        }
         $manifest_yaml = file_get_contents($manifest_file);
         $manifest = midgardmvc_core::read_yaml($manifest_yaml);
 
