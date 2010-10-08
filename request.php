@@ -389,6 +389,10 @@ class midgardmvc_core_request
     public static function get_for_intent($intent)
     {
         $request = new midgardmvc_core_request();
+        if (empty($intent))
+        {
+            throw new InvalidArgumentException("No intent provided");
+        }
         if (mgd_is_guid($intent))
         {
             // MgdSchema node GUID given
