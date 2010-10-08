@@ -52,6 +52,105 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         return file_get_contents($path);
     }
 
+    public function get_classes()
+    {
+        $classes = array();
+
+        // Check for MgdSchemas from the component
+        $schemas = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
+        foreach ($schemas as $schema)
+        {
+            if (substr($schema, 0, strlen($this->name)) != $this->name)
+            {
+                // Not from this component
+                continue;
+            }
+            $classes[] = $schema;
+        }
+
+        // Seek component for all PHP files
+        $filesystem_classes = $this->get_classes_filesystem($this->path, "{$this->name}");
+        foreach ($filesystem_classes as $class)
+        {
+            $classes[] = $class;
+        }
+
+        return $classes;
+    }
+
+    private function get_classes_filesystem($path, $prefix = '')
+    {
+        $files = array();
+
+        // MidgardMVC Core has some files that don't conform to autoloading needs
+        $ignore_dirs = array
+        (
+            'bin',
+            'tests',
+            'httpd',
+        );
+        $ignore_files = array
+        (
+            'midgardmvc_core_framework',
+            'midgardmvc_core_services_templating_TAL_modifiers',
+            'midgardmvc_core_helpers_spyc',
+        );
+        $file_aliases = array
+        (
+            'midgardmvc_core_exceptionhandler' => 'midgardmvc_exception',
+            'midgardmvc_core_interface' => 'midgardmvc_core',
+        );
+
+        if (!file_exists($path))
+        {
+            return $files;
+        }
+
+        $directory = dir($path);
+        while (false !== ($entry = $directory->read()))
+        {
+            if (substr($entry, 0, 1) == '.')
+            {
+                // Ignore dotfiles
+                continue;
+            }
+
+            if (is_dir("{$path}/{$entry}"))
+            {
+                if (in_array($entry, $ignore_dirs))
+                {
+                    continue;
+                }
+                // List subdirectory
+                $files = array_merge($files, $this->get_classes_filesystem("{$path}/{$entry}", "{$prefix}_{$entry}"));
+                continue;
+            }
+            
+            $pathinfo = pathinfo("{$path}/{$entry}");
+            if (   !isset($pathinfo['extension'])
+                || $pathinfo['extension'] != 'php')
+            {
+                // We're not interested in this type of file
+                continue;
+            }
+            
+            $filename = "{$prefix}_{$pathinfo['filename']}";
+            if (in_array($filename, $ignore_files))
+            {
+                continue;
+            }
+
+            if (isset($file_aliases[$filename]))
+            {
+                $filename = $file_aliases[$filename];
+            }
+
+            $files[] = $filename;
+        }
+        $directory->close();
+        return $files;
+    }
+
     public function get_template($template)
     {
         return $this->path . "/templates/{$template}.xhtml";

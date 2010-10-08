@@ -7,6 +7,8 @@ interface midgardmvc_core_providers_component_component
 
     public function get_class_contents($class);
 
+    public function get_classes();
+
     public function get_template($template);
 
     public function get_template_contents($template);
