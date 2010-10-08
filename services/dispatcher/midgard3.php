@@ -236,11 +236,11 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         // Run the route and set appropriate data
         try
         {
+            $controller->data = array();
             if (!method_exists($controller, $action_method))
             {
                 throw new midgardmvc_exception_httperror("{$request_method} method not allowed", 405);
             }
-            $controller->data = array();
             $controller->$action_method($arguments);
         }
         catch (Exception $e)
