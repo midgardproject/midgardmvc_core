@@ -152,67 +152,18 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
                 $matched_routes[$route->id] = $matches;
             }
         }
-        //$matched_routes = $this->get_route_matches($request, $route_definitions);
+
         if (!$matched_routes)
         {
             // TODO: Check message
             throw new midgardmvc_exception_notfound('No route matches current URL ' . $request->get_path());
         }
-        //unset($route_id_map);
 
         $matched_routes = array_reverse($matched_routes);
-        $success_flag = true; // Flag to tell if route ran successfully
         foreach ($matched_routes as $route_id => $arguments)
         {
-            try
-            {   
-                $success_flag = true; // before trying route it's marked success
-                $request->set_route($routes[$route_id]);
-                $this->dispatch_route($request, $arguments);
-            }
-            catch (Exception $e)
-            {
-                if (   $e instanceof midgardmvc_exception_unauthorized
-                    || $e instanceof StartNewRequestException)
-                {
-                    // ACL and App Server exceptions override anything else
-                    throw $e;
-                }
-                $this->exceptions_stack[] = $e; // Adding exception to exceptions stack
-                $success_flag = false; // route failed
-            }
-            if ($success_flag) // Checking for success
-            {
-                break; // if we get here, controller run succesfully so bailing out from the loop
-            }
-        } // ending foreach
-
-        if (!$success_flag) 
-        {
-            // if foreach is over and success flag is false throwing exeption
-            $messages = '';
-            foreach ($this->exceptions_stack as $exception)
-            {
-                switch (get_class($exception))
-                {
-                    case 'midgardmvc_exception_unauthorized':
-                        throw $exception;
-                        // This will exit
-                    case 'midgardmvc_exception_httperror':
-                        if (   $exception->getCode() != 405
-                            || count($this->exceptions_stack) == 1)
-                        {
-                            // Throw the HTTP error as-is, except if it is a "Method not allowed" that isn't the only error
-                            throw $exception;
-                            // This will exit
-                        }
-                    default:
-                        $messages .= $exception->getMessage() . "\n";
-                        break;
-                }
-            }
-            // 404 MultiFail
-            throw new midgardmvc_exception_notfound($messages);
+            $request->set_route($routes[$route_id]);
+            $this->dispatch_route($request, $arguments);
         }
     }
     
