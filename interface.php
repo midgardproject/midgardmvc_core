@@ -375,6 +375,10 @@ class midgardmvc_core
 
     public static function read_yaml($yaml_string)
     {
+        if (empty($yaml_string))
+        {
+            return array();
+        }
         static $use_yaml = null;
         if (is_null($use_yaml))
         {

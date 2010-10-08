@@ -72,15 +72,19 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         if (is_null($this->configuration))
         {
             // Called for first time, load from YAML file
-            $configuration = file_get_contents($this->path . "/configuration/defaults.yml");
-            $this->configuration = midgardmvc_core::read_yaml($configuration);
+            $this->configuration = midgardmvc_core::read_yaml($this->get_configuration_contents());
         }
         return $this->configuration;
     }
 
     public function get_configuration_contents()
     {
-        return file_get_contents($this->path . "/configuration/defaults.yml");
+        $configuration_file = $this->path . "/configuration/defaults.yml";
+        if (!file_exists($configuration_file))
+        {
+            return '';
+        }
+        return file_get_contents($configuration_file);
     }
 
     public function get_routes(midgardmvc_core_request $request)
