@@ -49,34 +49,6 @@ routes:
         root_only: true
         template_aliases: 
             content: midgardmvc-show-database
-    midgardmvc_documentation_show:
-        controller: midgardmvc_core_controllers_documentation
-        action: show
-        path: '/mgd:documentation@'
-        root_only: true
-        template_aliases: 
-            content: midgardmvc-show-documentation_file
-    midgardmvc_documentation_index:
-        controller: midgardmvc_core_controllers_documentation
-        action: index
-        path: '/mgd:documentation/{$component}'
-        root_only: true
-        template_aliases: 
-            content: midgardmvc-show-documentation_index
-    midgardmvc_documentation_routes:
-        controller: midgardmvc_core_controllers_documentation
-        action: routes
-        path: '/mgd:documentation/{$component}/routes'
-        root_only: true
-        template_aliases: 
-            content: midgardmvc-show-documentation_routes
-    midgardmvc_documentation_class:
-        controller: midgardmvc_core_controllers_documentation
-        action: class
-        path: '/mgd:documentation/class/{$class}'
-        root_only: true
-        template_aliases: 
-            content: midgardmvc-show-documentation_class
     login:
         controller: midgardmvc_core_controllers_authentication
         action: login
