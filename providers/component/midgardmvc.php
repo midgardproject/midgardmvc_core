@@ -144,6 +144,24 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             $this->components_enabled[$manifest['extends']] = array();
         }
 
+        if (!isset($manifest['requires']))
+        {
+            $manifest['requires'] = null;
+        }
+        else
+        {
+            if (!is_array($manifest['requires']))
+            {
+                $manifest['requires'] = null;
+            }
+
+            // Ensure the required components are always enabled
+            foreach ($manifest['requires'] as $component => $component_info)
+            {
+                $this->components_enabled[$component] = array();
+            }
+        }
+
         if (isset($manifest['process_injector']))
         {
             // This component has an injector for the process() phase
