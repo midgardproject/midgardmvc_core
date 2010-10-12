@@ -52,7 +52,7 @@ class midgardmvc_core_route
             // Simple route (only static arguments)
             if (   $route_path === $argv_str
                 && (   !$route_get
-                    || $this->get_matches($route_get))
+                    || $this->check_match_get($route_get))
                 )
             {
                 // echo "DEBUG: simple match route_id:{$route_id}\n";
@@ -75,7 +75,7 @@ class midgardmvc_core_route
         // "complex" route (with variable arguments)
         if(preg_match('%@%', $this->path, $match))
         {   
-            $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}\@%', '([^/]+?)', $route_path)) . '(.*)%';
+            $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}\@%', '([^/]+?)', $route_path)) . '$%';
         }
         else 
         {
@@ -88,7 +88,7 @@ class midgardmvc_core_route
             return null;
         }
         if (   $route_get
-            && !$this->check_match_get($route_get, $route))
+            && !$this->check_match_get($route_get))
         {
             // We have GET part that could not be matched, NEXT!
             return null;
@@ -122,7 +122,7 @@ class midgardmvc_core_route
             {
                 $matched[$varname] = $route_path_regex_matches[$index + 1];
             }
-            
+
             if (preg_match('%@%', $this->path, $match)) // Route @ set
             {
                 $path = explode('@', $route_path);

@@ -48,5 +48,46 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $unmatched = $route->check_match('/foobar/baz');
         $this->assertEquals(null, $unmatched);
     }
+
+    public function test_check_match_multiplevar()
+    {
+        $route = new midgardmvc_core_route('page_read', '/foo/{$bar}/{$int:baz}', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo/baz/7/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertEquals(7, $matched['baz']);
+
+        $unmatched = $route->check_match('/foobar/baz/five/');
+        $this->assertEquals(null, $unmatched);
+
+        $unmatched = $route->check_match('/foobar/baz');
+        $this->assertEquals(null, $unmatched);
+    }
+
+    public function test_check_match_array_simple()
+    {
+        $route = new midgardmvc_core_route('page_read', '/foo@', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo');
+        $this->assertEquals(null, $matched);
+
+        $matched = $route->check_match('/foo/bar/baz/');
+        $this->assertTrue(is_array($matched));
+        $this->assertTrue(isset($matched['variable_arguments']));
+        $this->assertEquals('bar', $matched['variable_arguments'][0]);
+    }
+
+    public function test_check_match_array_var()
+    {
+        $route = new midgardmvc_core_route('page_read', '/foo/{$bar}/baz@', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo/news/');
+        $this->assertEquals(null, $matched);
+
+        $matched = $route->check_match('/foo/news/baz/bar/');
+        $this->assertTrue(is_array($matched));
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('news', $matched['bar']);
+        $this->assertTrue(isset($matched['variable_arguments']));
+        $this->assertEquals('bar', $matched['variable_arguments'][0]);
+    }
 }
 ?>
