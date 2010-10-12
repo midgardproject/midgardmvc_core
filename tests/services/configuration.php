@@ -25,6 +25,11 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         foreach($this->testConfiguration as $key => $conf)
         {
+            if (isset($this->local_configuration[$key]))
+            {
+                // These configuration values are overridden in test suite, ignore
+                continue;
+            }
             $this->assertEquals($this->testConfiguration[$key], $this->_core->configuration->get($key), "Getter for configuration key {$key}");
         }
     }
@@ -33,6 +38,11 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         foreach($this->testConfiguration as $key => $conf)
         {
+            if (isset($this->local_configuration[$key]))
+            {
+                // These configuration values are overridden in test suite, ignore
+                continue;
+            }
             $this->assertEquals($this->testConfiguration[$key], $this->_core->configuration->$key, "Magic getter for configuration key {$key}");
         }
     }
