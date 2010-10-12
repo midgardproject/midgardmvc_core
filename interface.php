@@ -78,7 +78,7 @@ class midgardmvc_core
      *
      * @param string $service Name of service to load
      */
-    public function load_provider($provider)
+    private function load_provider($provider)
     {
         if (isset($this->$provider))
         {

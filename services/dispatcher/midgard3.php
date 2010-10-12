@@ -32,8 +32,6 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
     public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
-
-        $this->midgardmvc->load_provider('hierarchy');
         $this->_root_node = $this->midgardmvc->hierarchy->get_root_node();
     }
 
