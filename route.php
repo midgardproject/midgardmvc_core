@@ -132,17 +132,8 @@ class midgardmvc_core_route
      *
      * @fixme Move action arguments to subarray
      */
-    private function check_match_get(&$route_get, array $query)
+    private function check_match_get($route_get, array $query)
     {
-        /**
-         * It's probably faster to check against $route_get before calling this method but
-         * we want to be robust
-         */
-        if (empty($route_get))
-        {
-            return array();
-        }
-
         if (!preg_match_all('%\&?(.+?)=\{(.+?)\}%', $route_get, $route_get_matches))
         {
             // Can't parse arguments from route_get
