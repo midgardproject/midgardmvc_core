@@ -25,7 +25,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         foreach($this->testConfiguration as $key => $conf)
         {
-            $this->assertEquals($this->_core->configuration->get($key), $this->testConfiguration[$key]);
+            $this->assertEquals($this->testConfiguration[$key], $this->_core->configuration->get($key), "Getter for configuration key {$key}");
         }
     }
 
@@ -33,7 +33,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         foreach($this->testConfiguration as $key => $conf)
         {
-            $this->assertEquals($this->_core->configuration->$key, $this->testConfiguration[$key]);
+            $this->assertEquals($this->testConfiguration[$key], $this->_core->configuration->$key, "Magic getter for configuration key {$key}");
         }
     }
 
@@ -41,7 +41,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         foreach($this->testConfiguration as $key => $conf)
         {
-            $this->assertTrue($this->_core->configuration->exists($key));
+            $this->assertTrue($this->_core->configuration->exists($key), "Test whether {$key} exists in configuration");
         }
     }
 
@@ -49,7 +49,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
     {
         foreach($this->testConfiguration as $key => $conf)
         {
-            $this->assertTrue( isset($this->_core->configuration->$key));
+            $this->assertTrue(isset($this->_core->configuration->$key), "Test whether {$key} is set in configuration");
         }
     }
     

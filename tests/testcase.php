@@ -27,9 +27,15 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
             array
             (
                 'services_dispatcher' => 'manual',
+                'providers_component' => 'midgardmvc_core_providers_component_midgardmvc',
+                'components' => array
+                (
+                    'midgardmvc_core' => true,
+                ),
             )
         );
         $request = new midgardmvc_core_request();
+        $request->add_component_to_chain($this->_core->component->get('midgardmvc_core'));
         $this->_core->context->create($request);
     }
     
