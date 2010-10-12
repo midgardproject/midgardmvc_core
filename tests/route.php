@@ -49,19 +49,59 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertEquals(null, $unmatched);
     }
 
-    public function test_check_match_multiplevar()
+    public function test_check_match_typedvar()
     {
         $route = new midgardmvc_core_route('page_read', '/foo/{$bar}/{$int:baz}', 'foo', 'bar', array());
         $matched = $route->check_match('/foo/baz/7/');
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7, $matched['baz']);
+        $this->assertType('int', $matched['baz']);
 
         $unmatched = $route->check_match('/foobar/baz/five/');
         $this->assertEquals(null, $unmatched);
 
         $unmatched = $route->check_match('/foobar/baz');
         $this->assertEquals(null, $unmatched);
+    }
+
+    public function test_check_match_tokenvar()
+    {
+        $route = new midgardmvc_core_route('page_read', '/foo/{$bar}/{$token:baz}', 'foo', 'bar', array());
+        // Simple variant: just identifier given
+        $matched = $route->check_match('/foo/baz/7/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertTrue(is_array($matched['baz']));
+        $this->assertEquals(7, $matched['baz']['identifier']);
+        $this->assertEquals('html', $matched['baz']['type']);
+
+        // More complex variant requested: identifier and type
+        $matched = $route->check_match('/foo/baz/article.json/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertTrue(is_array($matched['baz']));
+        $this->assertEquals('article', $matched['baz']['identifier']);
+        $this->assertEquals('json', $matched['baz']['type']);
+
+        // More complex variant requested: identifier, variant and type
+        $matched = $route->check_match('/foo/baz/article.title.json/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertTrue(is_array($matched['baz']));
+        $this->assertEquals('article', $matched['baz']['identifier']);
+        $this->assertEquals('title', $matched['baz']['variant']);
+        $this->assertEquals('json', $matched['baz']['type']);
+
+        // More complex variant requested: identifier, variant, language and type
+        $matched = $route->check_match('/foo/baz/article.title.en.json/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertTrue(is_array($matched['baz']));
+        $this->assertEquals('article', $matched['baz']['identifier']);
+        $this->assertEquals('title', $matched['baz']['variant']);
+        $this->assertEquals('en', $matched['baz']['language']);
+        $this->assertEquals('json', $matched['baz']['type']);
     }
 
     public function test_check_match_get()
