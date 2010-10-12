@@ -48,6 +48,11 @@ class midgardmvc_core_route
         // Reset variables
         list ($route_path, $route_get, $route_args) = $this->split_path();
 
+        if (is_null($query))
+        {
+            $query = array();
+        }
+
         if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
         {
             // Simple route (only static arguments)
