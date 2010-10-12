@@ -43,21 +43,27 @@ class midgardmvc_core_route
      *
      * Returns NULL for no match, or an array of arguments for a match
      */
-    public function check_match($argv_str)
+    public function check_match($argv_str, array $query = null)
     {
         // Reset variables
         list ($route_path, $route_get, $route_args) = $this->split_path();
+
         if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
         {
             // Simple route (only static arguments)
-            if (   $route_path === $argv_str
-                && (   !$route_get
-                    || $this->check_match_get($route_get))
-                )
+            if ($route_path === $argv_str)
             {
-                // echo "DEBUG: simple match route_id:{$route_id}\n";
-                return array();
+                if (!$route_get)
+                {
+                    // echo "DEBUG: simple match route_id:{$route_id}\n";
+                    return array();
+                }
+                else
+                {
+                    return $this->check_match_get($route_get, $query);
+                }
             }
+    
 
             if ($route_args) // Route @ set
             {
@@ -87,50 +93,26 @@ class midgardmvc_core_route
             // Does not match, NEXT!
             return null;
         }
-        if (   $route_get
-            && !$this->check_match_get($route_get))
+
+        if ($route_get)
         {
-            // We have GET part that could not be matched, NEXT!
-            return null;
+            $get_matched = $this->check_match_get($route_get, $query);
+            if (!$get_matched)
+            {
+                // We have GET part that could not be matched, NEXT!
+                return null;
+            }
+            // Set matched GET arguments to the vars being handled
         }
 
+        // Remove the first item that is the full path
+        array_shift($route_path_regex_matches);
+
         // We have a complete match, setup route_id arguments and return
-        $matched = array();
-
-        // Map variable arguments
-        foreach ($route_path_matches[1] as $index => $varname)
+        $matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches);
+        if ($route_get)
         {
-            $variable_parts = explode(':', $varname);
-            if (count($variable_parts) == 1)
-            {
-                $type_hint = '';
-            }
-            else
-            {
-                $type_hint = $variable_parts[0];
-            }
-                            
-            // Strip type hints from variable names
-            $varname = preg_replace('/^.+:/', '', $varname);
-
-            if ($type_hint == 'token')
-            {
-                // Tokenize the argument to handle resource typing
-                $matched[$varname] = $this->tokenize_argument($route_path_regex_matches[$index + 1]);
-            }
-            else
-            {
-                $matched[$varname] = $route_path_regex_matches[$index + 1];
-            }
-
-            if (preg_match('%@%', $this->path, $match)) // Route @ set
-            {
-                $path = explode('@', $route_path);
-                if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
-                {
-                    $matched = explode('/', $matches[1]);
-                }
-            }
+            $matched = array_merge($matched, $get_matched);
         }
 
         return $matched;
@@ -141,12 +123,11 @@ class midgardmvc_core_route
      *
      * @access private
      * @param string $route_get GET part of a route definition
-     * @param string $route full route definition (used only for error reporting)
-     * @return boolean indicating match/no match
+     * @return array of matched GET arguments mapped to their values, or null for no match
      *
      * @fixme Move action arguments to subarray
      */
-    private function check_match_get(&$route_get)
+    private function check_match_get(&$route_get, array $query)
     {
         /**
          * It's probably faster to check against $route_get before calling this method but
@@ -154,7 +135,7 @@ class midgardmvc_core_route
          */
         if (empty($route_get))
         {
-            return true;
+            return array();
         }
 
         if (!preg_match_all('%\&?(.+?)=\{(.+?)\}%', $route_get, $route_get_matches))
@@ -168,45 +149,23 @@ class midgardmvc_core_route
         print_r($route_get_matches);
         echo "===\n";
         */
-
+        $matches = array();
         foreach ($route_get_matches[1] as $index => $get_key)
         {
             //echo "this->get[{$get_key}]:{$this->get[$get_key]}\n";
-            if (   !isset($this->get[$get_key])
-                || empty($this->get[$get_key]))
+            if (   !is_array($query)
+                || !isset($query[$get_key])
+                || empty($query[$get_key]))
             {
                 // required GET parameter not present, return false;
-                $this->action_arguments = array();
-                return false;
+                return null;
             }
-            
-            preg_match('%/{\$([a-zA-Z]+):([a-zA-Z]+)}/%', $route_get_matches[2][$index], $matches);
-            
-            if(count($matches) == 0)
-            {
-                $type_hint = '';
-            }
-            else
-            {
-                $type_hint = $matches[1];
-            }
-                
-            // Strip type hints from variable names
-            $varname = preg_replace('/^.+:/', '', $route_get_matches[2][$index]);
-                            
-            if ($type_hint == 'token')
-            {
-                 // Tokenize the argument to handle resource typing
-                $this->action_arguments[$varname] = $this->tokenize_argument($this->get[$get_key]);
-            }
-            else
-            {
-                $this->action_arguments[$varname] = $this->get[$get_key];
-            }
+            $matches[] = $query[$get_key];
         }
 
         // Unlike in route_matches falling through means match
-        return true;
+
+        return $this->normalize_variables($route_get_matches[1], $matches);
     }
 
     private function tokenize_argument($argument)
@@ -244,6 +203,51 @@ class midgardmvc_core_route
         }
         
         return $tokens;
+    }
+
+    private function normalize_variables($variables, $values)
+    {
+        // Map variable arguments
+        $matched = array();
+        foreach ($variables as $index => $varname)
+        {
+            $variable_parts = explode(':', $varname);
+            if (count($variable_parts) == 1)
+            {
+                $type_hint = '';
+            }
+            else
+            {
+                $type_hint = $variable_parts[0];
+            }
+                            
+            // Strip type hints from variable names
+            $varname = preg_replace('/^.+:/', '', $varname);
+
+            if ($type_hint == 'token')
+            {
+                // Tokenize the argument to handle resource typing
+                $matched[$varname] = $this->tokenize_argument($values[$index]);
+            }
+            else
+            {
+                $matched[$varname] = $values[$index];
+                if ($type_hint == 'int')
+                {
+                    $matched[$varname] = (int) $matched[$varname];
+                }
+            }
+
+            if (preg_match('%@%', $this->path, $match)) // Route @ set
+            {
+                $path = explode('@', $route_path);
+                if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
+                {
+                    $matched = explode('/', $matches[1]);
+                }
+            }
+        }
+        return $matched;
     }
 
     private function normalize_path()

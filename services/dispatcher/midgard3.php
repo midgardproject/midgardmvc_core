@@ -142,9 +142,10 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
         $matched_routes = array();
         // make a normalized string of $argv
         $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $request->get_arguments()) . '/');
+        $query = $request->get_query();
         foreach ($routes as $route)
         {
-            $matches = $route->check_match($argv_str);
+            $matches = $route->check_match($argv_str, $query);
             if (!is_null($matches))
             {
                 $matched_routes[$route->id] = $matches;

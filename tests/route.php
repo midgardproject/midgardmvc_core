@@ -64,6 +64,20 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertEquals(null, $unmatched);
     }
 
+    public function test_check_match_get()
+    {
+        $route = new midgardmvc_core_route('page_read', '/foo/?bar={$baz}', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo/', array('bar' => 'baz'));
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+
+        $unmatched = $route->check_match('/foobar/baz/');
+        $this->assertEquals(null, $unmatched);
+
+        $unmatched = $route->check_match('/foobar/baz');
+        $this->assertEquals(null, $unmatched);
+    }
+
     public function test_check_match_array_simple()
     {
         $route = new midgardmvc_core_route('page_read', '/foo@', 'foo', 'bar', array());
