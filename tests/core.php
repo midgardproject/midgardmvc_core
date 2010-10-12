@@ -26,15 +26,30 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         unset($midgardmvc->newproperty);
     }
 
+    public function test_known_providers_match()
+    {
+        $midgardmvc = midgardmvc_core::get_instance();
+        $providers = array
+        (
+            'hierarchy',
+            'component',
+        );
+
+        foreach ($providers as $provider)
+        {
+            $provider_instance = $midgardmvc->$provider;
+            $provider_interface = "midgardmvc_core_providers_{$provider}";
+            $this->assertTrue($provider_instance instanceof $provider_interface);
+        }
+    }
+
     public function test_known_services_match()
     {
         $midgardmvc = midgardmvc_core::get_instance();
         $services = array
         (
             'authentication',
-            //'authorization',
             'templating',
-            //'cache',
         );
         
         foreach ($services as $service)
@@ -58,6 +73,15 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         }
         
         $this->fail('An expected InvalidArgumentException has not been raised.');
+    }
+
+    public function test_read_yaml()
+    {
+        $yaml = 'foo: bar';
+        $parsed = midgardmvc_core::read_yaml($yaml);
+        $this->assertTrue(is_array($parsed));
+        $this->assertTrue(isset($parsed['foo']));
+        $this->assertEquals('bar', $parsed['foo']);
     }
 }
 ?>
