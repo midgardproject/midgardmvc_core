@@ -29,6 +29,12 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
         midgardmvc_core::get_instance()->component->get('invalid_component_name');
     }
 
+    public function test_get()
+    {
+        $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
+        $this->assertTrue($component instanceof midgardmvc_core_providers_component_component);
+    }
+
     public function test_is_installed()
     {
         $this->assertTrue(midgardmvc_core::get_instance()->component->is_installed('midgardmvc_core'));
