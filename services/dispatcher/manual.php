@@ -137,17 +137,8 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
 
     public function get_midgard_connection()
     {
-        if (method_exists('midgard_connection', 'get_instance'))
-        {
-            // Midgard 9.09 onwards
-            return midgard_connection::get_instance();
-        }
-        if (!isset($_MIDGARD_CONNECTION))
-        {
-            return null;
-        }
-        // Midgard 8.09 or 9.03
-        return $_MIDGARD_CONNECTION;
+        // Midgard 9.09 onwards
+        return midgard_connection::get_instance();
     }
 
     public function get_mgdschema_classes()

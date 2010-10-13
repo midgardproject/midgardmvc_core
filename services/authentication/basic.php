@@ -26,7 +26,7 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
         // FIXME: Add when #1478 is fixed
-        //midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -78,26 +78,6 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
 
     public function login($username, $password)
     {
-        if (method_exists('midgard_connection', 'get_sitegroup'))
-        {
-            // Midgard 8.09 or 9.03 authentication API with sitegroups
-            if (!$this->sitegroup)
-            {
-                // In Midgard2 we need current SG name for authentication
-                $this->sitegroup = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
-            }
-        
-            $this->user = midgard_user::auth($username, $password, $this->sitegroup);
-        
-            if (!$this->user)
-            {
-                midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
-                return false;
-            }
-            return true;
-        }
-
-        // Use Midgard 9.09 authentication API
         try
         {
             $user = new midgard_user($this->prepare_tokens($username, $password));
