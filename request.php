@@ -154,10 +154,6 @@ class midgardmvc_core_request
 
     public function set_component(midgardmvc_core_providers_component_component $component)
     {
-        if (!$component)
-        {
-            return;
-        }
         $this->component = $component;
 
         $this->add_component_to_chain($component);

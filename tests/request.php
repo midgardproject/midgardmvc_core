@@ -27,6 +27,20 @@ class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
         $this->assertEquals('/subdir/', $request->get_path());
     }
 
+    public function test_add_component_to_chain()
+    {
+        $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
+        $request = new midgardmvc_core_request();
+        $components = $request->get_component_chain();
+        $this->assertFalse(isset($components['midgardmvc_core']));
+        $request->add_component_to_chain($component);
+        $components = $request->get_component_chain();
+        $this->assertTrue(isset($components['midgardmvc_core']));
+        $request->add_component_to_chain($component);
+        $components = $request->get_component_chain();
+        $this->assertTrue(isset($components['midgardmvc_core']));
+    }
+
     public function test_methods_valid()
     {
         $verbs = array
