@@ -59,15 +59,9 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
     public function is_installed($component)
     {
-        if (isset($this->components[$component]))
+        if (isset($this->components_enabled[$component]))
         {
-            // Component is installed and already loaded
-            return true;
-        }
-
-        if (file_exists($this->get_manifest_path($component)))
-        {
-            // Component is installed
+            // Component is enabled
             return true;
         }
 
