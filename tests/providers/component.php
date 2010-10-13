@@ -51,7 +51,6 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
     public function test_get_routes()
     {
         $request = midgardmvc_core_request::get_for_intent('/');
-        $request->set_root_node(midgardmvc_core::get_instance()->hierarchy->get_root_node());
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
         $this->assertTrue(is_array($routes));
         $this->assertTrue(isset($routes['page_read']));
@@ -59,7 +58,6 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
         $this->assertTrue(isset($routes['login']), 'Root node should provide login route');
 
         $request = midgardmvc_core_request::get_for_intent('/subdir');
-        $request->set_root_node(midgardmvc_core::get_instance()->hierarchy->get_root_node());
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
         $this->assertTrue(is_array($routes));
         $this->assertTrue(isset($routes['page_read']));

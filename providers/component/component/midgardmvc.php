@@ -205,7 +205,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         }
 
         $node_is_root = false;
-        if ($request->get_node() == $request->get_root_node())
+        if ($request->get_node() == midgardmvc_core::get_instance()->hierarchy->get_root_node())
         {
             $node_is_root = true;
         }

@@ -24,13 +24,6 @@ class midgardmvc_core_request
     private $query = array();
 
     /**
-     * The root page to be used with the request
-     *
-     * @var midgardmvc_core_providers_hierarchy_node
-     */
-    private static $root_node = null;
-
-    /**
      * The node to be used with the request
      *
      * @var midgardmvc_core_providers_hierarchy_node
@@ -100,22 +93,6 @@ class midgardmvc_core_request
             $path .= '/';
         }
         return $path;
-    }
-
-    /**
-     * Set a root node to be used in the request
-     */
-    public function set_root_node(midgardmvc_core_providers_hierarchy_node $node)
-    {
-        self::$root_node = $node;
-    }
-
-    /**
-     * Get root node used in this request
-     */
-    public function get_root_node()
-    {
-        return self::$root_node;
     }
 
     /**
@@ -225,9 +202,6 @@ class midgardmvc_core_request
         // TODO: These are deprecated keys that used to be populated to context
         switch ($key)
         {
-            case 'root_node':
-            case 'root_page':
-                return $this->set_root_node($value);
             case 'node':
             case 'page':
                 return $this->set_node($value);
@@ -260,9 +234,6 @@ class midgardmvc_core_request
             // TODO: These are deprecated keys that used to be populated to context
             switch ($key)
             {
-                case 'root_node':
-                case 'root_page':
-                    return $this->get_root_node();
                 case 'component':
                     return $this->get_component();
                 case 'uri':

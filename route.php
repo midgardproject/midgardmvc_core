@@ -54,14 +54,14 @@ class midgardmvc_core_route
                     }
                     $value_array[] = $part;
                 }
-                
+
                 $value = implode('.', $value_array);
 
                 // This is a token replacement, add the type hint
                 $key = "token:{$key}";
             }
 
-            $link = str_replace("{\${$key}}", $value, $path);
+            $path = str_replace("{\${$key}}", $value, $path);
         }
 
         if (preg_match_all('%\{$(.+?)\}%', $path, $link_matches))

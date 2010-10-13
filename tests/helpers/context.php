@@ -79,17 +79,5 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         
         $this->_core->context->delete();
     }
-
-    public function testStatic()
-    {
-        $node = new midgardmvc_core_node();
-        $node->id = 5;
-        $root_node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
-        $this->_core->context->root_node = $root_node;
-        $request = new midgardmvc_core_request();
-        $this->_core->context->create($request);
-        $this->assertEquals($root_node, $this->_core->context->root_node);
-        $this->_core->context->delete();
-    }
 }
 ?>
