@@ -18,4 +18,47 @@ class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_te
         $url = midgardmvc_core::get_instance()->dispatcher->generate_url('page_read', array(), 'midgardmvc_core');
         $this->assertEquals('/', $url);
     }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_generate_url_missingroute()
+    {
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('route_not_defined', array(), 'midgardmvc_core');
+    }
+
+    public function test_dispatch()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        midgardmvc_core::get_instance()->dispatcher->dispatch($request);
+        $this->assertTrue($request->isset_data_item('current_component'));
+        $data = $request->get_data_item('current_component');
+        $this->assertEquals('Midgard MVC', $data['object']->title);
+    }
+
+    public function test_dispatch_head()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        $request->set_method('HEAD');
+        midgardmvc_core::get_instance()->dispatcher->dispatch($request);
+        $this->assertTrue($request->isset_data_item('current_component'));
+        $data = $request->get_data_item('current_component');
+        $this->assertEquals('Midgard MVC', $data['object']->title);
+    }
+
+    /**
+     * @expectedException midgardmvc_exception_httperror
+     */
+    public function test_dispatch_invalidmethod()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        $request->set_method('TRACE');
+        midgardmvc_core::get_instance()->dispatcher->dispatch($request);
+    }
 }
