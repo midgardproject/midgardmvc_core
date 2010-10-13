@@ -93,6 +93,13 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         $request->set_route($routes['page_read']);
         midgardmvc_core::get_instance()->dispatcher->set_request($request);
         $request = midgardmvc_core::get_instance()->process();
+        $this->assertTrue($request->isset_data_item('current_component'));
+        $data = $request->get_data_item('current_component');
+        $this->assertEquals('Midgard MVC', $data['object']->title);
+
+        $this->assertTrue($request->isset_data_item('midgardmvc_core'));
+        $data = $request->get_data_item('midgardmvc_core');
+        $this->assertEquals('Midgard MVC', $data['object']->title);
     }
 
     /**
