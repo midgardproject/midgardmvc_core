@@ -21,6 +21,26 @@ class midgardmvc_core_tests_helpers_head extends midgardmvc_core_tests_testcase
         $head->print_elements();
         $headers = ob_get_clean();
         $this->assertTrue(strpos($headers, '<script type="text/javascript" src="/midgardmvc-static/midgardmvc_core/jQuery/jquery-1.4.2.min.js"></script>') !== false, 'Check for jQuery script tag');
+
+        $stat = $head->enable_jquery();
+        $this->assertEquals(null, $stat, 'Ensure that jQuery is enabled only once');
+    }
+
+    public function test_jquery_state()
+    {
+        $head = new midgardmvc_core_helpers_head();
+        $head->add_jquery_state_script('alert("foo");');
+        ob_start();
+        $head->print_elements();
+        $headers = ob_get_clean();
+        $this->assertTrue(strpos($headers, "jQuery(document).ready(function() {\n\nalert(\"foo\");") !== false, 'Check for jQuery state script');
+
+        // Add another and see that both are included
+        $head->add_jquery_state_script('alert("bar");');
+        ob_start();
+        $head->print_elements();
+        $headers = ob_get_clean();
+        $this->assertTrue(strpos($headers, "jQuery(document).ready(function() {\n\nalert(\"foo\");\n\nalert(\"bar\");") !== false, 'Check for jQuery state script');
     }
 
     public function test_jsfile()
