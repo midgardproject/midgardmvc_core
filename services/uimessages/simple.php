@@ -136,7 +136,7 @@ class midgardmvc_core_services_uimessages_simple extends midgardmvc_core_service
      * Add a message to be shown to the user.
      * @param array $data Message parts
      */
-    public function add($data)
+    public function add(array $data)
     {        
         if (   !array_key_exists('title', $data)
             || !array_key_exists('message', $data))

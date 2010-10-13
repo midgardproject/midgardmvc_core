@@ -18,7 +18,7 @@ interface midgardmvc_core_services_uimessages
      */
     public function __construct(&$configuration = array());
     
-    public function add($data);
+    public function add(array $data);
     
     public function remove($key);
     
