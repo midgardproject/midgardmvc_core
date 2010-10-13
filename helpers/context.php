@@ -61,16 +61,6 @@ class midgardmvc_core_helpers_context
         return $this->requests[$this->current_request];
     }
 
-    public function get_context_identifier()
-    {
-        if (!isset($this->requests[$this->current_request]))
-        {
-            // We're not yet in a request, return "core" as identifier
-            return 'midgardmvc_core';
-        }
-        return $this->requests[$this->current_request]->get_identifier();
-    }
-
     /**
      * Get a reference of the context data array
      *
