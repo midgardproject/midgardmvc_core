@@ -109,13 +109,30 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     /**
      * Generates an URL for given route_id with given arguments
      *
+     * @param mixed $intent Component name, node object, node GUID or node path
      * @param string $route_id the id of the route to generate a link for
      * @param array $args associative arguments array
      * @return string url
      */
     public function generate_url($route_id, array $args, $intent)
     {
-        return '';
+        // Create a request from the intent and assign it to a context
+        $request = midgardmvc_core_request::get_for_intent($intent);
+        $this->midgardmvc->context->create($request);
+        $routes = $this->midgardmvc->component->get_routes($request);
+        if (!isset($routes[$route_id]))
+        {
+            if (empty($routes))
+            {
+                throw new OutOfBoundsException("Route ID '{$route_id}' not found in routes of request. Routes configuration is also empty " . $request->get_identifier());
+            }
+            throw new OutOfBoundsException("Route ID '{$route_id}' not found in routes of request " . $request->get_identifier());
+        }
+        $route = $routes[$route_id];
+        $request->set_arguments($route->set_variables($args));
+
+        $this->midgardmvc->context->delete();
+        return $request->get_path();
     }
 
     public function get_midgard_connection()
