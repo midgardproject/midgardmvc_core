@@ -70,6 +70,17 @@ class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
         $request->set_method('FOO');
     }
 
+    public function test_root_node()
+    {
+        $root_node = midgardmvc_core::get_instance()->hierarchy->get_root_node();
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $request->set_root_node($root_node);
+        $this->assertEquals($root_node, $request->get_root_node());
+
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $this->assertEquals($root_node, $request->get_root_node(), 'Root node, once set, should persist between requests');
+    }
+
     public function test_cache_identifier()
     {
         $request = midgardmvc_core_request::get_for_intent('/');

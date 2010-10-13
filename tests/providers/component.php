@@ -51,9 +51,44 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
     public function test_get_routes()
     {
         $request = midgardmvc_core_request::get_for_intent('/');
+        $request->set_root_node(midgardmvc_core::get_instance()->hierarchy->get_root_node());
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
         $this->assertTrue(is_array($routes));
         $this->assertTrue(isset($routes['page_read']));
         $this->assertTrue($routes['page_read'] instanceof midgardmvc_core_route);
+        $this->assertTrue(isset($routes['login']), 'Root node should provide login route');
+
+        $request = midgardmvc_core_request::get_for_intent('/subdir');
+        $request->set_root_node(midgardmvc_core::get_instance()->hierarchy->get_root_node());
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $this->assertTrue(is_array($routes));
+        $this->assertTrue(isset($routes['page_read']));
+        $this->assertTrue($routes['page_read'] instanceof midgardmvc_core_route);
+        $this->assertFalse(isset($routes['login']), 'Subnode should not provide login route');
+    }
+
+    public function test_get_classes()
+    {
+        $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
+        $classes = $component->get_classes();
+        $this->assertTrue(in_array('midgardmvc_core', $classes), 'Test that we know of the midgardmvc_core class');
+        $this->assertTrue(in_array('midgardmvc_core_helpers_context', $classes), 'Test that we know of the context class');
+        $this->assertFalse(in_array('midgardmvc_admin_injector', $classes));
+    }
+
+    public function test_get_class_contents()
+    {
+        $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
+        $original = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/request.php");
+        $this->assertEquals($original, $component->get_class_contents('midgardmvc_core_request'));
+
+        $this->assertEquals(null, $component->get_class_contents('midgardmvc_core_request_not_defined'));
+    }
+
+    public function test_get_description()
+    {
+        $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
+        $original = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/README.markdown");
+        $this->assertEquals($original, $component->get_description());
     }
 }
