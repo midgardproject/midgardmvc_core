@@ -13,6 +13,12 @@
  */
 class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_testcase
 {
+    public function setUp()
+    {
+        $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'] = '/tmp';
+        parent::setUp();
+    }
+
     public function test_get_element_simple()
     {
         $original_element = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/templates/ROOT.xhtml");
@@ -58,5 +64,18 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
     public function test_dynamic_call_invalid()
     {
         $data = midgardmvc_core::get_instance()->templating->dynamic_call('/subdir', 'missing_route', array());
+    }
+
+    public function test_dynamic_load()
+    {
+        // Test with returned output
+        $content = midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'page_read', array(), true);
+        $this->assertTrue(strpos($content, '<h1 mgd:property="title">Subfolder</h1>') !== false);
+
+        // Test with direct output
+        ob_start();
+        midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'page_read', array());
+        $newcontent = ob_get_clean();
+        $this->assertEquals($content, $newcontent);
     }
 }

@@ -45,7 +45,7 @@ class midgardmvc_core_services_cache_module_template
 
         if (!file_exists($this->cache_directory))
         {
-            $res = mkdir($this->cache_directory, 0777, true);
+            $res = @mkdir($this->cache_directory, 0777, true);
             if (false === $res) {
                 throw new RuntimeException("Couldn't create '{$this->cache_directory}' cache directory");
             }

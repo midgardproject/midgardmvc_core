@@ -19,8 +19,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     
     private $midgardmvc = null;
 
-    private $stacks = array();
-
     public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
@@ -170,9 +168,11 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
          * because in dynamic call the new component may change it
          */
         $this->midgardmvc->context->delete();
-        if ($this->midgardmvc->context->component)
+
+        $component = $this->midgardmvc->context->get_request()->get_component();
+        if ($component)
         {
-            $this->midgardmvc->i18n->set_translation_domain($this->midgardmvc->context->component->name);
+            $this->midgardmvc->i18n->set_translation_domain($component->name);
         }
 
         if ($return_html)
