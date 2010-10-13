@@ -13,12 +13,7 @@
  */
 class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testcase
 {
-    public function setUp()
-    {        
-        parent::setUp();
-    }
-    
-    public function testCreate()
+    public function test_create()
     { 
         $original_context = $this->_core->context->get_current_context();
         $new_context = $original_context + 1;
@@ -29,7 +24,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $this->_core->context->delete();
     }
 
-    public function testGet()
+    public function test_get()
     {
         $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
@@ -49,7 +44,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $this->_core->context->delete();
     }
     
-    public function testDelete()
+    public function test_delete()
     {
         $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
@@ -68,7 +63,7 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $this->fail('An expected OutOfBoundsException has not been raised.');
     }
     
-    public function testGetSet()
+    public function test_get_set()
     {
         $request = new midgardmvc_core_request();
         $this->_core->context->create($request);
@@ -78,6 +73,18 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $this->assertEquals(true, $this->_core->context->setted);
         
         $this->_core->context->delete();
+    }
+
+    public function test_magic()
+    {
+        $request = new midgardmvc_core_request();
+        $this->_core->context->create($request);
+        $this->assertFalse(isset($this->_core->context->missing_property));
+        $this->_core->context->missing_property = 'foo';
+        $this->assertTrue(isset($this->_core->context->missing_property));
+        $this->assertEquals('foo', $this->_core->context->missing_property);
+        $this->_core->context->delete();
+        $this->assertFalse(isset($this->_core->context->missing_property));
     }
 }
 ?>
