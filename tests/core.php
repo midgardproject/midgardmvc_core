@@ -107,5 +107,19 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         midgardmvc_core::get_instance()->dispatcher->set_request($request);
         $request = midgardmvc_core::get_instance()->process();
     }
+
+    public function test_serve()
+    {
+        $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'] = '/tmp';
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        midgardmvc_core::get_instance()->dispatcher->set_request($request);
+        $request = midgardmvc_core::get_instance()->process();
+        ob_start();
+        midgardmvc_core::get_instance()->serve($request);
+        $content = ob_get_clean();
+        $this->assertTrue(strpos($content, '<h1 mgd:property="title">Midgard MVC</h1>') !== false);
+    }
 }
 ?>
