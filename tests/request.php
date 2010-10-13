@@ -84,6 +84,27 @@ class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
         $request->set_method('FOO');
     }
 
+    public function test_data()
+    {
+        $request = new midgardmvc_core_request();
+        $this->assertFalse($request->isset_data_item('missing_item'));
+        $request->set_data_item('missing_item', 'foo');
+        $this->assertTrue($request->isset_data_item('missing_item'));
+        $this->assertEquals('foo', $request->get_data_item('missing_item'));
+
+        $request = new midgardmvc_core_request();
+        $this->assertFalse($request->isset_data_item('missing_item'));
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_data_missing()
+    {
+        $request = new midgardmvc_core_request();
+        $request->get_data_item('missing_item');
+    }
+
     public function test_cache_identifier()
     {
         $request = midgardmvc_core_request::get_for_intent('/');
