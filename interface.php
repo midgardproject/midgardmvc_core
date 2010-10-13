@@ -47,11 +47,6 @@ class midgardmvc_core
      */
     private function load_service($service)
     {
-        if (isset($this->$service))
-        {
-            return;
-        }
-        
         $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/services/{$service}.php";
         if (!file_exists($interface_file))
         {
@@ -80,11 +75,6 @@ class midgardmvc_core
      */
     private function load_provider($provider)
     {
-        if (isset($this->$provider))
-        {
-            return;
-        }
-        
         $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/providers/{$provider}.php";
         if (!file_exists($interface_file))
         {
