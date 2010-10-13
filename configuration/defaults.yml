@@ -17,7 +17,7 @@ services_cache_configuration:
     enabled: false
     module_template:
         directory: __MIDGARDCACHE__/midgard
-providers_hierarchy: midgardmvc_core_providers_hierarchy_midgardmvc
+providers_hierarchy: midgardmvc_core_providers_hierarchy_midgard2
 providers_component: midgardmvc_core_providers_component_midgardmvc
 midgardmvc_root_page: '4a2f5298c09611de9dcf75343667cef6cef6'
 log_file: __MIDGARDLOG__/__SERVERNAME__.__LOGNAME__.log

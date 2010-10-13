@@ -13,7 +13,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_services_dispatcher
+class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_services_dispatcher
 {
     protected $exceptions_stack = array();
 

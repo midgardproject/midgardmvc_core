@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_core_providers_hierarchy_node
+class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_core_providers_hierarchy_node
 {
     private $node = null;
     private $argv = array();
@@ -35,8 +35,8 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         $this->content =& $node->content;
 
         // Store the node to local cache to speed up parent requests
-        midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$node->id] = $this;
-        midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes_by_component[$node->component] = $this;
+        midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$node->id] = $this;
+        midgardmvc_core_providers_hierarchy_node_midgard2::$nodes_by_component[$node->component] = $this;
     }
 
     public function get_object()
@@ -93,7 +93,7 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         $nodes = $qb->execute();
         foreach ($nodes as $node)
         {
-            $children[] = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
+            $children[] = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
         }
         return $children;
     }
@@ -109,7 +109,7 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
         {
             return null;
         }
-        $node = new midgardmvc_core_providers_hierarchy_node_midgardmvc($nodes[0]);
+        $node = new midgardmvc_core_providers_hierarchy_node_midgard2($nodes[0]);
         return $node;
     }
 
@@ -131,16 +131,16 @@ class midgardmvc_core_providers_hierarchy_node_midgardmvc implements midgardmvc_
             return null;
         }
 
-        if (!isset(midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$this->node->up]))
+        if (!isset(midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$this->node->up]))
         {
             // Get from database
             $node = new midgardmvc_core_node($this->node->up);
-            $parent = new midgardmvc_core_providers_hierarchy_node_midgardmvc($node);
+            $parent = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
         }
         else
         {
             // Get from local cache
-            $parent = midgardmvc_core_providers_hierarchy_node_midgardmvc::$nodes[$this->node->up];
+            $parent = midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$this->node->up];
         }
 
         return $parent;
