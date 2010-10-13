@@ -23,7 +23,6 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
     public function get_request()
     {
         $request = new midgardmvc_core_request();
-        $request->set_root_node($this->_root_node);
         $request->set_method($this->appserver_context['env']['REQUEST_METHOD']);
 
         // Parse URL into components (Mjolnir doesn't do this for us)

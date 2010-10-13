@@ -32,7 +32,6 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
     public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
-        $this->_root_node = $this->midgardmvc->hierarchy->get_root_node();
     }
 
     /**
@@ -43,8 +42,6 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
     public function get_request()
     {
         $request = new midgardmvc_core_request();
-        $request->set_root_node($this->_root_node);
-
         if (function_exists('getallheaders'))
         {
             // TODO: Check for GData and CMIS compatible X-Method-Override
