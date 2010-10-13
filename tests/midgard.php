@@ -20,6 +20,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_FrameWork_TestCase
     // Ensure PHPUnit doesn't serialize/unserialize $_MIDGARD_CONNECTION
     protected $backupGlobals = false;
 
+    // @codeCoverageIgnoreStart
     public function check_extension()
     {
         if (!extension_loaded('midgard2'))
@@ -134,5 +135,6 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_FrameWork_TestCase
          */
         // $midgard->close();
     }
+    // @codeCoverageIgnoreEnd
 }
 ?>

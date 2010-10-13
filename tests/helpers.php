@@ -11,6 +11,7 @@
  */
 abstract class midgardmvc_core_tests_helpers
 {
+    // @codeCoverageIgnoreStart
     public static function get_tests($directory, $root_class, $add_skip = null)
     {
         $tests = array();
@@ -37,7 +38,7 @@ abstract class midgardmvc_core_tests_helpers
         
         $prefix = str_replace('_all', '', $root_class);
 
-        while(($testfile = $tests_dir->read()) !== false)
+        while (($testfile = $tests_dir->read()) !== false)
         {
             if (   array_key_exists($testfile, $skip)
                 || substr($testfile, 0, 1) == '.') 
@@ -66,5 +67,6 @@ abstract class midgardmvc_core_tests_helpers
         $tests_dir->close();
         return $tests;
     }
+    // @codeCoverageIgnoreEnd
 }
 ?>

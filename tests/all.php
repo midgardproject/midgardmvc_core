@@ -6,6 +6,7 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
+// @codeCoverageIgnoreStart
 if (!defined('PHPUnit_MAIN_METHOD'))
 {
     define('PHPUnit_MAIN_METHOD', 'midgardmvc_core_tests_all::main');
@@ -15,7 +16,7 @@ if (!defined('PHPUnit_MAIN_METHOD'))
  * @package midgardmvc_core
  */
 class midgardmvc_core_tests_all
-{   
+{
     public static function main()
     {
         PHPUnit_TextUI_TestRunner::run(self::suite());
@@ -39,4 +40,5 @@ if (PHPUnit_MAIN_METHOD == 'midgardmvc_core_tests_all::main')
 {
     midgardmvc_core_tests_all::main();
 }
+// @codeCoverageIgnoreEnd
 ?>

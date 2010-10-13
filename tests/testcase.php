@@ -26,6 +26,7 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
         $this->local_configuration = array
         (
             'services_dispatcher' => 'manual',
+            'services_authentication' => 'basic',
             'providers_component' => 'midgardmvc',
             'providers_hierarchy' => 'configuration',
             'components' => array
