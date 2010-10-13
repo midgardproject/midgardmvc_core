@@ -57,7 +57,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
         midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/services/uimessages/midgard.js");
         midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery.dimensions-1.1.2.js");
         
-        midgardmvc_core::get_instance()->head->add_link_head(
+        midgardmvc_core::get_instance()->head->add_link(
             array
             (
                 'rel'   => 'stylesheet',
@@ -66,7 +66,7 @@ class midgardmvc_core_services_uimessages_midgard extends midgardmvc_core_servic
                 'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/services/uimessages/midgard.css',
             )
         );
-        midgardmvc_core::get_instance()->head->add_link_head(
+        midgardmvc_core::get_instance()->head->add_link(
             array
             (
                 'condition' => 'eq IE',

@@ -33,7 +33,6 @@ class midgardmvc_core_helpers_head
     private $jquery_statuses_append = array();
 
     public $jquery_enabled = false;    
-    public $jsmidgardmvc_enabled = false;
     
     public function __construct()
     {
@@ -41,11 +40,6 @@ class midgardmvc_core_helpers_head
         if ($this->configuration->enable_jquery_framework)
         {
             $this->enable_jquery();
-        }
-        
-        if ($this->configuration->enable_js_midcom)
-        {
-            $this->enable_jsmidgardmvc($this->configuration->js_midcom_config);
         }
     }
     
@@ -66,7 +60,7 @@ class midgardmvc_core_helpers_head
         }
         else
         {
-            // Load from a locally installed PEAR package
+            // Load from jQuery bundled with Midgard MVC package
             $url = MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-{$version}.min.js";
             $this->jquery_inits = "        <script type=\"text/javascript\" src=\"{$url}\"></script>\n";
         }
@@ -98,49 +92,7 @@ class midgardmvc_core_helpers_head
             $this->jquery_states[$state] .= $js_call;
         }
     }
-    
-    public function enable_jsmidgardmvc($config = null)
-    {
-        if ($this->jsmidgardmvc_enabled)
-        {
-            return;
-        }
-        
-        if (! $this->jquery_enabled)
-        {
-            $this->enable_jquery();
-        }
-        
-        $this->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/midcom.js", true);
-        
-        $this->add_link_head(
-            array
-            (
-                'rel'   => 'stylesheet',
-                'type'  => 'text/css',
-                'media' => 'screen',
-                'href'  => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/midcom.css',
-            )
-        );
-        
-        $script = "jQuery.midcom.init({\n";
-        $script .= "    MIDGARDMVC_STATIC_URL: '" . MIDGARDMVC_STATIC_URL . "',\n";
-        $script .= "    MIDGARDMVC_PAGE_PREFIX: '/'\n"; //midgardmvc_core::get_instance()->get_page_prefix()
-        $script .= "});\n";
 
-        if (! is_null($config))
-        {
-            $config_str = $config;
-            $script .= "jQuery.midcom.update_config({\n";
-            $script .= "{$config_str}\n";
-            $script .= "});\n";            
-        }
-        
-        $this->add_jquery_state_script($script);
-        
-        $this->jsmidgardmvc_enabled = true;
-    }
-    
     function add_jsfile($url, $prepend = false)
     {
         // Adds a URL for a <script type="text/javascript" src="tinymce.js"></script>
@@ -190,14 +142,8 @@ class midgardmvc_core_helpers_head
      *
      * @param array $attributes Array of attribute => value pairs to be placed in the tag.
      */
-    public function add_meta($attributes = null)
+    public function add_meta(array $attributes)
     {
-        if (   is_null($attributes)
-            || !is_array($attributes))
-        {
-            return false;
-        }
-
         if (!isset($attributes['name']))
         {
             return false;
@@ -228,14 +174,8 @@ class midgardmvc_core_helpers_head
      *
      * @param array $attributes Array of attribute => value pairs to be placed in the tag.
      */
-    public function add_link_head($attributes = null, $prepend = false)
+    public function add_link(array $attributes, $prepend = false)
     {
-        if (   is_null($attributes)
-            || !is_array($attributes))
-        {
-            return false;
-        }
-
         if (! array_key_exists('href', $attributes))
         {
             return false;

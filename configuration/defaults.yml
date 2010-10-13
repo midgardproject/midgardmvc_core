@@ -25,11 +25,9 @@ development_mode: false
 enable_exception_trace: false
 enable_jquery_framework: true
 jquery_load_from_google: false
-enable_js_midcom: false
 enable_uimessages: false
 enable_xsendfile: false
 enable_attachment_cache: false
-js_midcom_config: 'enable_watchers: true, debug: false'
 default_language: en_US
 uimessages_configuration:
     js:
