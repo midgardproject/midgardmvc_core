@@ -49,6 +49,11 @@ class midgardmvc_core_providers_hierarchy_configuration implements midgardmvc_co
 
     public function get_node_by_component($component)
     {
+        if (isset(midgardmvc_core_providers_hierarchy_node_configuration::$nodes_by_component[$component]))
+        {
+            return midgardmvc_core_providers_hierarchy_node_configuration::$nodes_by_component[$component];
+        }
+        return null;
     }
 
     public function prepare_nodes(array $nodes, $destructive = false)

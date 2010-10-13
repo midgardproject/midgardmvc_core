@@ -35,8 +35,11 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
         $this->content =& $node->content;
 
         // Store the node to local cache to speed up parent requests
-        midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$node->id] = $this;
-        midgardmvc_core_providers_hierarchy_node_midgard2::$nodes_by_component[$node->component] = $this;
+        self::$nodes[$node->id] = $this;
+        if (!isset(self::$nodes_by_component[$node->component]))
+        {
+            self::$nodes_by_component[$node->component] = $this;
+        }
     }
 
     public function get_object()

@@ -12,6 +12,8 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
     private $children = array();
     private $path = null;
 
+    static $nodes_by_component = array();
+
     public function __construct($name, array $configuration, midgardmvc_core_providers_hierarchy_node_configuration $parent = null)
     {
         $this->name =& $name;
@@ -25,6 +27,11 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
         }
 
         $this->parent =& $parent;
+
+        if (!isset(self::$nodes_by_component[$this->component]))
+        {
+            self::$nodes_by_component[$this->component] = $this;
+        }
     }
 
     public function get_object()
