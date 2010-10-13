@@ -17,10 +17,22 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
 {
     protected $action_arguments = array();
     public $get = array();
+    private $request = null;
 
     public function __construct()
     {
         $this->midgardmvc = midgardmvc_core::get_instance();
+
+        // Ensure we have a blank request object available for get_request
+        $this->request = new midgardmvc_core_request();
+    }
+
+    /**
+     * Override the request object returned by get_request. This can be used for unit testing with the manual dispatcher
+     */
+    public function set_request(midgardmvc_core_request $request)
+    {
+        $this->request = $request;
     }
 
     /**
@@ -30,8 +42,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
      */
     public function get_request()
     {
-        $request = new midgardmvc_core_request();
-        return $request;
+        return $this->request;
     }
 
     /**
@@ -40,6 +51,13 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     public function dispatch(midgardmvc_core_request $request)
     {
         $route = $request->get_route();
+        $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $request->get_arguments()) . '/');
+        $query = $request->get_query();
+        $arguments = $route->check_match($argv_str, $query);
+        if (is_null($arguments))
+        {
+            throw new midgardmvc_exception_notfound('Selected route ' . $route->id . ' doesn\'t match current URL ' . $request->get_path());
+        }
 
         // Initialize controller and pass it the request object
         $controller_class = $route->controller;
@@ -62,7 +80,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
                 throw new midgardmvc_exception_httperror("{$request_method} method not allowed", 405);
             }
             $controller->data = array();
-            $controller->$action_method($route->request_arguments);
+            $controller->$action_method($arguments);
         }
         catch (Exception $e)
         {
@@ -152,6 +170,11 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
     public function session_start()
     {
         return;
+    }
+
+    public function session_is_started()
+    {
+        return false;
     }
 
     public function session_has_var($name)

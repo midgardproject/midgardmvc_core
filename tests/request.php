@@ -27,6 +27,67 @@ class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
         $this->assertEquals('/subdir/', $request->get_path());
     }
 
+    public function test_methods_valid()
+    {
+        $verbs = array
+        (
+            // Safe methods, should not modify data
+            'head',
+            'get',
+            'trace',
+            'options',
+            // Idempotent methods, multiple identical requests should produce same effect
+            'put',
+            'delete',
+            // Other HTTP methods
+            'post',
+            'connect',
+            'patch',
+            // WebDAV methods
+            'propfind',
+            'proppatch',
+            'mkcol',
+            'copy',
+            'move',
+            'lock',
+            'unlock',
+        );
+
+        $request = new midgardmvc_core_request();
+        foreach ($verbs as $verb)
+        {
+            $request->set_method(strtoupper($verb));
+            $this->assertEquals($verb, $request->get_method());
+        }
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_method_invalid()
+    {
+        $request = new midgardmvc_core_request();
+        $request->set_method('FOO');
+    }
+
+    public function test_cache_identifier()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $original = $request->get_identifier();
+        $this->assertEquals($original, $request->get_identifier());
+
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $this->assertEquals($original, $request->get_identifier(), 'Testing that second request with same environment returns same cache identifier');
+
+        $request = midgardmvc_core_request::get_for_intent('/subdir');
+        $subdir = $request->get_identifier();
+        $this->assertNotEquals($original, $subdir);
+
+        $route = new midgardmvc_core_route('page_read', '/foo/?bar={$baz}', 'foo', 'bar', array('content' => 'foo'));
+        $request->set_route($route);
+        $this->assertNotEquals($subdir, $request->get_identifier(), 'Testing that template names affect cache identifier');
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */

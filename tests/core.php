@@ -60,19 +60,13 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         }
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function test_unknown_service()
     {
         $midgardmvc = midgardmvc_core::get_instance();
-        try
-        {
-            $newservice = $midgardmvc->missingservice;
-        }
-        catch (InvalidArgumentException $e)
-        {
-            return;
-        }
-        
-        $this->fail('An expected InvalidArgumentException has not been raised.');
+        $newservice = $midgardmvc->missingservice;
     }
 
     public function test_read_yaml()
@@ -82,6 +76,36 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         $this->assertTrue(is_array($parsed));
         $this->assertTrue(isset($parsed['foo']));
         $this->assertEquals('bar', $parsed['foo']);
+    }
+
+    public function test_read_yaml_empty()
+    {
+        $yaml = '';
+        $parsed = midgardmvc_core::read_yaml($yaml);
+        $this->assertTrue(is_array($parsed));
+        $this->assertTrue(empty($parsed));
+    }
+
+    public function test_process()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        midgardmvc_core::get_instance()->dispatcher->set_request($request);
+        $request = midgardmvc_core::get_instance()->process();
+    }
+
+    /**
+     * @expectedException midgardmvc_exception_notfound
+     */
+    public function test_process_notfound()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        $request->set_arguments(array('foo' => 'bar'));
+        midgardmvc_core::get_instance()->dispatcher->set_request($request);
+        $request = midgardmvc_core::get_instance()->process();
     }
 }
 ?>

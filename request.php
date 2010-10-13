@@ -31,7 +31,7 @@ class midgardmvc_core_request
     private static $root_node = null;
 
     /**
-     * The page to be used with the request
+     * The node to be used with the request
      *
      * @var midgardmvc_core_providers_hierarchy_node
      */
@@ -43,10 +43,8 @@ class midgardmvc_core_request
     public $templatedir_id = 0;
 
     /**
-     * Path to the page used with the request
+     * Path to the node used with the request
      */
-    public $path = '/';
-
     private $prefix = '/';
     
     /**
@@ -58,14 +56,15 @@ class midgardmvc_core_request
 
     /**
      * List of components affecting merging chains of this request
+     *
+     * @var array
      */
     private $components = array();
 
-    private $path_for_page = array();
-
+    /**
+     * Route used with the request
+     */
     private $route = null;
-
-    private $template_aliases = array();
 
     /**
      * URL parameters after page has been resolved
@@ -76,6 +75,8 @@ class midgardmvc_core_request
      * Data associated with the request, typically set by a controller and displayed by a template
      */
     private $data = array();
+
+    private $cache_identifier = null;
 
     /**
      * Match an URL path to a page. Remaining path arguments are stored to argv
@@ -91,21 +92,18 @@ class midgardmvc_core_request
     /**
      * Get the request path
      */
-    public function get_path($include_arguments = true)
+    public function get_path()
     {
-        if (substr($this->path, -1, 1) !== '/')
+        $path = $this->prefix . implode('/', $this->argv);
+        if (substr($path, -1, 1) !== '/')
         {
-            $this->path .= '/';
+            $path .= '/';
         }
-        if (!$include_arguments)
-        {
-            return $this->path;
-        }
-        return $this->path . implode('/', $this->argv);
+        return $path;
     }
 
     /**
-     * Set a page to be used in the request
+     * Set a root node to be used in the request
      */
     public function set_root_node(midgardmvc_core_providers_hierarchy_node $node)
     {
@@ -121,7 +119,7 @@ class midgardmvc_core_request
     }
 
     /**
-     * Set a page to be used in the request
+     * Set a node to be used in the request
      */
     public function set_node(midgardmvc_core_providers_hierarchy_node $node)
     {
@@ -134,7 +132,10 @@ class midgardmvc_core_request
         }
         $this->set_component(midgardmvc_core::get_instance()->component->get($node_component));
 
-        $this->path = $node->get_path();
+        $this->prefix = $node->get_path();
+
+        // Clear cache identifier
+        $this->cache_identifier = null;
     }
 
     public function get_node()
@@ -183,6 +184,9 @@ class midgardmvc_core_request
         $this->component = $component;
 
         $this->add_component_to_chain($component);
+
+        // Clear cache identifier
+        $this->cache_identifier = null;
     }
 
     public function get_component()
@@ -193,6 +197,9 @@ class midgardmvc_core_request
     public function set_route(midgardmvc_core_route $route)
     {
         $this->route = $route;
+
+        // Clear cache identifier
+        $this->cache_identifier = null;
     }
 
     public function get_route()
@@ -203,25 +210,14 @@ class midgardmvc_core_request
     public function set_arguments(array $argv)
     {
         $this->argv = $argv;
+
+        // Clear cache identifier
+        $this->cache_identifier = null;
     }
     
     public function get_arguments()
     {
         return $this->argv;
-    }
-
-    public function set_template_alias($alias, $template)
-    {
-        $this->template_aliases[$alias] = $template;
-    }
-
-    public function get_template_alias($alias)
-    {
-        if (!isset($this->template_aliases[$alias]))
-        {
-            return $alias;
-        }
-        return $this->template_aliases[$alias];
     }
 
     public function set_data_item($key, $value)
@@ -236,7 +232,10 @@ class midgardmvc_core_request
             case 'page':
                 return $this->set_node($value);
             case 'prefix':
+            case 'self':
                 return $this->set_prefix($value);
+            case 'uri':
+                return;
             case 'argv':
                 return $this->set_arguments($value);
             case 'query':
@@ -265,22 +264,23 @@ class midgardmvc_core_request
                 case 'root_page':
                     return $this->get_root_node();
                 case 'component':
-                    return $this->component;
+                    return $this->get_component();
                 case 'uri':
-                    return $this->path;
+                    return $this->get_path();
                 case 'self':
-                    return $this->prefix;
+                case 'prefix':
+                    return $this->get_prefix();
                 case 'node':
                 case 'page':
-                    return $this->node;
-                case 'prefix':
-                    return $this->prefix;
+                    return $this->get_node();
                 case 'argv':
-                    return $this->argv;
+                    return $this->get_arguments();
                 case 'query':
-                    return $this->query;
+                    return $this->get_query();
                 case 'request_method':
-                    return $this->method;
+                    return $this->get_method();
+                case 'cache_request_identifier':
+                    return $this->get_identifier();
                 default:
                     throw new OutOfBoundsException("Midgard MVC request data '{$key}' not found.");
             }
@@ -293,21 +293,65 @@ class midgardmvc_core_request
         return $this->data;
     }
 
+    /**
+     * Set HTTP verb used with the request
+     */
     public function set_method($method)
     {
-        $this->method = strtolower($method);
+        // HTTP verbs defined by HTTP/1.1 and WebDAV
+        $verbs = array
+        (
+            // Safe methods, should not modify data
+            'head',
+            'get',
+            'trace',
+            'options',
+            // Idempotent methods, multiple identical requests should produce same effect
+            'put',
+            'delete',
+            // Other HTTP methods
+            'post',
+            'connect',
+            'patch',
+            // WebDAV methods
+            'propfind',
+            'proppatch',
+            'mkcol',
+            'copy',
+            'move',
+            'lock',
+            'unlock',
+        );
+
+        $method = strtolower($method);
+        if (!in_array($method, $verbs))
+        {
+            throw new InvalidArgumentException('Unrecognized HTTP method defined');
+        }
+
+        $this->method = $method;
     }
     
+    /**
+     * Get HTTP verb used with the request
+     * Note: HTTP verbs are provided in lowercase format (i.e. get, post)
+     */
     public function get_method()
     {
         return $this->method;
     }
     
+    /**
+     * Set HTTP query arguments ($_GET array in PHP terms) used with the request
+     */
     public function set_query(array $get_params)
     {
         $this->query = $get_params;
     }
-    
+
+    /**
+     * Get HTTP query arguments ($_GET array in PHP terms) used with the request
+     */
     public function get_query()
     {
         return $this->query;
@@ -328,10 +372,10 @@ class midgardmvc_core_request
      */
     public function get_identifier()
     {
-        if (isset($this->data['cache_request_identifier']))
+        if (!is_null($this->cache_identifier))
         {
             // An injector has generated this already, let it be
-            return $this->data['cache_request_identifier'];
+            return $this->cache_identifier;
         }
 
         $identifier_source  = 'URI=' . $this->get_path();
@@ -341,10 +385,10 @@ class midgardmvc_core_request
         $identifier_source .= ';LANG=ALL';
 
         // Template info too
-        if (isset($this->data['template_entry_point']))
+        if ($this->route)
         {
-            $identifier_source .= ';TEMPLATE=' . $this->get_data_item('template_entry_point');
-            $identifier_source .= ';CONTENT=' . $this->get_data_item('content_entry_point');
+            $identifier_source .= ';TEMPLATE=' . $this->route->template_aliases['root'];
+            $identifier_source .= ';CONTENT=' . $this->route->template_aliases['content'];
         }
         
         if (   isset($this->data['cache_enabled'])
@@ -371,8 +415,8 @@ class midgardmvc_core_request
             }
         }
 
-        $this->data['cache_request_identifier'] = md5($identifier_source);
-        return $this->data['cache_request_identifier'];
+        $this->cache_identifier = md5($identifier_source);
+        return $this->cache_identifier;
     }
 
     /**

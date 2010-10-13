@@ -240,38 +240,10 @@ class midgardmvc_core_services_dispatcher_midgard3 implements midgardmvc_core_se
             throw new OutOfBoundsException("Route ID '{$route_id}' not found in routes of request " . $request->get_identifier());
         }
         $route = $routes[$route_id];
-        $link = $route->path;
-        foreach ($args as $key => $value)
-        {
-            if (is_array($value))
-            {
-                $value_array = array();
-                foreach ($value as $part)
-                {
-                    if (empty($part))
-                    {
-                        continue;
-                    }
-                    $value_array[] = $part;
-                }
-                
-                $value = implode('.', $value_array);
+        $request->set_arguments($route->set_variables($args));
 
-                // This is a token replacement, add the type hint
-                $key = "token:{$key}";
-            }
-
-            $link = str_replace("{\${$key}}", $value, $link);
-        }
-
-        if (preg_match_all('%\{$(.+?)\}%', $link, $link_matches))
-        {
-            throw new UnexpectedValueException("Missing arguments matching route '{$route_id}' of {$this->midgardmvc->core->component}: " . implode(', ', $link_remaining_args));
-        }
-
-        //echo ("Deleting context " . $this->midgardmvc->context->get_current_context());
         $this->midgardmvc->context->delete();
-        return preg_replace('%/{2,}%', '/', $request->get_path(false) . $link);
+        return $request->get_path();
     }
 
     public function get_midgard_connection()

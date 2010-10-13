@@ -13,11 +13,50 @@
  */
 class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_testcase
 {
+    public function test_get_element_simple()
+    {
+        $original_element = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/templates/ROOT.xhtml");
+        $element = midgardmvc_core::get_instance()->templating->get_element('ROOT', false);
+        $this->assertEquals($original_element, $element, 'Template returned by templating service should be the same as the template file');
+    }
+
+    public function test_get_element_include()
+    {
+        $request = midgardmvc_core_request::get_for_intent('/subdir');
+        $routes = midgardmvc_core::get_instance()->component->get_routes($request);
+        $request->set_route($routes['page_read']);
+        midgardmvc_core::get_instance()->context->create($request);
+        
+        $original_element = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/templates/ROOT.xhtml");
+        $element = midgardmvc_core::get_instance()->templating->get_element('ROOT');
+        $this->assertNotEquals($original_element, $element, 'Template returned by templating service should not be the same as the template file because of includes');
+
+        $this->assertTrue(strpos($element, '<h1 mgd:property="title" tal:content="current_component/object/title">Title</h1>') !== false);
+
+        midgardmvc_core::get_instance()->context->delete();
+    }
+
+    /**
+     * @expectedException OutOfBoundsException
+     */
+    public function test_get_element_missing()
+    {
+        $element = midgardmvc_core::get_instance()->templating->get_element('missing-element', false);
+    }
+
     public function test_dynamic_call()
     {
         $data = midgardmvc_core::get_instance()->templating->dynamic_call('/subdir', 'page_read', array());
         $this->assertTrue(is_array($data), "Test whether dynamic call returned data");
         $this->assertTrue(isset($data['object']), "Test whether route returned an object");
         $this->assertEquals('Subfolder', $data['object']->title);
+    }
+
+    /**
+     * @expectedException OutOfRangeException
+     */
+    public function test_dynamic_call_invalid()
+    {
+        $data = midgardmvc_core::get_instance()->templating->dynamic_call('/subdir', 'missing_route', array());
     }
 }

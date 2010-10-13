@@ -27,6 +27,8 @@ interface midgardmvc_core_services_dispatcher
     public function get_midgard_connection();
     
     public function headers_sent();
+
+    public function session_is_started();
     
     public function session_has_var($name);
    

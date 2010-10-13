@@ -26,38 +26,27 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $this->midgardmvc = midgardmvc_core::get_instance();
     }
 
-    public function get_cache_identifier(midgardmvc_core_request $request)
+    public function get_element_callback(array $element)
     {
-        return $request->get_identifier();
+        return $this->get_element($element[1]);
     }
 
     public function get_element($element, $handle_includes = true)
     {
-        if (is_array($element))
-        {
-            // Element is array in the preg_replace_callback case (evaluating element includes)
-            $element = $element[1];
-        }
-
         $request = $this->midgardmvc->context->get_request();
 
         // Check for possible element aliases
         $route = $request->get_route();
-
-        if ($route)
+        if (    $route
+            && isset($route->template_aliases[$element]))
         {
-            $orig_element = $element;
-            if (isset($route->template_aliases[$element]))
-            {
-                $element = $route->template_aliases[$element];
-            }
+            $element = $route->template_aliases[$element];
         }
 
         $component_chain = array_reverse($request->get_component_chain());
         foreach ($component_chain as $component)
         {
             $element_content = $component->get_template_contents($element);
-            
             if (is_null($element_content))
             {
                 // This component didn't provide the necessary element, go to next one in stack
@@ -68,34 +57,12 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             {
                 return $element_content;
             }
+
             // Replace instances of <mgd:include>elementname</mgd:include> with contents of the element
-            return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element'), $element_content);
+            return preg_replace_callback("%<mgd:include[^>]*>([a-zA-Z0-9_-]+)</mgd:include>%", array($this, 'get_element_callback'), $element_content);
         }
-        $routes = $this->midgardmvc->component->get_routes($request);
         throw new OutOfBoundsException("Element {$element} not found in Midgard MVC component chain.");
     }
-    
-    public function append_directory($directory)
-    {
-        if (!file_exists($directory))
-        {
-            throw new Exception("Template directory {$directory} not found.");
-        }
-        $stack = $this->midgardmvc->context->get_current_context();
-        if (!isset($this->stacks[$stack]))
-        {
-            $this->stacks[$stack] = array();
-        }
-        $this->stacks[$stack][$directory] = 'directory';
-        
-        if (   isset($this->midgardmvc->context->subtemplate)
-            && $this->midgardmvc->context->subtemplate
-            && file_exists("{$directory}/{$this->midgardmvc->context->subtemplate}"))
-        {
-            $this->stacks[$stack]["{$directory}/{$this->midgardmvc->context->subtemplate}"] = 'directory';
-        }
-    }
-    
 
     /**
      * Call a route of a component with given arguments and return the data it generated
@@ -148,9 +115,9 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $routes = $this->midgardmvc->component->get_routes($request);
         if (!isset($routes[$route_id]))
         {
-            throw new Exception("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
+            throw new OutOfRangeException("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
         }
-        $routes[$route_id]->request_arguments = $arguments;
+        $request->set_arguments($routes[$route_id]->set_variables($arguments));
         $request->set_route($routes[$route_id]);
         $this->dispatcher->dispatch($request);
 
@@ -224,18 +191,18 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         // Check if we have the element in cache already
         if (   !$this->midgardmvc->configuration->development_mode
-            && $this->midgardmvc->cache->template->check($this->get_cache_identifier($request)))
+            && $this->midgardmvc->cache->template->check($request->get_identifier()))
         {
             return;
         }
 
         // Register current page to cache
 
-        $this->midgardmvc->cache->template->register($this->get_cache_identifier($request), array($request->get_component()->name));
+        $this->midgardmvc->cache->template->register($request->get_identifier(), array($request->get_component()->name));
 
         $element = $this->get_element($element_identifier);
         // Template cache didn't have this template, collect it
-        $this->midgardmvc->cache->template->put($this->get_cache_identifier($request), $element);
+        $this->midgardmvc->cache->template->put($request->get_identifier(), $element);
     }
     
     /**
@@ -247,7 +214,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     {
         $data =& $request->get_data();
 
-        $template_file = $this->midgardmvc->cache->template->get($this->get_cache_identifier($request));
+        $template_file = $this->midgardmvc->cache->template->get($request->get_identifier());
         $content = file_get_contents($template_file);
 
         if (strlen($content) == 0)
@@ -317,7 +284,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // FIXME: Rethink whole tal modifiers concept 
         include_once('TAL/modifiers.php');
         
-        $tal = new PHPTAL($this->get_cache_identifier($request));
+        $tal = new PHPTAL($request->get_identifier());
         
         $tal->uimessages = false;
         if ($this->midgardmvc->configuration->enable_uimessages)

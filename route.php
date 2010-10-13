@@ -38,6 +38,40 @@ class midgardmvc_core_route
         }
     }
 
+    public function set_variables(array $arguments)
+    {
+        $path = $this->path;
+        foreach ($arguments as $key => $value)
+        {
+            if (is_array($value))
+            {
+                $value_array = array();
+                foreach ($value as $part)
+                {
+                    if (empty($part))
+                    {
+                        continue;
+                    }
+                    $value_array[] = $part;
+                }
+                
+                $value = implode('.', $value_array);
+
+                // This is a token replacement, add the type hint
+                $key = "token:{$key}";
+            }
+
+            $link = str_replace("{\${$key}}", $value, $path);
+        }
+
+        if (preg_match_all('%\{$(.+?)\}%', $path, $link_matches))
+        {
+            throw new UnexpectedValueException("Missing arguments for route '{$this->id}': " . implode(', ', $link_remaining_args));
+        }
+
+        return explode('/', $path);
+    }
+
     /**
      * Check if the route matches to a given request path
      *
