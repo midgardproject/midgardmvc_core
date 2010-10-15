@@ -282,9 +282,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             require('PHPTAL.php');
         }
 
-        // FIXME: Rethink whole tal modifiers concept 
-        include_once('TAL/modifiers.php');
-        
         $tal = new PHPTAL($request->get_identifier());
         
         $tal->uimessages = false;
