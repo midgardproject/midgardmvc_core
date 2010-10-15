@@ -32,9 +32,10 @@ The application configuration is by default located in the root of your Midgard 
     name: Example Blog
     components:
         midgardmvc_core
-            source: git://github.com/midgardproject/midgardmvc_core.git
-        midgardmvc_create
-    services_dispatcher: midgard3
+            git: git://github.com/midgardproject/midgardmvc_core.git
+        midgardmvc_helper_forms
+            git: git://github.com/midgardproject/midgardmvc_helper_forms.git
+    services_dispatcher: midgard2
     providers_component: midgardmvc
 
 You can also define a custom location for your application configuration file by setting `midgardmvc.application_config` in your `php.ini`. Example:
@@ -54,9 +55,10 @@ The folder `midgardmvc_core/httpd` contains example rootfiles for different setu
     // Load Midgard MVC
     // Note: your Midgard MVC base directory has to be in PHP include_path
     require('midgardmvc_core/framework.php');
+    // In this case we configure MVC with an array. You could also provide path to your application.yml
     $config = array
     (
-        'services_dispatcher' => 'midgard3',
+        'services_dispatcher' => 'midgard2',
         'providers_component' => 'midgardmvc',
     );
     $midgardmvc = midgardmvc_core::get_instance($config);
@@ -90,14 +92,15 @@ It is also possible to run Midgard MVC using the PHP-based AppServer as your web
   * Front controller loads hierarchy providers specified in configuration
 * Request processing
   * A request object gets populated with the current HTTP request parameters
-  * Process injectors are called, if any
+  * Process injectors are called, if the loaded components registered any
   * Request object uses hierarchy providers to determine what components handle the request
-  * Dispatcher loads the necessary component
+  * Request object loads the necessary component
+  * Front controller passes the request object to the Dispatcher
   * Dispatcher dispatches the request to the component controller class, passing it the request object
   * Component controller class executes and sets data to the request object
 * Templating
   * Front controller loads template providers specified in configuration
-  * Template injectors are called, if any
+  * Template injectors are called, if the loaded components registered any
   * Front controller determines template to be used with the request
   * Front controller uses a template provider to generate request output
   * Request output is sent to browser
