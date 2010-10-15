@@ -247,6 +247,8 @@ class midgardmvc_core_request
                 case 'node':
                 case 'page':
                     return $this->get_node();
+                case 'root_page':
+                    return midgardmvc_core::get_instance->hierarchy->get_root_node();
                 case 'argv':
                     return $this->get_arguments();
                 case 'query':
