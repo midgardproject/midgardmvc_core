@@ -53,12 +53,12 @@ class midgardmvc_core
             throw new InvalidArgumentException("Service {$service} not installed");
         }
         
-        $service_implementation = $this->configuration->get("services_{$service}");
-        if (!$service_implementation)
+        if (!$this->configuration->exists("services_{$service}"))
         {
             throw new Exception("No implementation defined for service {$service}");
         }
 
+        $service_implementation = $this->configuration->get("services_{$service}");
         if (strpos($service_implementation, '_') === false)
         {
             // Built-in service implementation called using the shorthand notation
@@ -81,12 +81,12 @@ class midgardmvc_core
             throw new InvalidArgumentException("Provider {$provider} not installed");
         }
         
-        $provider_implementation = $this->configuration->get("providers_{$provider}");
-        if (!$provider_implementation)
+        if (!$this->configuration->exists("providers_{$provider}"))
         {
             throw new Exception("No implementation defined for provider {$provider}");
         }
 
+        $provider_implementation = $this->configuration->get("providers_{$provider}");
         if (strpos($provider_implementation, '_') === false)
         {
             // Built-in provider implementation called using the shorthand notation
