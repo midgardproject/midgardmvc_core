@@ -92,7 +92,7 @@ class midgardmvc_core_request
      */
     public function get_path()
     {
-        $path = $this->prefix . implode('/', $this->argv);
+        $path = $this->prefix . '/' . implode('/', $this->argv);
         if (substr($path, -1, 1) !== '/')
         {
             $path .= '/';
