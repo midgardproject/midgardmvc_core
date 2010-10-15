@@ -18,8 +18,12 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
     {
         $this->name =& $name;
         $this->title =& $configuration['title'];
-        $this->content =& $configuration['content'];
         $this->component =& $configuration['component'];
+
+        if (isset($configuration['content']))
+        {
+            $this->content =& $configuration['content'];
+        }
 
         if (isset($configuration['children']))
         {
