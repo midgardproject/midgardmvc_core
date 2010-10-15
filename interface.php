@@ -189,8 +189,11 @@ class midgardmvc_core
                 break;
             }
         }
- 
         $path_under_component = implode('/', $class_parts);
+        if ($path_under_component == '')
+        {
+            $path_under_component = 'interface';
+        }
         $path = MIDGARDMVC_ROOT . "/{$component}/{$path_under_component}.php";
         if (!file_exists($path))
         {
