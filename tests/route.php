@@ -35,6 +35,15 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertEquals('/foo/foo/1', implode('/', $path));
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_set_variables_invalid()
+    {
+        $route = new midgardmvc_core_route('page_read', '/foo/{$bar}/{$int:baz}', 'foo', 'bar', array());
+        $path = $route->set_variables(array('bar' => 'foo', 'baz' => 'bar'));
+    }
+
     public function test_check_match_simple()
     {
         $route = new midgardmvc_core_route('page_read', '/', 'foo', 'bar', array());

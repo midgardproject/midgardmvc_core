@@ -93,7 +93,6 @@ class midgardmvc_core_route
      */
     public function check_match($argv_str, array $query = null)
     {
-        // Reset variables
         list ($route_path, $route_get, $route_args) = $this->split_path();
 
         if (is_null($query))
