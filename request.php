@@ -235,8 +235,10 @@ class midgardmvc_core_request
             // TODO: These are deprecated keys that used to be populated to context
             switch ($key)
             {
+                case 'route_id':
+                    return $this->get_route()->id;
                 case 'component':
-                    return $this->get_component();
+                    return $this->get_component()->name;
                 case 'uri':
                     return $this->get_path();
                 case 'self':
