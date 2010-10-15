@@ -61,7 +61,21 @@ class midgardmvc_core_route
                 $key = "token:{$key}";
             }
 
-            $path = str_replace("{\${$key}}", $value, $path);
+            $type = gettype($value);
+            switch($type)
+            {
+                case 'integer':
+                    $path = str_replace("{\$int:{$key}}", $value, $path);
+                    break;
+                case 'float':
+                    $path = str_replace("{\$float:{$key}}", $value, $path);
+                    break;
+                case 'string':
+                    $path = str_replace("{\${$key}}", $value, $path);
+                    break;
+                
+            }
+            
         }
 
         if (preg_match_all('%\{$(.+?)\}%', $path, $link_matches))
@@ -253,7 +267,7 @@ class midgardmvc_core_route
                             
             // Strip type hints from variable names
             $varname = preg_replace('/^.+:/', '', $varname);
-
+            
             if ($type_hint == 'token')
             {
                 // Tokenize the argument to handle resource typing
