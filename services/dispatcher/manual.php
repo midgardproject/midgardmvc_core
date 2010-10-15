@@ -187,7 +187,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
 
     public function end_request()
     {
-        exit();
+        return;
     }
 
     public function session_has_var($name)
