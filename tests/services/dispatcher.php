@@ -15,7 +15,7 @@ class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_te
 {
     public function test_generate_url()
     {
-        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('page_read', array(), 'midgardmvc_core');
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('index', array(), 'midgardmvc_core');
         $this->assertEquals('/', $url);
     }
 
@@ -31,7 +31,7 @@ class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_te
     {
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         midgardmvc_core::get_instance()->dispatcher->dispatch($request);
         $this->assertTrue($request->isset_data_item('current_component'));
         $data = $request->get_data_item('current_component');
@@ -42,7 +42,7 @@ class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_te
     {
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         $request->set_method('HEAD');
         midgardmvc_core::get_instance()->dispatcher->dispatch($request);
         $this->assertTrue($request->isset_data_item('current_component'));
@@ -57,7 +57,7 @@ class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_te
     {
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         $request->set_method('TRACE');
         midgardmvc_core::get_instance()->dispatcher->dispatch($request);
     }

@@ -30,7 +30,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
     {
         $request = midgardmvc_core_request::get_for_intent('/subdir');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         midgardmvc_core::get_instance()->context->create($request);
         
         $original_element = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/templates/ROOT.xhtml");
@@ -52,7 +52,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
 
     public function test_dynamic_call()
     {
-        $data = midgardmvc_core::get_instance()->templating->dynamic_call('/subdir', 'page_read', array());
+        $data = midgardmvc_core::get_instance()->templating->dynamic_call('/subdir', 'index', array());
         $this->assertTrue(is_array($data), "Test whether dynamic call returned data");
         $this->assertTrue(isset($data['object']), "Test whether route returned an object");
         $this->assertEquals('Subfolder', $data['object']->title);
@@ -69,12 +69,12 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
     public function test_dynamic_load()
     {
         // Test with returned output
-        $content = midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'page_read', array(), true);
+        $content = midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'index', array(), true);
         $this->assertTrue(strpos($content, '<h1 mgd:property="title">Subfolder</h1>') !== false);
 
         // Test with direct output
         ob_start();
-        midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'page_read', array());
+        midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'index', array());
         $newcontent = ob_get_clean();
         $this->assertEquals($content, $newcontent);
     }

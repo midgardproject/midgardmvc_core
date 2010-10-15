@@ -118,7 +118,7 @@ class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
         $subdir = $request->get_identifier();
         $this->assertNotEquals($original, $subdir);
 
-        $route = new midgardmvc_core_route('page_read', '/foo/?bar={$baz}', 'foo', 'bar', array('content' => 'foo'));
+        $route = new midgardmvc_core_route('index', '/foo/?bar={$baz}', 'foo', 'bar', array('content' => 'foo'));
         $request->set_route($route);
         $this->assertNotEquals($subdir, $request->get_identifier(), 'Testing that template names affect cache identifier');
     }
