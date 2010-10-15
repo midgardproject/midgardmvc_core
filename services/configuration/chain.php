@@ -53,10 +53,6 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
 
         // Build inheritance chain
         $request = $this->mvc->context->get_request();
-        if (!isset($this->mvc->component))
-        {
-            throw new RuntimeException("Application configuration key {$key} not found and component provider not available");
-        }
         if (!$request)
         {
             $components = array($this->mvc->component->get('midgardmvc_core'));
