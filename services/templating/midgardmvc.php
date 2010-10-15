@@ -96,6 +96,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         $request = midgardmvc_core_request::get_for_intent($intent);
         $request->add_component_to_chain($this->midgardmvc->component->get('midgardmvc_core'));
+        $request->set_subrequest();
         
         if ($switch_context)
         {        

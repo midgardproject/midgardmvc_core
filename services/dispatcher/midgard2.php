@@ -226,6 +226,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
     {
         // Create a request from the intent and assign it to a context
         $request = midgardmvc_core_request::get_for_intent($intent);
+        $request->set_subrequest();
         $this->midgardmvc->context->create($request);
         $routes = $this->midgardmvc->component->get_routes($request);
         if (!isset($routes[$route_id]))

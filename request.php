@@ -72,6 +72,11 @@ class midgardmvc_core_request
     private $cache_identifier = null;
 
     /**
+     * Whether the request object is a subrequest (i.e. dynamic_load or dynamic_call)
+     */
+    private $subrequest = false;
+
+    /**
      * Match an URL path to a page. Remaining path arguments are stored to argv
      *
      * @param $path URL path
@@ -260,6 +265,16 @@ class midgardmvc_core_request
         return $this->data;
     }
 
+    public function is_subrequest()
+    {
+        return $this->subrequest;
+    }
+
+    public function set_subrequest()
+    {
+        $this->subrequest = true;
+    }
+
     /**
      * Set HTTP verb used with the request
      */
@@ -394,6 +409,7 @@ class midgardmvc_core_request
      * - Instance of a Midgard MVC node (of MgdSchema)
      * - Component name
      * - Path
+     * - An existing request object
      *
      * @args mixed $intent Component name, node object, node GUID or node path
      */

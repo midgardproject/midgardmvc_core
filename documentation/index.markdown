@@ -190,6 +190,22 @@ Variables can be used with URL patterns in the following way:
   - -path `'/file/@'`
   - With request `/file/a/b` the controller would be called with `$args['variable_arguments'] = array('a', 'b')`
 
+### Limiting route availability
+
+If you want routes to be accessible only when run on the root folder of the website (`/`), you can add the following to that route definition:
+
+    routes:
+        some_route:
+            root_only: true
+
+Another option is to ensure a route is accessible only when used in subrequests (`dynamic_load` and `dynamic_call`) and not accessible directly by browser. This can be achieved by the following in route definition:
+
+    routes:
+        some_route:
+            subrequest_only: true
+
+The component provider handling route registration will ensure that routes not fitting these limitations will not be registered for the Request.
+
 Workings of a controller
 ------------------------
 

@@ -198,12 +198,6 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
 
     public function get_routes(midgardmvc_core_request $request)
     {
-        static $routes = null;
-        if (!is_null($routes))
-        {
-           // return $routes;
-        }
-
         $node_is_root = false;
         if ($request->get_node() == midgardmvc_core::get_instance()->hierarchy->get_root_node())
         {
@@ -224,7 +218,15 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
                 // Drop root-only routes from subnodes
                 continue;
             }
-            
+
+            if (   isset($route['subrequest_only'])
+                && $route['subrequest_only']
+                && !$request->is_subrequest())
+            {
+                // Drop routes that are usable via subrequest only from the main request
+                continue;
+            }
+
             // Handle the required route parameters
             if (!isset($route['controller']))
             {
