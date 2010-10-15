@@ -322,32 +322,34 @@ class midgardmvc_core
             return self::$instance;
         }
 
-        if (is_null($local_configuration))
+        if (is_array($local_configuration))
         {
-            $configuration = array();
+            // Configuration passed as a PHP array
+            $configuration = $local_configuration;
+        }
+        elseif (   is_string($local_configuration)
+                && substr($local_configuration, 0, 1) == '/')
+        {
+            // Application YAML file provided, load configuration from it
+            if (!file_exists($local_configuration))
+            {
+                throw new Exception("Application configuration file {$local_configuration} not found");
+            }
+            $configuration_yaml = file_get_contents($local_configuration);
+            $configuration = midgardmvc_core::read_yaml($configuration_yaml);
         }
         else
         {
-            if (is_array($local_configuration))
-            {
-                // Configuration passed as a PHP array
-                $configuration = $local_configuration;
-            }
-            elseif (   is_string($local_configuration)
-                    && substr($local_configuration, 0, 1) == '/')
-            {
-                // Application YAML file provided, load configuration from it
-                if (!file_exists($local_configuration))
-                {
-                    throw new Exception("Application configuration file {$local_configuration} not found");
-                }
-                $configuration_yaml = file_get_contents($local_configuration);
-                $configuration = midgardmvc_core::read_yaml($configuration_yaml);
-            }
-            else
-            {
-                throw new Exception('Unrecognized configuration given for Midgard MVC initialization');
-            }
+            throw new Exception('Unrecognized configuration given for Midgard MVC initialization');
+        }
+
+        if (!isset($configuration['services_dispatcher']))
+        {
+            throw new Exception('Dispatcher not defined in configuration given for Midgard MVC initialization');
+        }
+        if (!isset($configuration['providers_component']))
+        {
+            throw new Exception('Component provider not defined in configuration given for Midgard MVC initialization');
         }
 
         // Load and return MVC instance
