@@ -49,7 +49,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_FrameWork_TestCase
         $this->config->blobdir = "/tmp/midgardmvc_test";
         $this->config->tablecreate = true;
         $this->config->tableupdate = true;
-        $this->config->loglevel = 'warning';
+        $this->config->loglevel = 'critical';
  
         if (!$midgard->open_config($this->config))
         {
