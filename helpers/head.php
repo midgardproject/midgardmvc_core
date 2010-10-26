@@ -43,6 +43,11 @@ class midgardmvc_core_helpers_head
         }
     }
     
+    public function set_title($title)
+    {
+        $this->title = $title;   
+    }
+    
     public function enable_jquery($version = '1.4.2')
     {
         if ($this->jquery_enabled)
@@ -258,6 +263,10 @@ class midgardmvc_core_helpers_head
             {
                 echo $js_call;
             }
+        }
+        if (isset($this->title))
+        {
+            echo ("<title>{$this->title}</title>");
         }
 
         foreach ($this->script_head as $js_call)
