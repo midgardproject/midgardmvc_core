@@ -32,9 +32,9 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     public function get_element($element, $handle_includes = true)
     {
         $request = $this->midgardmvc->context->get_request();
-
         // Check for possible element aliases
         $route = $request->get_route();
+        
         if (    $route
             && isset($route->template_aliases[$element]))
         {
@@ -200,7 +200,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // Register current page to cache
 
         $this->midgardmvc->cache->template->register($request->get_identifier(), array($request->get_component()->name));
-
         $element = $this->get_element($element_identifier);
         // Template cache didn't have this template, collect it
         $this->midgardmvc->cache->template->put($request->get_identifier(), $element);

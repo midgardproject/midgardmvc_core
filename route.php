@@ -31,7 +31,6 @@ class midgardmvc_core_route
         $this->path = $path;
         $this->controller = $controller;
         $this->action = $action;
-
         foreach ($template_aliases as $alias => $template)
         {
             $this->template_aliases[$alias] = $template;
@@ -166,7 +165,6 @@ class midgardmvc_core_route
         {
             $matched = array_merge($matched, $get_matched);
         }
-
         return $matched;
     }
 
