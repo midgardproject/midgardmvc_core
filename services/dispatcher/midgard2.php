@@ -42,10 +42,11 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
     public function get_request()
     {
         $request = new midgardmvc_core_request();
-        if (function_exists('getallheaders'))
-        {
-            // TODO: Check for GData and CMIS compatible X-Method-Override
-        }
+        /*if (function_exists('getallheaders'))
+         *{
+         * // TODO: Check for GData and CMIS compatible X-Method-Override
+         *}
+         */
         $request->set_method($_SERVER['REQUEST_METHOD']);
         
         // Parse URL into components
