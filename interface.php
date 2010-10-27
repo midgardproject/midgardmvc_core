@@ -365,10 +365,20 @@ class midgardmvc_core
             return array();
         }
         static $use_yaml = null;
+        static $yaml_function = null;
         if (is_null($use_yaml))
         {
             // Check for YAML extension
-            $use_yaml = extension_loaded('yaml');
+            if (extension_loaded('yaml'))
+            {
+                $yaml_function = 'yaml_parse';
+                $use_yaml = true;
+            }
+            if (extension_loaded('syck'))
+            {
+                $yaml_function = 'syck_load';
+                $use_yaml = true;
+            }
             if (!$use_yaml)
             {
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
@@ -380,7 +390,7 @@ class midgardmvc_core
         {
             return Spyc::YAMLLoad($yaml_string);
         }
-        return yaml_parse($yaml_string);
+        return $yaml_function($yaml_string);
     }
 }
 ?>
