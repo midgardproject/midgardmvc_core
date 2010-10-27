@@ -66,7 +66,7 @@ class midgardmvc_core_route
                 case 'integer':
                     $path = str_replace(array("{\${$key}}", "{\$int:{$key}}"), $value, $path);
                     break;
-                case 'float':
+                case 'double':
                     $path = str_replace(array("{\${$key}}", "{\$float:{$key}}"), $value, $path);
                     break;
                 case 'string':
