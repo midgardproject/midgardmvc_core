@@ -22,7 +22,7 @@ authors:
         email: arttu@kaktus.cc
         url: http://www.kaktus.cc/
 routes:
-    page_read:
+    index:
         controller: midgardmvc_core_controllers_page
         action: read
         path: /

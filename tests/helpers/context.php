@@ -24,15 +24,32 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         $this->_core->context->delete();
     }
 
+    public function test_get_request()
+    {
+        $original = new midgardmvc_core_request();
+        $this->_core->context->create($original);
+        $current = $this->_core->context->get_current_context();
+        $second = new midgardmvc_core_request();
+        $second->set_method('post');
+        $this->_core->context->create($second);
+        $request = $this->_core->context->get_request($current);
+        
+        $this->assertEquals($original, $request);
+        
+        $this->_core->context->delete();
+        $this->_core->context->delete();
+    }
+
     public function test_get()
     {
-        $request = new midgardmvc_core_request();
-        $this->_core->context->create($request);
+        $original = new midgardmvc_core_request();
+        $this->_core->context->create($original);
+        $this->_core->context->set_item('foo', 'bar');
         $current = $this->_core->context->get_current_context();
         
         try
         {
-            $context = $this->_core->context->get($current);
+            $context = $this->_core->context->get();
         }
         catch (OutOfBoundsException $e)
         {
@@ -40,10 +57,16 @@ class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testca
         }
         
         $this->assertTrue(is_array($context));
-        
+
+        $second = new midgardmvc_core_request();
+        $request = $this->_core->context->create($second);
+
+        $this->assertEquals($context, $this->_core->context->get($current));
+
+        $this->_core->context->delete();
         $this->_core->context->delete();
     }
-    
+
     public function test_delete()
     {
         $request = new midgardmvc_core_request();

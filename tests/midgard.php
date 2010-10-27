@@ -49,7 +49,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_FrameWork_TestCase
         $this->config->blobdir = "/tmp/midgardmvc_test";
         $this->config->tablecreate = true;
         $this->config->tableupdate = true;
-        $this->config->loglevel = 'warning';
+        $this->config->loglevel = 'critical';
  
         if (!$midgard->open_config($this->config))
         {
@@ -63,10 +63,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_FrameWork_TestCase
     public function prepare_storage()
     {
         // Generate tables
-        /*if (!midgard_storage::create_base_storage())
-        {
-            $this->markTestSkipped('Could not generate Midgard tables for test database');
-        }*/
+        midgard_storage::create_base_storage();
 
         // And update as necessary
         $re = new ReflectionExtension('midgard2');

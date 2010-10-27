@@ -53,15 +53,15 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
         $this->assertTrue(is_array($routes));
-        $this->assertTrue(isset($routes['page_read']));
-        $this->assertTrue($routes['page_read'] instanceof midgardmvc_core_route);
+        $this->assertTrue(isset($routes['index']));
+        $this->assertTrue($routes['index'] instanceof midgardmvc_core_route);
         $this->assertTrue(isset($routes['login']), 'Root node should provide login route');
 
         $request = midgardmvc_core_request::get_for_intent('/subdir');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
         $this->assertTrue(is_array($routes));
-        $this->assertTrue(isset($routes['page_read']));
-        $this->assertTrue($routes['page_read'] instanceof midgardmvc_core_route);
+        $this->assertTrue(isset($routes['index']));
+        $this->assertTrue($routes['index'] instanceof midgardmvc_core_route);
         $this->assertFalse(isset($routes['login']), 'Subnode should not provide login route');
     }
 

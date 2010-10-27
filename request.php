@@ -200,27 +200,7 @@ class midgardmvc_core_request
 
     public function set_data_item($key, $value)
     {
-        // TODO: These are deprecated keys that used to be populated to context
-        switch ($key)
-        {
-            case 'node':
-            case 'page':
-                return $this->set_node($value);
-            case 'prefix':
-            case 'self':
-                return $this->set_prefix($value);
-            case 'uri':
-                return;
-            case 'argv':
-                return $this->set_arguments($value);
-            case 'query':
-                return $this->set_query($value);
-            case 'request_method':
-                return $this->set_method($value);
-            default:
-                $this->data[$key] = $value;
-                break;
-        }
+        $this->data[$key] = $value;
     }
 
     public function isset_data_item($key)
@@ -247,6 +227,8 @@ class midgardmvc_core_request
                 case 'node':
                 case 'page':
                     return $this->get_node();
+                case 'root_page':
+                    return midgardmvc_core::get_instance()->hierarchy->get_root_node();
                 case 'argv':
                     return $this->get_arguments();
                 case 'query':

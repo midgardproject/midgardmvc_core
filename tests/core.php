@@ -90,7 +90,7 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
     {
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         midgardmvc_core::get_instance()->dispatcher->set_request($request);
         $request = midgardmvc_core::get_instance()->process();
         $this->assertTrue($request->isset_data_item('current_component'));
@@ -109,7 +109,7 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
     {
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         $request->set_arguments(array('foo' => 'bar'));
         midgardmvc_core::get_instance()->dispatcher->set_request($request);
         $request = midgardmvc_core::get_instance()->process();
@@ -120,7 +120,7 @@ class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
         $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'] = '/tmp';
         $request = midgardmvc_core_request::get_for_intent('/');
         $routes = midgardmvc_core::get_instance()->component->get_routes($request);
-        $request->set_route($routes['page_read']);
+        $request->set_route($routes['index']);
         midgardmvc_core::get_instance()->dispatcher->set_request($request);
         $request = midgardmvc_core::get_instance()->process();
         ob_start();
