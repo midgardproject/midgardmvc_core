@@ -105,14 +105,14 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->data['object'] =& $this->object;
         $this->data['type'] = get_class($this->object);
         
-        if (   $this->data['object'] instanceof midgard_db_object
+        if (   $this->data['object'] instanceof midgard_dbobject
             && midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
         {
             midgardmvc_core::get_instance()->head->add_link
             (
                 array
                 (
-                    'rel' => 'alternate',
+                    'rel' => 'edit',
                     'type' => 'application/x-wiki',
                     'title' => 'Edit this page!', // TODO: l10n and object type
                     'href' => $this->get_url_update(),
