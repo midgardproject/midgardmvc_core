@@ -65,13 +65,17 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         {
             // If we have a Midgard node we can assign that as a "default parent"
             $this->data['parent'] = $node->get_object();
-            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         }
         
         $this->data['object'] =& $this->object;
         
         // Prepare the new object that form will eventually create
         $this->prepare_new_object($args);
+
+        if (isset($this->data['parent']))
+        {
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
+        }
         
         $this->load_form();
         $this->data['form'] =& $this->form;
@@ -169,9 +173,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         if (isset($_POST['delete']))
         {
             $this->object->delete();
-            // FIXME: We can remove this once signals work again
-            midgardmvc_core::get_instance()->cache->invalidate($this->object->guid);
-            midgardmvc_core::get_instance()->head->relocate("{midgardmvc_core::get_instance()->context->prefix}/");
+            // FIXME: We can remove this once signals are used for this
+            midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
+            midgardmvc_core::get_instance()->head->relocate(midgardmvc_core::get_instance()->context->get_request()->get_prefix());
             // TODO: This needs a better redirect 
         }
     }
