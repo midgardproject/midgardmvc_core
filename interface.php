@@ -319,14 +319,7 @@ class midgardmvc_core
     {
         if (!is_null(self::$instance))
         {
-            $arr = debug_backtrace();
-            //echo "Not null, returning instance for {$arr[0]['file']}: {$arr[0]['line']}\n";
             return self::$instance;
-        }
-        else
-        {
-            $arr = debug_backtrace();
-            //echo "NULL at {$arr[0]['file']}: {$arr[0]['line']}\n";
         }
 
         if (is_array($local_configuration))
