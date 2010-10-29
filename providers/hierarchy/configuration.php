@@ -53,7 +53,35 @@ class midgardmvc_core_providers_hierarchy_configuration implements midgardmvc_co
         {
             return midgardmvc_core_providers_hierarchy_node_configuration::$nodes_by_component[$component];
         }
-        return null;
+        // Component is not found in 1st level. Starting to loop children
+        
+        if (!$node = $this->search_node_by_component($this->get_root_node(), $component))
+        {
+            return null;
+        }
+        
+        return $node;
+    }
+    
+    private function search_node_by_component($node, $component)
+    {
+        if ($node->get_component() == $component)
+        {
+            return $node;
+        }
+        if ($node->has_child_nodes())
+        {
+            $children = $node->get_child_nodes();
+            foreach ($children as $child)
+            {
+                $node = $this->search_node_by_component($child, $component);
+                if ($node !== false)
+                {
+                    return $node;
+                }
+            }
+        }
+        return false;
     }
 
     public function prepare_nodes(array $nodes, $destructive = false)
