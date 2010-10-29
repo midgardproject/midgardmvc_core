@@ -8,6 +8,12 @@ class midgardmvc_appserv_app
 {
     public function __construct()
     {
+        $application_config = get_cfg_var('midgardmvc.application_config');
+        if (!$application_config)
+        {
+            $application_config = MIDGARDMVC_ROOT . '/application.yml';
+        }
+        $mvc = midgardmvc_core::get_instance($application_config);
     }
 
     public function __invoke($context)
@@ -28,12 +34,7 @@ class midgardmvc_appserv_app
 
         // starting processing
         try {
-            $application_config = get_cfg_var('midgardmvc.application_config');
-            if (!$application_config)
-            {
-                $application_config = MIDGARDMVC_ROOT . '/application.yml';
-            }
-            $mvc = midgardmvc_core::get_instance($application_config);
+            $mvc = midgardmvc_core::get_instance();
             $mvc->dispatcher->set_request_data($context);
 
             call_user_func($context['logger'], "-> starting midgardmvc");
