@@ -379,7 +379,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     public function handle_exception(Exception $exception)
     {
         $app = midgardmvc_core::get_instance();
-        $request = $midgardmvc->context->get_request();
+        $request = $app->context->get_request();
 
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
