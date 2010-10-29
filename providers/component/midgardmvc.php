@@ -159,13 +159,13 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         if (isset($manifest['process_injector']))
         {
             // This component has an injector for the process() phase
-            $this->injectors['process'][$manifest['component']] = $manifest['process_injector'];
+            $this->injectors['process'][$component] = $manifest['process_injector'];
         }
 
         if (isset($manifest['template_injector']))
         {
             // This component has an injector for the template() phase
-            $this->injectors['template'][$manifest['component']] = $manifest['template_injector'];
+            $this->injectors['template'][$component] = $manifest['template_injector'];
         }
         return $manifest;
     }

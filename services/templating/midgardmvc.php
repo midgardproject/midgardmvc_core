@@ -189,7 +189,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     {
         // Let injectors do their work
         $this->midgardmvc->component->inject($request, 'template');
-
         // Check if we have the element in cache already
         if (   !$this->midgardmvc->configuration->development_mode
             && $this->midgardmvc->cache->template->check($request->get_identifier()))
