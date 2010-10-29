@@ -57,6 +57,8 @@ class midgardmvc_core_services_sessioning_midgard
     private $dispatcher = null;
     private $data = array();
 
+    private static $started = false;
+
     /**
      * The constructor will initialize the sessioning, set the output nocacheable
      * and initialize the session data. This might involve creating an empty
@@ -64,14 +66,17 @@ class midgardmvc_core_services_sessioning_midgard
      */
     public function __construct()
     {
-        static $started = false;
+        $this->start();
+    }
 
-        if ($started)
+    private function start()
+    {
+        if (self::$started)
         {
-            throw new Exception("Midgard MVC Sessioning has already been started, it must not be started twice. Aborting");
+            return;
         }
 
-        $started = true;
+        self::$started = true;
         $this->dispatcher = midgardmvc_core::get_instance()->dispatcher;
 
         try

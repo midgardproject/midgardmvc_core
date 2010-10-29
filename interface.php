@@ -319,7 +319,14 @@ class midgardmvc_core
     {
         if (!is_null(self::$instance))
         {
+            $arr = debug_backtrace();
+            //echo "Not null, returning instance for {$arr[0]['file']}: {$arr[0]['line']}\n";
             return self::$instance;
+        }
+        else
+        {
+            $arr = debug_backtrace();
+            //echo "NULL at {$arr[0]['file']}: {$arr[0]['line']}\n";
         }
 
         if (is_array($local_configuration))
@@ -356,6 +363,11 @@ class midgardmvc_core
         self::$instance = new midgardmvc_core();
         self::$instance->load_base_services($configuration);
         return self::$instance;
+    }
+
+    public static function clear_instance()
+    {
+        self::$instance = null;
     }
 
     public static function read_yaml($yaml_string)

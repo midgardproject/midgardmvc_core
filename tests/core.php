@@ -11,19 +11,55 @@
  */
 class midgardmvc_core_tests_core extends PHPUnit_FrameWork_TestCase
 {
+    private $configuration = array
+    (
+        'services_dispatcher' => 'manual',
+        'providers_component' => 'midgardmvc',
+        'providers_hierarchy' => 'configuration',
+        'components' => array
+        (
+            'midgardmvc_core' => true,
+        ),
+        'nodes' => array
+        (
+            'title' => 'Midgard MVC',
+            'content' => '<p>Welcome to Midgard MVC</p>',
+            'component' => 'midgardmvc_core',
+        ),
+    );
+
+    public function setUp()
+    {
+        midgardmvc_core::get_instance($this->configuration);
+        parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        midgardmvc_core::clear_instance();
+        parent::tearDown();
+    }
+
     public function test_singleton()
     {
-        $midgardmvc = midgardmvc_core::get_instance
-        (
-            array
-            (
-                'services_dispatcher' => 'manual',
-            )
-        );
+        $midgardmvc = midgardmvc_core::get_instance();
         $midgardmvc->newproperty = true;
         $midgardmvc_new = midgardmvc_core::get_instance();
         $this->assertEquals(true, $midgardmvc_new->newproperty);
         unset($midgardmvc->newproperty);
+    }
+
+    public function test_singleton_nullable()
+    {
+        $midgardmvc = midgardmvc_core::get_instance();
+        $midgardmvc->newproperty = true;
+        $midgardmvc_new = midgardmvc_core::get_instance();
+        $this->assertEquals(true, $midgardmvc_new->newproperty);
+
+        midgardmvc_core::clear_instance();
+
+        $midgardmvc = midgardmvc_core::get_instance($this->configuration);
+        $this->assertEquals(false, $midgardmvc_new->newproperty);
     }
 
     public function test_known_providers_match()
