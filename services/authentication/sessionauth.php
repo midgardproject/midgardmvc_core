@@ -38,8 +38,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         }
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        // FIXME: Add when #1478 is fixed
-        //midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -149,44 +148,6 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      */
     private function do_midgard_login($username, $password)
     {
-        if (method_exists('midgard_connection', 'get_sitegroup'))
-        {
-            // Midgard 8.09 or 9.03 authentication API with sitegroups
-            if (!$this->sitegroup)
-            {
-                // Sitegroups are only used in Midgard 9.03 and older
-                $this->sitegroup = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_sitegroup();
-            }
-            
-            if ($this->sitegroup)
-            {
-                $this->user = midgard_user::auth($username, '', $this->sitegroup, $this->trusted_auth);
-            }
-            else
-            {
-                $this->user = midgard_user::auth($username, '', $this->trusted_auth);
-            }
-
-            // Don't allow trusted auth for admin users 
-            if (   $this->trusted_auth 
-                && !empty($this->user)
-                && $this->user->is_admin())
-            {
-                // Re-check using password for admin users
-                $this->user = midgard_user::auth($username, $password, $this->sitegroup, false);
-            }
-
-            if (!$this->user)
-            {
-                midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
-                $this->session_cookie->delete_login_session_cookie();          
-                return false;
-            }
-            
-            return true;
-        }
-
-        // Use Midgard 9.09 authentication API
         try
         {
             $user = new midgard_user($this->prepare_tokens($username, $password));
@@ -277,6 +238,11 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      */
     public function logout()
     {
+        if ($this->user)
+        {
+            $this->user->logout();
+        }
+
         $qb = new midgard_query_builder('midgardmvc_core_login_session');
         $qb->add_constraint('guid', '=', $this->session_cookie->get_session_id());
         $res = $qb->execute();
@@ -284,10 +250,14 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         if (! $res)
         {
             return false;
-        }        
+        }
+
+        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');
         $res[0]->delete();
         $res[0]->purge();
-        $this->session_cookie = new midgardmvc_core_services_authentication_cookie();        
+        midgardmvc_core::get_instance()->authorization->leave_sudo();
+
+        $this->session_cookie = new midgardmvc_core_services_authentication_cookie();
         return true;
     }
     
