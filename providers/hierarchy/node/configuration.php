@@ -11,6 +11,7 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
     private $component = null;
     private $children = array();
     private $path = null;
+    private $configuration = array();
 
     static $nodes_by_component = array();
 
@@ -23,6 +24,11 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
         if (isset($configuration['content']))
         {
             $this->content =& $configuration['content'];
+        }
+
+        if (isset($configuration['configuration']))
+        {
+            $this->configuration = $configuration['configuration'];
         }
 
         if (isset($configuration['children']))
@@ -41,6 +47,11 @@ class midgardmvc_core_providers_hierarchy_node_configuration implements midgardm
     public function get_object()
     {
         return $this;
+    }
+
+    public function get_configuration()
+    {
+        return $this->configuration;
     }
 
     public function get_component()

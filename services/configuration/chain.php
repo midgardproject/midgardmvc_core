@@ -60,7 +60,19 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         else
         {
             $components = array_reverse($request->get_component_chain());
+
+            // Per-node configuration
+            $node = $node_configuration = $request->get_node();
+            if ($node)
+            {
+                $node_configuration = $node->get_configuration();
+                if (array_key_exists($key, $node_configuration))
+                {
+                    return $node_configuration[$key];
+                }
+            }
         }
+
         foreach ($components as $component)
         {
             $component_value = $this->get_from_component($component, $key);
@@ -118,7 +130,19 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         else
         {
             $components = array_reverse($request->get_component_chain());
+
+            // Per-node configuration
+            $node = $node_configuration = $request->get_node();
+            if ($node)
+            {
+                $node_configuration = $node->get_configuration();
+                if (array_key_exists($key, $node_configuration))
+                {
+                    return true;
+                }
+            }
         }
+
         foreach ($components as $component)
         {
             if (!isset(self::$configuration[$component->name]))
