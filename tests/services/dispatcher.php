@@ -18,6 +18,41 @@ class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_te
         $url = midgardmvc_core::get_instance()->dispatcher->generate_url('index', array(), 'midgardmvc_core');
         $this->assertEquals('/', $url);
     }
+    
+    public function test_generate_url_intvariable()
+    {
+        $now = (int)time();
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('integer_variable_test_route', array('test_variable' => $now), 'midgardmvc_core');
+        $this->assertEquals("/{$now}/", $url);
+        
+        $now = "{$now}";
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('integer_variable_test_route', array('test_variable' => $now), 'midgardmvc_core');
+        $this->assertNotEquals("/{$now}/", $url);
+    }
+
+    public function test_generate_url_floatvariable()
+    {
+        $now = (float)time()/2;
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('float_variable_test_route', array('test_variable' => $now), 'midgardmvc_core');
+        $this->assertEquals("/{$now}/", $url);
+
+        $now = "{$now}";
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('float_variable_test_route', array('test_variable' => $now), 'midgardmvc_core');
+        $this->assertNotEquals("/{$now}/", $url);
+    }
+
+    public function test_generate_url_variable()
+    {
+        $now = time();
+        
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('variable_test_route', array('test_variable' => $now), 'midgardmvc_core');
+        $this->assertEquals("/{$now}/", $url);
+
+        $now = "{$now}"; // Typecasting to string
+        $url = midgardmvc_core::get_instance()->dispatcher->generate_url('variable_test_route', array('test_variable' => $now), 'midgardmvc_core');
+        $this->assertEquals("/{$now}/", $url);
+    }
+
 
     /**
      * @expectedException OutOfBoundsException

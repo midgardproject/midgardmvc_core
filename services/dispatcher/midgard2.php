@@ -218,9 +218,9 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
     /**
      * Generates an URL for given route_id with given arguments
      *
-     * @param mixed $intent Component name, node object, node GUID or node path
      * @param string $route_id the id of the route to generate a link for
      * @param array $args associative arguments array
+     * @param mixed $intent Component name, node object, node GUID or node path
      * @return string url
      */
     public function generate_url($route_id, array $args, $intent)

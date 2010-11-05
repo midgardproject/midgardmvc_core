@@ -31,7 +31,6 @@ class midgardmvc_core_route
         $this->path = $path;
         $this->controller = $controller;
         $this->action = $action;
-
         foreach ($template_aliases as $alias => $template)
         {
             $this->template_aliases[$alias] = $template;
@@ -73,13 +72,13 @@ class midgardmvc_core_route
             switch($type)
             {
                 case 'integer':
-                    $path = str_replace("{\$int:{$key}}", $value, $path);
+                    $path = str_replace(array("{\${$key}}", "{\$int:{$key}}"), $value, $path);
                     break;
-                case 'float':
-                    $path = str_replace("{\$float:{$key}}", $value, $path);
+                case 'double':
+                    $path = str_replace(array("{\${$key}}", "{\$float:{$key}}"), $value, $path);
                     break;
                 case 'string':
-                    $path = str_replace("{\${$key}}", $value, $path);
+                    $path = str_replace(array("{\${$key}}", "{\${$key}}"), $value, $path);
                     break;
                 
             }
@@ -173,7 +172,6 @@ class midgardmvc_core_route
         {
             $matched = array_merge($matched, $get_matched);
         }
-
         return $matched;
     }
 
