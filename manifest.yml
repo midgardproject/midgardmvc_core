@@ -66,18 +66,21 @@ routes:
         controller: midgardmvc_core_controllers_page
         action: read
         path: /{$test_variable}/
+        test_only: true
         template_aliases: 
             content: midgardmvc-show-page
     integer_variable_test_route:
         controller: midgardmvc_core_controllers_page
         action: read
         path: /{$int:test_variable}/
+        test_only: true
         template_aliases: 
             content: midgardmvc-show-page
     float_variable_test_route:
         controller: midgardmvc_core_controllers_page
         action: read
         path: /{$float:test_variable}/
+        test_only: true
         template_aliases: 
             content: midgardmvc-show-page
  
