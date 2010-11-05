@@ -21,9 +21,8 @@ $config->database = $argv[1];
 $config->tablecreate = true;
 $config->tableupdate = true;
 $config->loglevel = 'warning';
-// Save it to ~/.midgard2
-$config->save_file($argv[1], true);
-echo "Configuration file ~/.midgard2/conf.d/{$argv[1]} created.\n";
+$config->save_file($argv[1]);
+echo "Configuration file /etc/midgard2/conf.d/{$argv[1]} created.\n";
 
 // Open a DB connection with the config
 $midgard = midgard_connection::get_instance();
