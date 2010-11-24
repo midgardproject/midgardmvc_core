@@ -85,6 +85,10 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         {
             self::$configuration[$component->name] = $component->get_configuration();
         }
+        if (!is_array(self::$configuration[$component->name]))
+        {
+            return null;
+        }
         if (array_key_exists($key, self::$configuration[$component->name]))
         {
             return self::$configuration[$component->name][$key];
