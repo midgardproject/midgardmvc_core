@@ -150,9 +150,12 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             }
 
             // Ensure the required components are always enabled
-            foreach ($manifest['requires'] as $component => $component_info)
+            if (is_array($manifest['requires']))
             {
-                $this->components_enabled[$component] = array();
+                foreach ($manifest['requires'] as $component => $component_info)
+                {
+                    $this->components_enabled[$component] = array();
+                }
             }
         }
 
