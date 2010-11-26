@@ -41,7 +41,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             $element = $route->template_aliases[$element];
         }
 
-        $component_chain = array_reverse($request->get_component_chain());
+        $component_chain = $request->get_component_chain();
         foreach ($component_chain as $component)
         {
             $element_content = $component->get_template_contents($element);

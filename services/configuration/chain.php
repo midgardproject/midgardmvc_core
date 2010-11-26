@@ -59,7 +59,7 @@ class midgardmvc_core_services_configuration_chain implements midgardmvc_core_se
         }
         else
         {
-            $components = array_reverse($request->get_component_chain());
+            $components = $request->get_component_chain();
 
             // Per-node configuration
             $node = $node_configuration = $request->get_node();
