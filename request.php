@@ -148,13 +148,9 @@ class midgardmvc_core_request
                 // We have this part of the chain already
                 break;
             }
-            $components_array[] = $component;
+            $components_array[$component->name] = $component;
         }
-        $components_array = array_reverse($components_array);
-        foreach ($components_array as $component)
-        {
-            $this->components[$component->name] = $component;
-        }
+        $this->components = array_merge($this->components, $components_array);
     }
 
     public function set_component(midgardmvc_core_providers_component_component $component)
