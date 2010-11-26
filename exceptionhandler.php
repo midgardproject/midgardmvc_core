@@ -32,32 +32,27 @@ class midgardmvc_core_exceptionhandler
         $message = strip_tags($exception->getMessage());
         $message = str_replace("\n", ' ', $message);
 
-        $midgardmvc = midgardmvc_core::get_instance();
-
-        $midgardmvc->log($message_type, $message, 'warning');
-
+        $midgardmvc = null;
+        try
+        {
+            $midgardmvc = midgardmvc_core::get_instance();
+            $midgardmvc->log($message_type, $message, 'warning');
+        }
+        catch (Exception $e)
+        {
+            // MVC not initialized, display original message and exit
+            self::show_error_plaintext($http_code, $message_type, $message);
+            // This will exit
+        }
         $header = self::header_by_code($http_code);
-        if (!isset($midgardmvc->dispatcher))
+        if ($midgardmvc->dispatcher->headers_sent())
         {
-            if (headers_sent())
-            {
-                die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
-            }
-
-            header("X-MidgardMVC-Error: {$message}");
-            header($header);
+            self::show_error_plaintext($http_code, $message_type, $message, $midgardmvc->dispatcher);
+            // This will exit
         }
-        else
-        {
-            if ($midgardmvc->dispatcher->headers_sent())
-            {
-                echo "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n";
-                $midgardmvc->dispatcher->end_request();
-            }
-
-            $midgardmvc->dispatcher->header("X-MidgardMVC-Error: {$message}");
-            $midgardmvc->dispatcher->header($header);
-        }
+        
+        $midgardmvc->dispatcher->header("X-MidgardMVC-Error: {$message}");
+        $midgardmvc->dispatcher->header($header);
 
         if ($http_code != 304)
         {
@@ -124,6 +119,23 @@ class midgardmvc_core_exceptionhandler
             // Clean up and finish
             $midgardmvc->context->delete();
         }
+    }
+
+    private static function show_error_plaintext($http_code, $message_type, $message, $dispatcher = null)
+    {
+        if (is_null($dispatcher))
+        {
+            // We got an exception before MVC was fully initialized
+            if (!headers_sent())
+            {
+                header("X-MidgardMVC-Error: {$message}");
+                header(self::header_by_code($http_code));
+            }
+            die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
+        }
+        
+        echo "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n";
+        $dispatcher->end_request();
     }
 
     private static function header_by_code($code)
