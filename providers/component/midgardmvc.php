@@ -140,13 +140,13 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
         if (!isset($manifest['requires']))
         {
-            $manifest['requires'] = null;
+            $manifest['requires'] = array();
         }
         else
         {
             if (!is_array($manifest['requires']))
             {
-                $manifest['requires'] = null;
+                $manifest['requires'] = array();
             }
 
             // Ensure the required components are always enabled
