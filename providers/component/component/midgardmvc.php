@@ -17,6 +17,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
     private $path = '';
     private $parent = null;
     private $configuration = null;
+    private $cached_routes = array();
     public $name = '';
 
     public function __construct($name, array $manifest)
@@ -203,6 +204,11 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         {
             $node_is_root = true;
         }
+        
+        if (isset($this->cached_routes[$node_is_root]))
+        {
+            return $this->cached_routes[$node_is_root];
+        }
 
         $routes = array();
         if (!isset($this->manifest['routes']))
@@ -250,6 +256,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
 
             $routes[$route_id] = new midgardmvc_core_route($route_id, $route['path'], $route['controller'], $route['action'], $route['template_aliases']);
         }
+        $this->cached_routes[$node_is_root] = $routes;
         return $routes;
     }
 }
