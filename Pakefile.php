@@ -56,7 +56,7 @@ function run_init_mvc($task, $args)
 
     get_mvc_components($application, $dir);
 
-    $dbname = pake_input('How should database be named?', 'midgard2');
+    $dbname = 'midgard2';
     create_ini_file($dir, $dbname);
     create_config($dir, $dbname);
 
@@ -186,13 +186,20 @@ function create_ini_file($dir, $dbname)
     $cfg_path = $dir.'/'.$dbname.'.conf';
 
     $fname = $dir.'/php.ini';
-    $res = file_put_contents(
-        $fname,
-        "date.timezone=".ini_get('date.timezone')."\n".
-        "midgard.engine = On\n".
-        "midgard.http = On\n".
-        "midgard.configuration_file = {$cfg_path}\n"
-    );
+
+    $php_config = '';
+
+    if (!extension_loaded('midgard2'))
+    {
+        $php_config .= "extension=midgard2.so\n";
+    }
+
+    $php_config .= "date.timezone=" . ini_get('date.timezone') . "\n";
+    $php_config .= "midgard.engine = On\n";
+    $php_config .= "midgard.http = On\n";
+    $php_config .= "midgard.configuration_file = {$cfg_path}\n";
+
+    $res = file_put_contents($fname, $php_config);
 
     if ($res === false)
     {
