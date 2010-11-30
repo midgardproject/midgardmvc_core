@@ -232,14 +232,30 @@ function create_env_fs($dir)
 
     // looking for core xml-files
     if (is_dir(__PAKEFILE_DIR__.'/../midgard/core/midgard'))
+    {
         $xml_dir = __PAKEFILE_DIR__.'/../midgard/core/midgard';
+    }
     elseif (is_dir('/usr/share/midgard2'))  // <-- need something smarter here
     {
         $xml_dir = '/usr/share/midgard2';
     }
     else
     {
-        throw new pakeException("Can't find core xml-files directory");
+        $pkgconfig = pake_which('pkg-config');
+
+        if ($pkgconfig) {
+            $path = trim(pake_sh('pkg-config --variable=prefix midgard2'));
+        } else {
+            $path = pake_input("Please enter your midgard-prefix");
+        }
+
+        if (!is_dir($path))
+            throw new pakeException('Wrong path: "'.$path.'"');
+
+        $xml_dir = $path.'/share/midgard2';
+
+        if (!is_dir($xml_dir))
+            throw new pakeException("Can't find core xml-files directory");
     }
 
     $xmls = pakeFinder::type('file')->name('*.xml')->maxdepth(0);
