@@ -192,11 +192,13 @@ function create_ini_file($dir, $dbname)
 
     $php_config = '';
 
-    if (!extension_loaded('midgard2'))
+    if (!file_exists('/etc/debian_version') or !extension_loaded('midgard2'))
     {
         $php_config .= "extension=midgard2.so\n";
+        $php_config .= "extension=gettext.so\n";
     }
 
+    $php_config .= "include_path=" . ini_get('include_path') . "\n";
     $php_config .= "date.timezone=" . ini_get('date.timezone') . "\n";
     $php_config .= "midgard.engine = On\n";
     $php_config .= "midgard.http = On\n";
