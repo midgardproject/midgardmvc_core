@@ -73,8 +73,14 @@ function get_mvc_components(array $application, $target_dir)
     }
 }
 
-function get_mvc_component($component, array $source, $target_dir)
+function get_mvc_component($component, $source, $target_dir)
 {
+    if (   !is_array($source)
+        && !file_exists("{$target_dir}/{$component}"))
+    {
+        throw new pakeException("Cannot install {$component}, source repository not provided");
+    }
+
     if (!isset($source['git']))
     {
         throw new pakeException("Cannot install {$component}, unknown source");
@@ -141,6 +147,8 @@ function run__init_mvc_stage2($task, $args)
     $dbname = $args[1];
 
     init_database($dir, $dbname);
+
+    pake_echo_comment("Midgard MVC installed. Run your application with 'php -c {$dir}/php.ini {$dir}/midgardmvc_core/httpd/midgardmvc-root-appserv.php' and go to http://localhost:8001/");
 }
 
 function init_database($dir, $dbname)
