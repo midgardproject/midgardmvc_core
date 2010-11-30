@@ -35,10 +35,10 @@ class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
         $this->assertFalse(isset($components['midgardmvc_core']));
         $request->add_component_to_chain($component);
         $components = $request->get_component_chain();
-        $this->assertTrue(isset($components['midgardmvc_core']));
+        $this->assertTrue(in_array($components, $component));
         $request->add_component_to_chain($component);
         $components = $request->get_component_chain();
-        $this->assertTrue(isset($components['midgardmvc_core']));
+        $this->assertTrue(in_array($components, $component));
     }
 
     public function test_methods_valid()

@@ -48,7 +48,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         if (!isset($this->manifests[$component]))
         {
             $manifest_path = $this->get_manifest_path($component);
-            $this->manifests[$component] = $this->load_manifest_file($manifest_path);
+            $this->manifests[$component] = $this->load_manifest_file($component, $manifest_path);
         }
         $this->components[$component] = new midgardmvc_core_providers_component_component_midgardmvc($component, $this->manifests[$component]);
 
@@ -113,7 +113,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
      *
      * @param string $manifest_file Path of the manifest file
      */
-    private function load_manifest_file($manifest_file)
+    private function load_manifest_file($component, $manifest_file)
     {
         if (!file_exists($manifest_file))
         {
@@ -138,37 +138,27 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             $this->components_enabled[$manifest['extends']] = array();
         }
 
-        if (!isset($manifest['requires']))
+        if (   !isset($manifest['requires'])
+            || !is_array($manifest['requires']))
         {
-            $manifest['requires'] = null;
+            $manifest['requires'] = array();
         }
-        else
+        // Ensure the required components are always enabled
+        foreach ($manifest['requires'] as $component_required => $component_info)
         {
-            if (!is_array($manifest['requires']))
-            {
-                $manifest['requires'] = null;
-            }
-
-            // Ensure the required components are always enabled
-            if (is_array($manifest['requires']))
-            {
-                foreach ($manifest['requires'] as $component => $component_info)
-                {
-                    $this->components_enabled[$component] = array();
-                }
-            }
+            $this->components_enabled[$component_required] = array();
         }
 
         if (isset($manifest['process_injector']))
         {
             // This component has an injector for the process() phase
-            $this->injectors['process'][$manifest['component']] = $manifest['process_injector'];
+            $this->injectors['process'][$component] = $manifest['process_injector'];
         }
 
         if (isset($manifest['template_injector']))
         {
             // This component has an injector for the template() phase
-            $this->injectors['template'][$manifest['component']] = $manifest['template_injector'];
+            $this->injectors['template'][$component] = $manifest['template_injector'];
         }
         return $manifest;
     }
@@ -185,7 +175,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
                 throw new Exception("Component {$component} specified in application configuration is not installed");
             }
             
-            $this->manifests[$component] = $this->load_manifest_file("{$component_path}/manifest.yml");
+            $this->manifests[$component] = $this->load_manifest_file($component, "{$component_path}/manifest.yml");
         }
     }
 }

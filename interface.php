@@ -358,6 +358,11 @@ class midgardmvc_core
         return self::$instance;
     }
 
+    public static function clear_instance()
+    {
+        self::$instance = null;
+    }
+
     public static function read_yaml($yaml_string)
     {
         if (empty($yaml_string))

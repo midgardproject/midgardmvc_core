@@ -69,8 +69,6 @@ class midgardmvc_core_controllers_about
             @ini_set('memory_limit', -1);
             @ini_set('max_execution_time', 0);
 
-            midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->set_loglevel('debug');
-            
             if (!class_exists('midgard_storage'))
             {
                 // Midgard1 or Midgard2 9.03
@@ -125,7 +123,6 @@ class midgardmvc_core_controllers_about
                     }
                 }
             }
-            midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->set_loglevel(midgardmvc_core::get_instance()->configuration->get('log_level'));
         }
         
         $this->get_database($args);

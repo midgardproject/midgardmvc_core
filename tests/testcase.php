@@ -61,7 +61,7 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
     {   
         // Delete the context        
         $this->_core->context->delete();
-        
+        midgardmvc_core::clear_instance();
         parent::tearDown();
     }
 }

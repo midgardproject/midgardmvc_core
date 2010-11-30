@@ -44,6 +44,14 @@ class midgardmvc_core_route
         {
             if (is_array($value))
             {
+                if ($key == 'variable_arguments')
+                {
+                    if (strpos($path, '@') === false)
+                    {
+                        continue;
+                    }
+                    $path = str_replace('@', '/' . implode('/', $value), $path);
+                }
                 $value_array = array();
                 foreach ($value as $part)
                 {
@@ -74,7 +82,6 @@ class midgardmvc_core_route
                     break;
                 
             }
-            
         }
 
         if (preg_match_all('%\{$(.+?)\}%', $path, $link_matches))
@@ -131,7 +138,7 @@ class midgardmvc_core_route
         }
         // "complex" route (with variable arguments)
         if(preg_match('%@%', $this->path, $match))
-        {   
+        {
             $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}\@%', '([^/]+?)', $route_path)) . '$%';
         }
         else 

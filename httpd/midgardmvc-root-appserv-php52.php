@@ -12,14 +12,24 @@ try
 {
     $app = new MFS_AppServer_Middleware_PHP_Compat(_as_w(new midgardmvc_appserv_app()));
 
-    $_midcom_root = realpath(dirname(__FILE__).'/../..').'/';
+    $_midgardmvc_root = realpath(dirname(__FILE__).'/../..').'/';
 
-    $app = new MFS_AppServer_Middleware_URLMap(array(
-        '/' => _as_w($app),
-        '/midgardmvc-static/midgardmvc_core'                => _as_w(new file_server($_midcom_root.'midgardmvc_core/static')),
-        //'/midgardmvc-static/midgardmvc_helper_forms'        => _as_w(new file_server($_midcom_root.'midgardmvc_helper_forms/static')),
-        '/midgardmvc-static/midgardmvc_admin'        => _as_w(new file_server($_midcom_root.'midgardmvc_admin/static')),
-    ));
+    $urlmap = array
+    (
+        '/' => $app,
+    );
+
+    $components = midgardmvc_core::get_instance()->component->get_components();
+    foreach ($components as $component)
+    {
+        if (!file_exists("{$_midgardmvc_root}{$component->name}/static"))
+        {
+            continue;
+        }
+        $urlmap["/midgardmvc-static/{$component->name}"] = _as_w(new file_server("{$_midgardmvc_root}{$component->name}/static", 4000000));
+    }
+
+    $app = new MFS_AppServer_Middleware_URLMap($urlmap);
 
     $handler = new MFS_AppServer_DaemonicHandler('tcp://127.0.0.1:8080', 'HTTP');
     $handler->serve(_as_w($app));

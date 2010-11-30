@@ -12,15 +12,25 @@ try
 {
     $app = new aip_php_compat(new aip_session(new midgardmvc_appserv_app()));
 
-    $_midcom_root = realpath(__DIR__ . '/../..') . '/';
+    $_midgardmvc_root = realpath(__DIR__ . '/../..') . '/';
 
-    $map = new \MFS\AppServer\Middleware\URLMap\URLMap(array(
+    $urlmap = array
+    (
         '/' => $app,
-        '/favicon.ico'                                  => function($ctx) { return array(404, array(), ''); },
-        '/midgardmvc-static/midgardmvc_core'                => new file_server($_midcom_root.'midgardmvc_core/static', 4000000),
-        //'/midgardmvc-static/midgardmvc_helper_forms'  => new file_server($_midcom_root.'midgardmvc_helper_forms/static'),
-        '/midgardmvc-static/midgardmvc_admin'        => new file_server($_midcom_root.'midgardmvc_admin/static'),
-    ));
+        '/favicon.ico' => function($ctx) { return array(404, array(), ''); },
+    );
+
+    $components = midgardmvc_core::get_instance()->component->get_components();
+    foreach ($components as $component)
+    {
+        if (!file_exists("{$_midgardmvc_root}{$component->name}/static"))
+        {
+            continue;
+        }
+        $urlmap["/midgardmvc-static/{$component->name}"] = new file_server("{$_midgardmvc_root}{$component->name}/static", 4000000);
+    }
+
+    $map = new \MFS\AppServer\Middleware\URLMap\URLMap($urlmap);
 
     $handler = new \MFS\AppServer\DaemonicHandler('tcp://127.0.0.1:8001', 'HTTP');
     $handler->serve(new aip_logger($map, STDOUT));

@@ -26,12 +26,12 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
     public function get_element_callback(array $element)
     {
-        return $this->get_element($element[1]);
+        $request = $this->midgardmvc->context->get_request();
+        return $this->get_element($request, $element[1]);
     }
 
-    public function get_element($element, $handle_includes = true)
+    public function get_element(midgardmvc_core_request $request, $element, $handle_includes = true)
     {
-        $request = $this->midgardmvc->context->get_request();
         // Check for possible element aliases
         $route = $request->get_route();
         
@@ -41,7 +41,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             $element = $route->template_aliases[$element];
         }
 
-        $component_chain = array_reverse($request->get_component_chain());
+        $component_chain = $request->get_component_chain();
         foreach ($component_chain as $component)
         {
             $element_content = $component->get_template_contents($element);
@@ -189,7 +189,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     {
         // Let injectors do their work
         $this->midgardmvc->component->inject($request, 'template');
-
         // Check if we have the element in cache already
         if (   !$this->midgardmvc->configuration->development_mode
             && $this->midgardmvc->cache->template->check($request->get_identifier()))
@@ -200,7 +199,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // Register current page to cache
 
         $this->midgardmvc->cache->template->register($request->get_identifier(), array($request->get_component()->name));
-        $element = $this->get_element($element_identifier);
+        $element = $this->get_element($request, $element_identifier);
         // Template cache didn't have this template, collect it
         $this->midgardmvc->cache->template->put($request->get_identifier(), $element);
     }

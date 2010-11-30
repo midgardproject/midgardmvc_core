@@ -25,7 +25,6 @@ class midgardmvc_core_services_authentication_basic implements midgardmvc_core_s
         }
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        // FIXME: Add when #1478 is fixed
         midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 

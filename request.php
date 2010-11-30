@@ -125,12 +125,22 @@ class midgardmvc_core_request
         return $this->node;
     }
 
+    /**
+     * Get the list of components registered for the request. The
+     * components are ordered in priority order of:
+     *
+     * - Prepended components (usually registered by injectors)
+     * - Possible parent components of the prepended components
+     * - Main component of request
+     * - Possible parent components of the main component
+     * - Midgard MVC
+     */
     public function get_component_chain()
     {
         return $this->components;
     }
 
-    public function add_component_to_chain(midgardmvc_core_providers_component_component $component)
+    public function add_component_to_chain(midgardmvc_core_providers_component_component $component, $prepend = false)
     {
         $components_array = array
         (
@@ -148,13 +158,15 @@ class midgardmvc_core_request
                 // We have this part of the chain already
                 break;
             }
-            $components_array[] = $component;
+            $components_array[$component->name] = $component;
         }
-        $components_array = array_reverse($components_array);
-        foreach ($components_array as $component)
+
+        if ($prepend)
         {
-            $this->components[$component->name] = $component;
+            $this->components = array_merge($components_array, $this->components);
+            return;
         }
+        $this->components = array_merge($this->components, $components_array);
     }
 
     public function set_component(midgardmvc_core_providers_component_component $component)

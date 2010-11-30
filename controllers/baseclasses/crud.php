@@ -57,6 +57,12 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->form = midgardmvc_helper_forms_mgdschema::create($this->object);
     }
 
+    public function process_form()
+    {
+        $this->data['form']->process_post();
+        midgardmvc_helper_forms_mgdschema::form_to_object($this->data['form'], $this->object);
+    }
+
     // TODO: Refactor. There is code duplication with edit
     public function get_create(array $args)
     { 
@@ -65,13 +71,17 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         {
             // If we have a Midgard node we can assign that as a "default parent"
             $this->data['parent'] = $node->get_object();
-            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         }
         
         $this->data['object'] =& $this->object;
         
         // Prepare the new object that form will eventually create
         $this->prepare_new_object($args);
+
+        if (isset($this->data['parent']))
+        {
+            midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
+        }
         
         $this->load_form();
         $this->data['form'] =& $this->form;
@@ -82,8 +92,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->get_create($args);
         try
         {
-            $this->data['form']->process_post();
-            midgardmvc_helper_forms_mgdschema::form_to_object($this->data['form'], $this->object);
+            $this->process_form();
             $this->object->create();
             
             // TODO: add uimessage of $e->getMessage();
@@ -101,14 +110,14 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->data['object'] =& $this->object;
         $this->data['type'] = get_class($this->object);
         
-        if (   $this->data['object'] instanceof midgard_db_object
+        if (   $this->data['object'] instanceof midgard_dbobject
             && midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $this->data['object']))
         {
             midgardmvc_core::get_instance()->head->add_link
             (
                 array
                 (
-                    'rel' => 'alternate',
+                    'rel' => 'edit',
                     'type' => 'application/x-wiki',
                     'title' => 'Edit this page!', // TODO: l10n and object type
                     'href' => $this->get_url_update(),
@@ -133,8 +142,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
 
         try
         {
-            $this->data['form']->process_post();
-            midgardmvc_helper_forms_mgdschema::form_to_object($this->data['form'], $this->object);
+            $this->process_form();
             $this->object->update();
 
             // FIXME: We can remove this once signals work again
@@ -169,9 +177,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         if (isset($_POST['delete']))
         {
             $this->object->delete();
-            // FIXME: We can remove this once signals work again
-            midgardmvc_core::get_instance()->cache->invalidate($this->object->guid);
-            midgardmvc_core::get_instance()->head->relocate("{midgardmvc_core::get_instance()->context->prefix}/");
+            // FIXME: We can remove this once signals are used for this
+            midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
+            midgardmvc_core::get_instance()->head->relocate(midgardmvc_core::get_instance()->context->get_request()->get_prefix());
             // TODO: This needs a better redirect 
         }
     }
