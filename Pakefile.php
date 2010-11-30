@@ -62,6 +62,9 @@ function run_init_mvc($task, $args)
 
     pakeYaml::emitFile($application, "{$target_dir}/application.yml");
 
+    // install PHPTAL
+    pake_superuser_sh('pear install -s http://phptal.org/latest.tar.gz');
+
     init_mvc_stage2($dir, $dbname);
 }
 
