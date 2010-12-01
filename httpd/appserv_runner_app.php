@@ -1,6 +1,5 @@
 <?php
 
-require 'AppServer/autoload.php';
 use MFS\AppServer\Apps\FileServe\FileServe as file_server;
 use MFS\AppServer\Middleware\PHP_Compat\PHP_Compat as aip_php_compat;
 use MFS\AppServer\Middleware\Logger\Logger as aip_logger;
