@@ -23,16 +23,12 @@ function run_default($task, $args)
 
 function run_init_mvc($task, $args)
 {
-    if (!isset($args[0]))
+    if (count($args) != 2)
     {
         throw new pakeException('usage: pake '.$task->get_name().' path/to/application.yml target/dir/path');
     }
 
-    if (!isset($args[1]))
-    {
-        throw new pakeException('usage: pake '.$task->get_name().' path/to/application.yml target/dir/path');
-    }
-
+    pake_echo_comment('reading application definition');
     $application_yml = $args[0];
 
     $application = @file_get_contents($application_yml);
@@ -46,23 +42,18 @@ function run_init_mvc($task, $args)
         throw new pakeException("Failed to parse MVC application.yml from {$application_yml}");
     }
 
-    $target_dir = $args[1];
-
-    if (file_exists($target_dir))
-    {
-        throw new pakeException("Directory {$target_dir} already exists");
-    }
-
-    create_env_fs($target_dir);
-    $dir = realpath($target_dir);
+    create_env_fs($args[1]);
+    $dir = realpath($args[1]);
 
     get_mvc_components($application, $dir);
 
+    pake_echo_comment('installing configuration files');
     $dbname = 'midgard2';
     create_ini_file($dir, $dbname);
     create_config($dir, $dbname);
 
-    pakeYaml::emitFile($application, "{$target_dir}/application.yml");
+    pakeYaml::emitFile($application, "{$dir}/application.yml");
+
 
     pake_echo_comment('getting dependencies');
     // install PHPTAL. it is in file, so we have to be creative
@@ -77,6 +68,7 @@ function run_init_mvc($task, $args)
 
 function get_mvc_components(array $application, $target_dir)
 {
+    pake_echo_comment('fetching MidgardMVC components');
     foreach ($application['components'] as $component => $source)
     {
         get_mvc_component($component, $source, $target_dir);
@@ -223,6 +215,13 @@ function create_ini_file($dir, $dbname)
 
 function create_env_fs($dir)
 {
+    pake_echo_comment('creating directory-structure');
+
+    if (file_exists($dir))
+    {
+        throw new pakeException("Directory {$target_dir} already exists");
+    }
+
     pake_mkdirs($dir);
     $dir = realpath($dir);
 
