@@ -57,6 +57,11 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->form = midgardmvc_helper_forms_mgdschema::create($this->object);
     }
 
+    public function relocate_to_read()
+    {
+        midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
+    }
+
     public function process_form()
     {
         $this->data['form']->process_post();
@@ -96,7 +101,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
             $this->object->create();
             
             // TODO: add uimessage of $e->getMessage();
-            midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
+            $this->relocate_to_read();
         }
         catch (midgardmvc_helper_forms_exception_validation $e)
         {
@@ -149,7 +154,7 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
             midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
 
             // TODO: add uimessage of $e->getMessage();
-            midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
+            $this->relocate_to_read();
         }
         catch (midgardmvc_helper_forms_exception_validation $e)
         {
