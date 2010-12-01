@@ -213,7 +213,11 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $data =& $request->get_data();
 
         $template_file = $this->midgardmvc->cache->template->get($request->get_identifier());
-        $content = file_get_contents($template_file);
+
+        $fp = fopen($template_file, 'r');
+        flock($fp, LOCK_SH);
+        $content = stream_get_contents($fp);
+        fclose($fp);
 
         if (strlen($content) == 0)
         {

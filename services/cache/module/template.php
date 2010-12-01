@@ -91,7 +91,7 @@ class midgardmvc_core_services_cache_module_template
     public function put($identifier, $template)
     {
         $cache_file = "{$this->cache_directory}/{$identifier}.php";
-        file_put_contents($cache_file, $template);
+        file_put_contents($cache_file, $template, LOCK_EX);
     }
 
     /**
