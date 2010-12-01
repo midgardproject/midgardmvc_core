@@ -62,7 +62,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         // Initialize controller and pass it the request object
         $controller_class = $route->controller;
         $controller = new $controller_class($request);
-        
+
         // Define the action method for the route_id
         $request_method = $request->get_method();
         $action_method = "{$request_method}_{$route->action}";

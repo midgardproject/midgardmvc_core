@@ -97,7 +97,7 @@ class midgardmvc_core_request
         {
             $path .= '/';
         }
-        return  preg_replace('%/{2,}%', '/', $path);
+        return preg_replace('%/{2,}%', '/', $path);
     }
 
     /**
@@ -409,7 +409,7 @@ class midgardmvc_core_request
      *
      * @args mixed $intent Component name, node object, node GUID or node path
      */
-    public static function get_for_intent($intent)
+    public static function get_for_intent($intent, $clone = true)
     {
         $request = new midgardmvc_core_request();
         if (empty($intent))
@@ -425,7 +425,14 @@ class midgardmvc_core_request
         {
             if ($intent instanceof midgardmvc_core_request)
             {
-                $request = $intent;
+                if ($clone)
+                {
+                    $request = clone $intent;
+                }
+                else
+                {
+                    $request = $intent;
+                }
             }
 
             if ($intent instanceof midgardmvc_core_node)

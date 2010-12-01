@@ -59,7 +59,6 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
             parse_str($url_components['query'], $get_parameters);
             $request->set_query($get_parameters);
         }
-        
         $request->resolve_node($url_components['path']);
 
         return $request;
