@@ -202,6 +202,7 @@ function create_ini_file($dir, $dbname)
     $php_config .= "midgard.engine = On\n";
     $php_config .= "midgard.http = On\n";
     $php_config .= "midgard.configuration_file = {$cfg_path}\n";
+    $php_config .= "midgardmvc.application_config = {$dir}/application.yml\n";
 
     $res = file_put_contents($fname, $php_config);
 
