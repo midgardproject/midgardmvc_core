@@ -329,18 +329,26 @@ function create_env_fs($dir)
     $pkgconfig = pake_which('pkg-config');
 
     if ($pkgconfig) {
-        $xml_dir = trim(pake_sh(escapeshellarg($pkgconfig).' --variable=prefix midgard2')).'/share/midgard2';
-    } elseif (is_dir('/usr/share/midgard2')) {
-        $xml_dir = '/usr/share/midgard2';
-    } elseif (is_dir(__PAKEFILE_DIR__.'/../midgard/core/midgard')) {
-        $xml_dir = realpath(__PAKEFILE_DIR__.'/..').'/midgard/core/midgard';
-    } else {
-        $path = pake_input("Please enter your midgard-prefix");
+        try {
+            $xml_dir = trim(pake_sh(escapeshellarg($pkgconfig).' --variable=prefix midgard2')).'/share/midgard2';
+        } catch (pakeException $e)
+        {
+        }
+    }
 
-        if (!is_dir($path))
-            throw new pakeException('Wrong path: "'.$path.'"');
+    if (!isset($xml_dir)) {
+        if (is_dir('/usr/share/midgard2')) {
+            $xml_dir = '/usr/share/midgard2';
+        } elseif (is_dir(__PAKEFILE_DIR__.'/../midgard/core/midgard')) {
+            $xml_dir = realpath(__PAKEFILE_DIR__.'/..').'/midgard/core/midgard';
+        } else {
+            $path = pake_input("Please enter your midgard-prefix");
 
-        $xml_dir = $path.'/share/midgard2';
+            if (!is_dir($path))
+                throw new pakeException('Wrong path: "'.$path.'"');
+
+            $xml_dir = $path.'/share/midgard2';
+        }
     }
 
     if (!is_dir($xml_dir))
