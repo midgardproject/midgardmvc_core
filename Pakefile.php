@@ -166,7 +166,6 @@ function get_mvc_component($component, $sources, $target_dir)
     }
 
     // Install pear-dependencies
-    // install PHPTAL. it is in file, so we have to be creative
     if (isset($manifest['requires_pear'])) {
         $pear = escapeshellarg(pake_which('pear'));
 
