@@ -3,6 +3,8 @@ interface midgardmvc_core_providers_component
 {
     public function get($component);
 
+    public function load_library($library);
+
     public function is_installed($component);
 
     public function get_components();

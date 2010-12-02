@@ -57,6 +57,30 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         return $this->components[$component];
     }
 
+    /**
+     * Load a Zeta Component library
+     */
+    public function load_library($library)
+    {
+        // Enable Zeta Components autoloader
+        static $zeta_enabled = false;
+        if (!$zeta_enabled)
+        {
+            require('ezc/Base/base.php');
+            spl_autoload_register
+            (
+                array
+                (
+                    'ezcBase',
+                    'autoload'
+                )
+            );
+            $zeta_enabled = true;
+        }
+
+        // At the moment we don't need to do anything else, Zeta autoloader will handle it
+    }
+
     public function is_installed($component)
     {
         if (isset($this->components_enabled[$component]))
