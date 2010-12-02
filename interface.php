@@ -388,7 +388,10 @@ class midgardmvc_core
             if (!$use_yaml)
             {
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
-                require_once MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
+                if (!class_exists('sfYaml'))
+                {
+                    require MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
+                }
             }
         }
 
