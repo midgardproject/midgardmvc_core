@@ -156,15 +156,21 @@ function get_mvc_component($component, $sources, $target_dir)
     }
 
     // Link schemas
-    $schema_files = pakeFinder::type('file')->name('*.xml')->in("{$component_dir}/models/");
+    $schema_files = pakeFinder::type('file')->name('*.xml')->maxdepth(0)->in("{$component_dir}/models/");
     foreach ($schema_files as $schema_file)
     {
         pake_copy($schema_file, "{$target_dir}/share/schema/{$component}_" . basename($schema_file));
     }
 
+    $view_files = pakeFinder::type('file')->name('*.xml')->in("{$component_dir}/models/views/");
+    foreach ($view_files as $view_file)
+    {
+        pake_copy($view_file, "{$target_dir}/share/views/{$component}_" . basename($view_file));
+    }
+
+    // Install component dependencies too
     if (isset($manifest['requires']))
     {
-        // Install required components too
         foreach ($manifest['requires'] as $component => $source)
         {
             get_mvc_component($component, $source, $target_dir);
