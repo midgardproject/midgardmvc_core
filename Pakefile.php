@@ -48,9 +48,6 @@ function run_init_mvc($task, $args)
     get_mvc_components($application, $dir);
 
     pake_echo_comment('getting dependencies');
-    // install PHPTAL. it is in file, so we have to be creative
-    $pear = escapeshellarg(pake_which('pear'));
-    pake_superuser_sh($pear.' install -s http://phptal.org/latest.tar.gz');
 
     // install recent AppServer
     pakePearTask::install_pear_package('AppServer', 'pear.indeyets.pp.ru');
@@ -166,6 +163,28 @@ function get_mvc_component($component, $sources, $target_dir)
     foreach ($view_files as $view_file)
     {
         pake_copy($view_file, "{$target_dir}/share/views/{$component}_" . basename($view_file));
+    }
+
+    // Install pear-dependencies
+    // install PHPTAL. it is in file, so we have to be creative
+    if (isset($manifest['requires_pear'])) {
+        $pear = escapeshellarg(pake_which('pear'));
+
+        foreach($manifest['requires_pear'] as $name => $fields) {
+            if (isset($fields['channel'])) {
+                pakePearTask::install_pear_package($name, $fields['channel']);
+            } elseif (isset($fields['url'])) {
+                try {
+                    // if the package is already installed, this will be ok
+                    pake_sh($pear.' info '.escapeshellarg($name));
+                } catch (pakeException $e) {
+                    // otherwise, let's install it!
+                    pake_superuser_sh($pear.' install '.escapeshellarg($fields['url']));
+                }
+            } else {
+                throw new pakeException('Do not know how to install pear-package without channel or url: "'.$name.'"');
+            }
+        }
     }
 
     // Install component dependencies too
