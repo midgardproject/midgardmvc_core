@@ -74,32 +74,76 @@ function run_init_mvc($task, $args)
 function get_mvc_components(array $application, $target_dir)
 {
     pake_echo_comment('fetching MidgardMVC components');
-    foreach ($application['components'] as $component => $source)
+    foreach ($application['components'] as $component => $sources)
     {
-        get_mvc_component($component, $source, $target_dir);
+        get_mvc_component($component, $sources, $target_dir);
     }
 }
 
-function get_mvc_component($component, $source, $target_dir)
+function get_mvc_component($component, $sources, $target_dir)
 {
-    if (   !is_array($source)
-        && !file_exists("{$target_dir}/{$component}"))
+    $component_dir = $target_dir.'/'.$component;
+
+    if (!file_exists($component_dir))
     {
-        throw new pakeException("Cannot install {$component}, source repository not provided");
+        if (!is_array($sources))
+        {
+            throw new pakeException("Cannot install {$component}, source repository not provided");
+        }
+
+        // support for single-source components
+        if (!isset($sources[0]))
+        {
+            $sources = array($sources);
+        }
+
+        foreach ($sources as $source)
+        {
+            if (!isset($source['type']))
+            {
+                var_dump($source);
+                pake_echo_error('source does not have "type" defined. skipping');
+                continue;
+            }
+
+            try
+            {
+                switch ($source['type'])
+                {
+                    case 'git':
+                        get_mvc_component_from_git($source['url'], $source['branch'], $component_dir);
+                    break;
+
+                    case 'github':
+                        get_mvc_component_from_github($source['user'], $source['repository'], $source['branch'], $component_dir);
+                    break;
+
+                    case 'subversion':
+                        get_mvc_component_from_subversion($source['url'], $component_dir);
+                    break;
+
+                    default:
+                        pake_echo_error('source is of unknown type. skipping');
+                    break;
+                }
+
+                // there wasn't exception, so, probably, we're ok
+                break;
+            }
+            catch (pakeException $e)
+            {
+                pake_echo_error('there was an error fetching from source: '.$e->getMessage().'. skipping');
+                if (file_exists($component_dir))
+                {
+                    pake_echo_comment("Cleanup…");
+                    pake_remove_dir($component_dir);
+                    pake_echo_comment("<- Cleanup is done");
+                }
+            }
+        }
     }
 
-    if (!isset($source['git']))
-    {
-        throw new pakeException("Cannot install {$component}, unknown source");
-    }
-
-    if (!file_exists("{$target_dir}/{$component}"))
-    {
-        // Check out the component from git
-        pakeGit::clone_repository($source['git'], "{$target_dir}/{$component}");
-    }
-
-    $manifest_path = "{$target_dir}/{$component}/manifest.yml";
+    $manifest_path = "{$component_dir}/manifest.yml";
     if (!file_exists($manifest_path))
     {
         throw new pakeException("Component {$component} did not supply a manifest file");
@@ -112,7 +156,7 @@ function get_mvc_component($component, $source, $target_dir)
     }
 
     // Link schemas
-    $schema_files = pakeFinder::type('file')->name('*.xml')->in("{$target_dir}/{$component}/models/");
+    $schema_files = pakeFinder::type('file')->name('*.xml')->in("{$component_dir}/models/");
     foreach ($schema_files as $schema_file)
     {
         pake_copy($schema_file, "{$target_dir}/share/schema/{$component}_" . basename($schema_file));
@@ -126,6 +170,31 @@ function get_mvc_component($component, $source, $target_dir)
             get_mvc_component($component, $source, $target_dir);
         }
     }
+}
+
+function get_mvc_component_from_git($url, $branch, $component_dir)
+{
+    // Check out the component from git
+    pakeGit::clone_repository($url, $component_dir)->checkout($branch);
+}
+
+function get_mvc_component_from_github($user, $repository, $branch, $component_dir)
+{
+    try
+    {
+        // At first, we try "git" protocol
+        get_mvc_component_from_git('git://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+    }
+    catch (pakeException $e)
+    {
+        // Then fallback to http
+        get_mvc_component_from_git('https://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+    }
+}
+
+function get_mvc_component_from_subversion($url, $component_dir)
+{
+    pakeSubversion::checkout($url, $component_dir);
 }
 
 function init_mvc_stage2($dir, $dbname)
