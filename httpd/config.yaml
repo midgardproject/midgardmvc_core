@@ -1,0 +1,11 @@
+---
+servers:
+  -
+    protocol: HTTP
+    socket: 'tcp://127.0.0.1:8001'
+    min-children: 2
+    max-children: 10
+    app:
+      class: midgardmvc_appserv_runner_app
+      file: appserv_runner_app.php
+      middlewares: []

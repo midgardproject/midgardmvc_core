@@ -52,6 +52,8 @@ function run_init_mvc($task, $args)
     create_ini_file($dir, $dbname);
     create_config($dir, $dbname);
 
+    create_runner_script($dir);
+
     pakeYaml::emitFile($application, "{$dir}/application.yml");
 
 
@@ -64,6 +66,10 @@ function run_init_mvc($task, $args)
     pakePearTask::install_pear_package('AppServer', 'pear.indeyets.pp.ru');
 
     init_mvc_stage2($dir, $dbname);
+
+    pake_echo_comment("Midgard MVC installed. Run your application with ".
+                        // "'php -c {$dir}/php.ini {$dir}/midgardmvc_core/httpd/midgardmvc-root-appserv.php' ".
+                        "'{$dir}/run' and go to http://localhost:8001/");
 }
 
 function get_mvc_components(array $application, $target_dir)
@@ -149,8 +155,6 @@ function run__init_mvc_stage2($task, $args)
     $dbname = $args[1];
 
     init_database($dir, $dbname);
-
-    pake_echo_comment("Midgard MVC installed. Run your application with 'php -c {$dir}/php.ini {$dir}/midgardmvc_core/httpd/midgardmvc-root-appserv.php' and go to http://localhost:8001/");
 }
 
 function init_database($dir, $dbname)
@@ -320,4 +324,18 @@ function create_config($prefix, $dbname)
     }
 
     pake_echo_action('file+', $fname);
+}
+
+function create_runner_script($prefix)
+{
+    $fname = $prefix.'/run';
+
+    $contents =  '#!/bin/sh'."\n\n";
+    $contents .= escapeshellarg(pake_which('php')).' -c '.escapeshellarg($prefix.'/php.ini').' '
+                .escapeshellarg(pake_which('aip')).' app '.escapeshellarg($prefix.'/midgardmvc_core/httpd');
+
+    file_put_contents($fname, $contents);
+    pake_echo_action('file+', $fname);
+
+    pake_chmod('run', $prefix, 0755);
 }
