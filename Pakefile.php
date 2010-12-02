@@ -74,32 +74,76 @@ function run_init_mvc($task, $args)
 function get_mvc_components(array $application, $target_dir)
 {
     pake_echo_comment('fetching MidgardMVC components');
-    foreach ($application['components'] as $component => $source)
+    foreach ($application['components'] as $component => $sources)
     {
-        get_mvc_component($component, $source, $target_dir);
+        get_mvc_component($component, $sources, $target_dir);
     }
 }
 
-function get_mvc_component($component, $source, $target_dir)
+function get_mvc_component($component, $sources, $target_dir)
 {
-    if (   !is_array($source)
-        && !file_exists("{$target_dir}/{$component}"))
+    $component_dir = $target_dir.'/'.$component;
+
+    if (!file_exists($component_dir))
     {
-        throw new pakeException("Cannot install {$component}, source repository not provided");
+        if (!is_array($sources))
+        {
+            throw new pakeException("Cannot install {$component}, source repository not provided");
+        }
+
+        // support for single-source components
+        if (!isset($sources[0]))
+        {
+            $sources = array($sources);
+        }
+
+        foreach ($sources as $source)
+        {
+            if (!isset($source['type']))
+            {
+                var_dump($source);
+                pake_echo_error('source does not have "type" defined. skipping');
+                continue;
+            }
+
+            try
+            {
+                switch ($source['type'])
+                {
+                    case 'git':
+                        get_mvc_component_from_git($source['url'], $source['branch'], $component_dir);
+                    break;
+
+                    case 'github':
+                        get_mvc_component_from_github($source['user'], $source['repository'], $source['branch'], $component_dir);
+                    break;
+
+                    case 'subversion':
+                        get_mvc_component_from_subversion($source['url'], $component_dir);
+                    break;
+
+                    default:
+                        pake_echo_error('source is of unknown type. skipping');
+                    break;
+                }
+
+                // there wasn't exception, so, probably, we're ok
+                break;
+            }
+            catch (pakeException $e)
+            {
+                pake_echo_error('there was an error fetching from source: '.$e->getMessage().'. skipping');
+                if (file_exists($component_dir))
+                {
+                    pake_echo_comment("Cleanup…");
+                    pake_remove_dir($component_dir);
+                    pake_echo_comment("<- Cleanup is done");
+                }
+            }
+        }
     }
 
-    if (!isset($source['git']))
-    {
-        throw new pakeException("Cannot install {$component}, unknown source");
-    }
-
-    if (!file_exists("{$target_dir}/{$component}"))
-    {
-        // Check out the component from git
-        pakeGit::clone_repository($source['git'], "{$target_dir}/{$component}");
-    }
-
-    $manifest_path = "{$target_dir}/{$component}/manifest.yml";
+    $manifest_path = "{$component_dir}/manifest.yml";
     if (!file_exists($manifest_path))
     {
         throw new pakeException("Component {$component} did not supply a manifest file");
@@ -112,20 +156,51 @@ function get_mvc_component($component, $source, $target_dir)
     }
 
     // Link schemas
-    $schema_files = pakeFinder::type('file')->name('*.xml')->in("{$target_dir}/{$component}/models/");
+    $schema_files = pakeFinder::type('file')->name('*.xml')->maxdepth(0)->in("{$component_dir}/models/");
     foreach ($schema_files as $schema_file)
     {
         pake_copy($schema_file, "{$target_dir}/share/schema/{$component}_" . basename($schema_file));
     }
 
+    $view_files = pakeFinder::type('file')->name('*.xml')->in("{$component_dir}/models/views/");
+    foreach ($view_files as $view_file)
+    {
+        pake_copy($view_file, "{$target_dir}/share/views/{$component}_" . basename($view_file));
+    }
+
+    // Install component dependencies too
     if (isset($manifest['requires']))
     {
-        // Install required components too
         foreach ($manifest['requires'] as $component => $source)
         {
             get_mvc_component($component, $source, $target_dir);
         }
     }
+}
+
+function get_mvc_component_from_git($url, $branch, $component_dir)
+{
+    // Check out the component from git
+    pakeGit::clone_repository($url, $component_dir)->checkout($branch);
+}
+
+function get_mvc_component_from_github($user, $repository, $branch, $component_dir)
+{
+    try
+    {
+        // At first, we try "git" protocol
+        get_mvc_component_from_git('git://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+    }
+    catch (pakeException $e)
+    {
+        // Then fallback to http
+        get_mvc_component_from_git('https://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+    }
+}
+
+function get_mvc_component_from_subversion($url, $component_dir)
+{
+    pakeSubversion::checkout($url, $component_dir);
 }
 
 function init_mvc_stage2($dir, $dbname)
@@ -241,32 +316,25 @@ function create_env_fs($dir)
     pake_mkdirs($dir.'/cache');
 
     // looking for core xml-files
-    if (is_dir(__PAKEFILE_DIR__.'/../midgard/core/midgard'))
-    {
-        $xml_dir = __PAKEFILE_DIR__.'/../midgard/core/midgard';
-    }
-    elseif (is_dir('/usr/share/midgard2'))  // <-- need something smarter here
-    {
-        $xml_dir = '/usr/share/midgard2';
-    }
-    else
-    {
-        $pkgconfig = pake_which('pkg-config');
+    $pkgconfig = pake_which('pkg-config');
 
-        if ($pkgconfig) {
-            $path = trim(pake_sh('pkg-config --variable=prefix midgard2'));
-        } else {
-            $path = pake_input("Please enter your midgard-prefix");
-        }
+    if ($pkgconfig) {
+        $xml_dir = trim(pake_sh(escapeshellarg($pkgconfig).' --variable=prefix midgard2')).'/share/midgard2';
+    } elseif (is_dir('/usr/share/midgard2')) {
+        $xml_dir = '/usr/share/midgard2';
+    } elseif (is_dir(__PAKEFILE_DIR__.'/../midgard/core/midgard')) {
+        $xml_dir = realpath(__PAKEFILE_DIR__.'/..').'/midgard/core/midgard';
+    } else {
+        $path = pake_input("Please enter your midgard-prefix");
 
         if (!is_dir($path))
             throw new pakeException('Wrong path: "'.$path.'"');
 
         $xml_dir = $path.'/share/midgard2';
-
-        if (!is_dir($xml_dir))
-            throw new pakeException("Can't find core xml-files directory");
     }
+
+    if (!is_dir($xml_dir))
+        throw new pakeException("Can't find core xml-files directory");
 
     $xmls = pakeFinder::type('file')->name('*.xml')->maxdepth(0);
 
