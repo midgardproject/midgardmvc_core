@@ -273,6 +273,16 @@ function create_ini_file($dir, $dbname)
     {
         $php_config .= "extension=midgard2.so\n";
         $php_config .= "extension=gettext.so\n";
+
+        if (extension_loaded('yaml'))
+        {
+            $php_config .= "extension=yaml.so\n";
+        }
+
+        if (extension_loaded('httpparser'))
+        {
+            $php_config .= "extension=httpparser.so\n";
+        }
     }
 
     $php_config .= "include_path=" . ini_get('include_path') . "\n";
