@@ -388,13 +388,13 @@ class midgardmvc_core
             if (!$use_yaml)
             {
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
-                require_once MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/spyc.php';
+                require_once MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
             }
         }
 
         if (!$use_yaml)
         {
-            return Spyc::YAMLLoad($yaml_string);
+            return sfYaml::load($yaml_string);
         }
         return $yaml_function($yaml_string);
     }
