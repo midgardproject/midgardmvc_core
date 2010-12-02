@@ -47,6 +47,14 @@ function run_init_mvc($task, $args)
 
     get_mvc_components($application, $dir);
 
+    pake_echo_comment('getting dependencies');
+    // install PHPTAL. it is in file, so we have to be creative
+    $pear = escapeshellarg(pake_which('pear'));
+    pake_superuser_sh($pear.' install -s http://phptal.org/latest.tar.gz');
+
+    // install recent AppServer
+    pakePearTask::install_pear_package('AppServer', 'pear.indeyets.pp.ru');
+
     pake_echo_comment('installing configuration files');
     $dbname = 'midgard2';
     create_ini_file($dir, $dbname);
@@ -55,15 +63,6 @@ function run_init_mvc($task, $args)
     create_runner_script($dir);
 
     pakeYaml::emitFile($application, "{$dir}/application.yml");
-
-
-    pake_echo_comment('getting dependencies');
-    // install PHPTAL. it is in file, so we have to be creative
-    $pear = escapeshellarg(pake_which('pear'));
-    pake_superuser_sh($pear.' install -s http://phptal.org/latest.tar.gz');
-
-    // install recent AppServer
-    pakePearTask::install_pear_package('AppServer', 'pear.indeyets.pp.ru');
 
     init_mvc_stage2($dir, $dbname);
 
