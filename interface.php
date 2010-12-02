@@ -379,11 +379,12 @@ class midgardmvc_core
                 $yaml_function = 'yaml_parse';
                 $use_yaml = true;
             }
-            if (extension_loaded('syck'))
+            elseif (extension_loaded('syck'))
             {
                 $yaml_function = 'syck_load';
                 $use_yaml = true;
             }
+
             if (!$use_yaml)
             {
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
