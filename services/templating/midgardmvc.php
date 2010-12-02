@@ -150,7 +150,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     public function dynamic_load($intent, $route_id, array $arguments, $return_html = false)
     { 
         $request = midgardmvc_core_request::get_for_intent($intent);
-        $this->midgardmvc->context->create($request);        
+        $this->midgardmvc->context->create($request);
         $data = $this->dynamic_call($request, $route_id, $arguments, false);
 
         $this->template($request, 'content');
