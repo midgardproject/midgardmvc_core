@@ -1,6 +1,6 @@
 version: 10.12.0devel
 requires_pear:
-    PHPTAL
+    PHPTAL:
         url: http://phptal.org/latest.tar.gz
 authors:
     bergie:
