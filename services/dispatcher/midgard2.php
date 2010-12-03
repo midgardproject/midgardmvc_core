@@ -249,27 +249,41 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
         return midgard_connection::get_instance();
     }
 
-    public function get_mgdschema_classes()
+    public function get_mgdschema_classes($include_views = false)
     {
         static $mgdschemas = array();
-        if (empty($mgdschemas))
+        if (isset($mgdschemas[$include_views]))
         {
-            // Get the classes from PHP5 reflection
-            $re = new ReflectionExtension('midgard2');
-            $classes = $re->getClasses();
-            foreach ($classes as $refclass)
+            return $mgdschemas[$include_views];
+        }
+
+        $mgdschemas[$include_views] = array();
+
+        // Get the classes from PHP5 reflection
+        $re = new ReflectionExtension('midgard2');
+        $classes = $re->getClasses();
+        foreach ($classes as $refclass)
+        {
+            $parent_class = $refclass->getParentClass();
+            if (!$parent_class)
             {
-                $parent_class = $refclass->getParentClass();
-                if (!$parent_class)
+                continue;
+            }
+
+            if ($parent_class->getName() == 'midgard_object')
+            {
+                $mgdschemas[$include_views][] = $refclass->getName();
+                continue;
+            }
+
+            if ($include_views)
+            {
+                if ($parent_class->getName() == 'midgard_view')
                 {
-                    continue;
-                }
-                if ($parent_class->getName() == 'midgard_object')
-                {
-                    $mgdschemas[] = $refclass->getName();
+                    $mgdschemas[$include_views][] = $refclass->getName();
                 }
             }
         }
-        return $mgdschemas;
+        return $mgdschemas[$include_views];
     }
 }

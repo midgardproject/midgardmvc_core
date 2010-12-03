@@ -17,7 +17,7 @@
  */
 class midgardmvc_core_services_authentication_cookie
 {
-    private $_cookie_id = 'midgardmvc_services_auth_backend_simple-';
+    private $_cookie_id = 'midgardmvc_core_services_authentication_cookie';
     protected $session_id = null;
     protected $user_id = null;
     
@@ -28,15 +28,7 @@ class midgardmvc_core_services_authentication_cookie
     public function read_login_session()
     {
         $reset_cookie = false;
-        $request = midgardmvc_core::get_instance()->context->get_request();
-        if (   $request
-            && array_key_exists($this->_cookie_id, $request->get_query())
-            && !array_key_exists($this->_cookie_id, $_COOKIE))
-        {
-            $reset_cookie = true;
-        }
-
-        if (!array_key_exists($this->_cookie_id, $_COOKIE))
+        if (!isset($_COOKIE[$this->_cookie_id]))
         {
             return false;
         }
@@ -44,6 +36,7 @@ class midgardmvc_core_services_authentication_cookie
         $data = explode(':', $_COOKIE[$this->_cookie_id]);
         if (count($data) != 2)
         {
+            
             $this->delete_cookie();
             return false;
         }
@@ -77,12 +70,13 @@ class midgardmvc_core_services_authentication_cookie
     
     private function delete_cookie()
     {
-        midgardmvc_core::get_instance()->dispatcher->setcookie(
-                    $this->_cookie_id,
-                    false,
-                    time()-86400,
-                    midgardmvc_core::get_instance()->configuration->services_authentication_cookie_cookiepath
-                );
+        midgardmvc_core::get_instance()->dispatcher->setcookie
+        (
+            $this->_cookie_id,
+            false,
+            time()-86400,
+            midgardmvc_core::get_instance()->configuration->services_authentication_cookie_cookiepath
+        );
     }
     
     public function create_login_session_cookie($session_id, $user_id)

@@ -238,6 +238,9 @@ class midgardmvc_core
         // Load the head helper
         $this->head = new midgardmvc_core_helpers_head();
 
+        // Check authentication
+        $this->authentication->check_session();
+
         // Disable cache for now
         $request->set_data_item('cache_enabled', false);
 

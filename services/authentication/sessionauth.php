@@ -30,15 +30,18 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     public function __construct()
     {
         $this->session_cookie = new midgardmvc_core_services_authentication_cookie();
-        
+
+        // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
+        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+    }
+
+    public function check_session()
+    {
         if ($this->session_cookie->read_login_session())
         {
             $sessionid = $this->session_cookie->get_session_id();
             $this->authenticate_session($sessionid);
         }
-
-        // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
     }
 
     /**
@@ -212,7 +215,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         $result = array
         (
             'session_id' => $session->guid, 
-            'user' => &$user // <-- FIXME: is this supposed to be $this->user instead?
+            'user' => $this->user->guid,
         );
         
         $this->current_session_id = $session->guid;

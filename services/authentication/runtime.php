@@ -22,11 +22,17 @@ class midgardmvc_core_services_authentication_runtime implements midgardmvc_core
         {
             midgardmvc_core::get_instance()->authentication = new midgardmvc_core_services_authentication_sessionauth();
         }
-        
-        $this->autologin();
 
         // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        //midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+    }
+
+    public function check_session()
+    {
+        if (isset($_ENV['MIDGARD_ENV_USER_NAME']))
+        {
+            $this->autologin();
+        }
     }
 
     private function get_person_by_name($name)
