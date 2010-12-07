@@ -357,7 +357,7 @@ function create_env_fs($dir)
 
     if (file_exists($dir))
     {
-        throw new pakeException("Directory {$target_dir} already exists");
+        throw new pakeException("Directory {$dir} already exists");
     }
 
     pake_mkdirs($dir);
