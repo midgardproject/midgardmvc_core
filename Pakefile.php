@@ -15,7 +15,7 @@ pake_task('init_mvc');
 
 pake_task('_init_mvc_stage2'); // helper
 
-// show list of available tasks, by default
+// TASKS
 function run_default($task, $args)
 {
     pakeApp::get_instance()->display_tasks_and_comments();
@@ -68,6 +68,17 @@ function run_init_mvc($task, $args)
                         "'{$dir}/run' and go to http://localhost:8001/");
 }
 
+function run__init_mvc_stage2($task, $args)
+{
+    $dir = $args[0];
+    $dbname = $args[1];
+
+    init_database($dir, $dbname);
+}
+
+
+
+// HELPERS
 function get_mvc_components(array $application, $target_dir)
 {
     pake_echo_comment('fetching MidgardMVC components');
@@ -239,14 +250,6 @@ function init_mvc_stage2($dir, $dbname)
         ' _init_mvc_stage2 '.escapeshellarg($dir).' '.escapeshellarg($dbname),
         true
     );
-}
-
-function run__init_mvc_stage2($task, $args)
-{
-    $dir = $args[0];
-    $dbname = $args[1];
-
-    init_database($dir, $dbname);
 }
 
 function init_database($dir, $dbname)
