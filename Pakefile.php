@@ -15,6 +15,9 @@ pake_task('init_mvc');
 
 pake_task('_init_mvc_stage2'); // helper
 
+pake_desc('Create fresh database for existing application');
+pake_task('reinit_db');
+
 // TASKS
 function run_default($task, $args)
 {
@@ -76,6 +79,31 @@ function run__init_mvc_stage2($task, $args)
     init_database($dir, $dbname);
 }
 
+function run_reinit_db($task, $args)
+{
+    $dir = $args[0];
+
+    if (!is_dir($dir))
+        throw new pakeException('"'.$dir.'" is not a directory');
+
+    $dir = realpath($dir);
+
+    if (!file_exists($dir.'/application.yml'))
+        throw new pakeException('"'.$dir.'" does not look like MidgardMVC application. (can not find application.yml file)');
+
+    $dbname = 'midgard2';
+
+    if (file_exists($dir.'/'.$dbname.'.db')) {
+        // if (file_exists($dir.'/'.$dbname.'.db.bak')) {
+        //     pake_remove($dbname.'.db.bak', $dir);
+        // }
+        pake_rename($dir.'/'.$dbname.'.db', $dir.'/'.$dbname.'.db.bak');
+    } else {
+        pake_echo_error('Can not find old database file. Got nothing to backup');
+    }
+
+    init_mvc_stage2($dir, $dbname);
+}
 
 
 // HELPERS
