@@ -112,7 +112,8 @@ function get_mvc_component($component, $sources, $target_dir)
                     break;
 
                     case 'github':
-                        get_mvc_component_from_github($source['user'], $source['repository'], $source['branch'], $component_dir);
+                        $is_private = isset($source['private']) ? $source['private'] : false;
+                        get_mvc_component_from_github($source['user'], $source['repository'], $source['branch'], $is_private, $component_dir);
                     break;
 
                     case 'subversion':
@@ -202,17 +203,18 @@ function get_mvc_component_from_git($url, $branch, $component_dir)
     pakeGit::clone_repository($url, $component_dir)->checkout($branch);
 }
 
-function get_mvc_component_from_github($user, $repository, $branch, $component_dir)
+function get_mvc_component_from_github($user, $repository, $branch, $is_private, $component_dir)
 {
-    try
-    {
-        // At first, we try "git" protocol
-        get_mvc_component_from_git('git://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
-    }
-    catch (pakeException $e)
-    {
-        // Then fallback to http
-        get_mvc_component_from_git('https://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+    if ($is_private) {
+        get_mvc_component_from_git('git@github.com:'.$user.'/'.$repository.'.git', $branch, $component_dir);
+    } else {
+        try {
+            // At first, we try "git" protocol
+            get_mvc_component_from_git('git://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+        } catch (pakeException $e) {
+            // Then fallback to http
+            get_mvc_component_from_git('https://github.com/'.$user.'/'.$repository.'.git', $branch, $component_dir);
+        }
     }
 }
 
