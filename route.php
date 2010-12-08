@@ -333,7 +333,7 @@ class midgardmvc_core_route
                         break;
 
                     default:
-                        throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}' the hint is not understood");
+                        throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}', but he hint is not understood");
                 }
             }
 
