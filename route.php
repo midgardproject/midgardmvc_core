@@ -40,7 +40,7 @@ class midgardmvc_core_route
      * @param string $controller controller class name 
      * @param string $action action method name
      * @param array $template_aliases keys are template names to override, values template names to use in their place
-     * @param string $mimetype 
+     * @param string $mimetype mimetype header to set
      */
     public function __construct($id, $path, $controller, $action, array $template_aliases, $mimetype = 'application/xhtml+xml')
     {
@@ -92,6 +92,7 @@ class midgardmvc_core_route
                 case 'integer':
                     $path = str_replace(array("{\${$key}}", "{\$int:{$key}}"), $value, $path);
                     break;
+                case 'float':
                 case 'double':
                     $path = str_replace(array("{\${$key}}", "{\$float:{$key}}"), $value, $path);
                     break;
@@ -316,16 +317,20 @@ class midgardmvc_core_route
         return $matched;
     }
 
-    private function normalize_path()
+    /** 
+     * Normalizes the given path
+     *
+     */
+    private function normalize_path($path)
     {
-        // Normalize route
-        $path = $this->path;
+        // If path has no GET variables and does not end in trailing slash, add trailing slash
         if (   strpos($path, '?') === false
             && substr($path, -1, 1) !== '/')
         {
             $path .= '/';
         }
-        return preg_replace('%/{2,}%', '/', $path);
+        // Convert doubled slashes to single ones
+        return mb_ereg_replace('/{2,}', '/', $path);
     }
 
     public function split_path()
@@ -345,7 +350,7 @@ class midgardmvc_core_route
             $path_args = true;
         }
         
-        $path = $this->normalize_path();
+        $path = $this->normalize_path($this->path);
         // Get route parts
         $path_parts = explode('?', $path, 2);
         $path = $path_parts[0];
