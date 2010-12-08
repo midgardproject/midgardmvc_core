@@ -103,7 +103,7 @@ class midgardmvc_core_route
             }
         }
 
-        if (preg_match_all('%\{$(.+?)\}%', $path, $link_matches))
+        if (mb_ereg_match('\{$(.+?)\}', $path))
         {
             throw new UnexpectedValueException("Missing arguments for route '{$this->id}': " . implode(', ', $link_remaining_args));
         }
@@ -125,6 +125,7 @@ class midgardmvc_core_route
             $query = array();
         }
 
+        $route_path_matches = array();
         if (!preg_match_all('%\{\$(.+?)\}%', $route_path, $route_path_matches))
         {
             // Simple route (only static arguments)
@@ -156,16 +157,18 @@ class midgardmvc_core_route
             return null;
         }
         // "complex" route (with variable arguments)
-        if(preg_match('%@%', $this->path, $match))
+        //if(preg_match('%@%', $this->path, $match))
+        if (strpos('@', $this->path) !== false)
         {
-            $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}\@%', '([^/]+?)', $route_path)) . '$%';
+            $route_path_regex = '^' . mb_ereg_replace('\{(.+?)\}\@', '([^/]+?)', $route_path) . '$';
         }
         else 
         {
-            $route_path_regex = '%^' . str_replace('%', '\%', preg_replace('%\{(.+?)\}%', '([^/]+?)', $route_path)) . '$%';
+            $route_path_regex = '^' . mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $route_path) . '$';
         }
         // echo "DEBUG: route_path_regex:{$route_path_regex} argv_str:{$argv_str}\n";
-        if (!preg_match($route_path_regex, $argv_str, $route_path_regex_matches))
+        $route_path_regex_matches = array();
+        if (!mb_ereg($route_path_regex, $argv_str, $route_path_regex_matches))
         {
             // Does not match, NEXT!
             return null;
@@ -289,7 +292,7 @@ class midgardmvc_core_route
             }
                             
             // Strip type hints from variable names
-            $varname = preg_replace('/^.+:/', '', $varname);
+            $varname = mb_ereg_replace('^.+:', '', $varname);
             
             if ($type_hint == 'token')
             {
@@ -305,10 +308,11 @@ class midgardmvc_core_route
                 }
             }
 
-            if (preg_match('%@%', $this->path, $match)) // Route @ set
+            //if (preg_match('%@%', $this->path, $match)) // Route @ set
+            if (strpos('@', $this->path) !== false)
             {
                 $path = explode('@', $route_path);
-                if (preg_match('%' . str_replace('/', '\/', preg_replace('%\{(.+?)\}%', '([^/]+?)', $path[0])) . '/(.*)\/%', $argv_str, $matches))
+                if (mb_ereg(str_replace('/', '\/', mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $path[0])) . '/(.*)\/', $argv_str, $matches))
                 {
                     $matched = explode('/', $matches[1]);
                 }
@@ -344,7 +348,7 @@ class midgardmvc_core_route
          * $matches[1] = /some/route/
          * $matches[2] = somedata
          */
-        preg_match('%([^@]*)@%', $this->path, $matches);
+        mb_ereg('([^@]*)@', $this->path, $matches);
         if(count($matches) > 0)
         {
             $path_args = true;
