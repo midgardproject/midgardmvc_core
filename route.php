@@ -24,7 +24,7 @@ class midgardmvc_core_route
     );
     public $mimetype = 'text/html';
 
-    public function __construct($id, $path, $controller, $action, array $template_aliases, $mimetype)
+    public function __construct($id, $path, $controller, $action, array $template_aliases, $mimetype = 'application/xhtml+xml')
     {
         $this->id = $id;
         $this->path = $path;
@@ -339,3 +339,4 @@ class midgardmvc_core_route
         return array($path, $path_get, $path_args);
     }
 }
+?>
