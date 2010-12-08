@@ -83,12 +83,30 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertEquals(7, $matched['baz']);
         $this->assertType('int', $matched['baz']);
 
-        $unmatched = $route->check_match('/foo/baz/five/');
-        $this->assertEquals(null, $unmatched);
-
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_check_match_typedvar_int_invalid()
+    {
+        $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$int:baz}', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo/baz/7/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertEquals(7, $matched['baz']);
+        $this->assertType('int', $matched['baz']);
+
+
+        $unmatched = $route->check_match('/foo/baz');
+        $this->assertEquals(null, $unmatched);
+
+        // This should throw exception
+        $unmatched = $route->check_match('/foo/baz/five/');
+    }
+
 
     public function test_check_match_typedvar_float()
     {
@@ -97,14 +115,31 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7.5, $matched['baz']);
-        $this->assertType('double', $matched['baz']);
-
-        $unmatched = $route->check_match('/foo/baz/five/');
-        $this->assertEquals(null, $unmatched);
+        $this->assertType('float', $matched['baz']);
 
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_check_match_typedvar_fload_invalid()
+    {
+        $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$float:baz}', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo/baz/7.5/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertEquals(7.5, $matched['baz']);
+        $this->assertType('float', $matched['baz']);
+
+        $unmatched = $route->check_match('/foo/baz');
+        $this->assertEquals(null, $unmatched);
+
+        // This should throw exception
+        $unmatched = $route->check_match('/foo/baz/five/');
+    }
+
 
     public function test_check_match_typedvar_guid()
     {
@@ -114,12 +149,28 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals('1dffd6e01102ccafd6e11dfb7306f10c214c77ac77a', $matched['baz']);
 
-        $unmatched = $route->check_match('/foo/baz/graphene/');
-        $this->assertEquals(null, $unmatched);
-
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function test_check_match_typedvar_guid_invalid()
+    {
+        $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$guid:baz}', 'foo', 'bar', array());
+        $matched = $route->check_match('/foo/baz/1dffd6e01102ccafd6e11dfb7306f10c214c77ac77a/');
+        $this->assertTrue(isset($matched['bar']));
+        $this->assertEquals('baz', $matched['bar']);
+        $this->assertEquals('1dffd6e01102ccafd6e11dfb7306f10c214c77ac77a', $matched['baz']);
+
+        $unmatched = $route->check_match('/foo/baz');
+        $this->assertEquals(null, $unmatched);
+
+        // This should throw exception
+        $unmatched = $route->check_match('/foo/baz/graphene/');
+    }
+
 
     public function test_check_match_tokenvar()
     {

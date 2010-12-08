@@ -318,7 +318,7 @@ class midgardmvc_core_route
                     case 'int':
                         if (!is_numeric($value))
                         {
-                            throw new UnexpectedValueException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not numeric");
+                            throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not numeric");
                         }
                         $matched[$varname] = (int) $value;
                         break;
@@ -327,13 +327,13 @@ class midgardmvc_core_route
                     case 'double':
                         if (!is_numeric($value))
                         {
-                            throw new UnexpectedValueException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not numeric");
+                            throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not numeric");
                         }
                         $matched[$varname] = (double) $value;
                         break;
 
                     default:
-                        throw new UnexpectedValueException("Variable '{$varname}' is type hinted as '{$type_hint}' the hint is not understood");
+                        throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}' the hint is not understood");
                 }
             }
 
