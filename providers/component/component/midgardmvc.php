@@ -261,7 +261,13 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
                 $route['template_aliases'] = array();
             }
 
-            $routes[$route_id] = new midgardmvc_core_route($route_id, $route['path'], $route['controller'], $route['action'], $route['template_aliases']);
+            if (!isset($route['mimetype']))
+            {
+                $route['mimetype'] = 'text/html';
+                // $route['mimetype'] = 'application/xhtml+xml';
+            }
+
+            $routes[$route_id] = new midgardmvc_core_route($route_id, $route['path'], $route['controller'], $route['action'], $route['template_aliases'], $route['mimetype']);
         }
         $this->cached_routes[$node_is_root] = $routes;
         return $routes;

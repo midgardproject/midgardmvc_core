@@ -13,6 +13,8 @@
  */
 interface midgardmvc_core_services_authentication
 {
+    public function check_session();
+
     public function on_auth_changed();
 
     public function get_person();

@@ -332,10 +332,7 @@ class midgardmvc_core_helpers_head
             $url = $_SERVER['REQUEST_URI'];
         }
         $app = midgardmvc_core::get_instance();
-        // ======================================================================================
-        // = Should be reenabled, eventually (breaks appserver, as sessions are not ported yet) =
-        // ======================================================================================
-        //$app->uimessages->store();
+        $app->uimessages->store();
         $app->dispatcher->header("Location: $url");
         $app->dispatcher->end_request();
     }

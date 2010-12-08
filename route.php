@@ -23,9 +23,8 @@ class midgardmvc_core_route
         'content' => '',
     );
     public $mimetype = 'text/html';
-    //public $mimetype = 'application/xhtml+xml';
 
-    public function __construct($id, $path, $controller, $action, array $template_aliases)
+    public function __construct($id, $path, $controller, $action, array $template_aliases, $mimetype)
     {
         $this->id = $id;
         $this->path = $path;
@@ -35,6 +34,7 @@ class midgardmvc_core_route
         {
             $this->template_aliases[$alias] = $template;
         }
+        $this->mimetype = $mimetype;
     }
 
     public function set_variables(array $arguments)

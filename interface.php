@@ -238,6 +238,9 @@ class midgardmvc_core
         // Load the head helper
         $this->head = new midgardmvc_core_helpers_head();
 
+        // Check authentication
+        $this->authentication->check_session();
+
         // Disable cache for now
         $request->set_data_item('cache_enabled', false);
 
@@ -379,21 +382,25 @@ class midgardmvc_core
                 $yaml_function = 'yaml_parse';
                 $use_yaml = true;
             }
-            if (extension_loaded('syck'))
+            elseif (extension_loaded('syck'))
             {
                 $yaml_function = 'syck_load';
                 $use_yaml = true;
             }
+
             if (!$use_yaml)
             {
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
-                require_once MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/spyc.php';
+                if (!class_exists('sfYaml'))
+                {
+                    require MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
+                }
             }
         }
 
         if (!$use_yaml)
         {
-            return Spyc::YAMLLoad($yaml_string);
+            return sfYaml::load($yaml_string);
         }
         return $yaml_function($yaml_string);
     }

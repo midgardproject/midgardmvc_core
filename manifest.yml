@@ -1,5 +1,7 @@
-component: midgardmvc_core
 version: 10.12.0devel
+requires_pear:
+    PHPTAL:
+        url: http://phptal.org/latest.tar.gz
 authors:
     bergie:
         name: Henri Bergius

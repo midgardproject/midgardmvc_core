@@ -94,12 +94,11 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             $this->dispatcher = new midgardmvc_core_services_dispatcher_manual();
         }
 
-        $request = midgardmvc_core_request::get_for_intent($intent);
+        $request = midgardmvc_core_request::get_for_intent($intent, $switch_context);
         $request->add_component_to_chain($this->midgardmvc->component->get('midgardmvc_core'));
         $request->set_subrequest();
-        
         if ($switch_context)
-        {        
+        {
             $this->midgardmvc->context->create($request);
         }
         
@@ -118,10 +117,10 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
         $request->set_arguments($routes[$route_id]->set_variables($arguments));
         $request->set_route($routes[$route_id]);
+
         $this->dispatcher->dispatch($request);
 
         $data = $request->get_data_item('current_component');
-
         if ($switch_context)
         {        
             $this->midgardmvc->context->delete();
@@ -151,7 +150,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     public function dynamic_load($intent, $route_id, array $arguments, $return_html = false)
     { 
         $request = midgardmvc_core_request::get_for_intent($intent);
-        $this->midgardmvc->context->create($request);        
+        $this->midgardmvc->context->create($request);
         $data = $this->dynamic_call($request, $route_id, $arguments, false);
 
         $this->template($request, 'content');
@@ -214,7 +213,11 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $data =& $request->get_data();
 
         $template_file = $this->midgardmvc->cache->template->get($request->get_identifier());
-        $content = file_get_contents($template_file);
+
+        $fp = fopen($template_file, 'r');
+        flock($fp, LOCK_SH);
+        $content = stream_get_contents($fp);
+        fclose($fp);
 
         if (strlen($content) == 0)
         {

@@ -27,7 +27,11 @@ class midgardmvc_core_controllers_authentication
     }
     
     public function get_login(array $args)
-    {   
+    {
+        if (midgardmvc_core::get_instance()->authentication->is_user())
+        {
+            midgardmvc_core::get_instance()->head->relocate('/');
+        }
         $exception_data = array();
         $exception_data['message'] = midgardmvc_core::get_instance()->i18n->get
         (
@@ -42,10 +46,7 @@ class midgardmvc_core_controllers_authentication
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
         {
-            if (midgardmvc_core::get_instance()->authentication->login($_POST['username'], $_POST['password']))
-            {
-                midgardmvc_core::get_instance()->head->relocate('/');
-            }
+            midgardmvc_core::get_instance()->authentication->login($_POST['username'], $_POST['password']);
         }
         $this->get_login($args);
     }
