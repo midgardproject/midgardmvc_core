@@ -15,7 +15,10 @@ pake_task('init_mvc');
 
 pake_task('_init_mvc_stage2'); // helper
 
-// show list of available tasks, by default
+pake_desc('Create fresh database for existing application');
+pake_task('reinit_db');
+
+// TASKS
 function run_default($task, $args)
 {
     pakeApp::get_instance()->display_tasks_and_comments();
@@ -68,6 +71,42 @@ function run_init_mvc($task, $args)
                         "'{$dir}/run' and go to http://localhost:8001/");
 }
 
+function run__init_mvc_stage2($task, $args)
+{
+    $dir = $args[0];
+    $dbname = $args[1];
+
+    init_database($dir, $dbname);
+}
+
+function run_reinit_db($task, $args)
+{
+    $dir = $args[0];
+
+    if (!is_dir($dir))
+        throw new pakeException('"'.$dir.'" is not a directory');
+
+    $dir = realpath($dir);
+
+    if (!file_exists($dir.'/application.yml'))
+        throw new pakeException('"'.$dir.'" does not look like MidgardMVC application. (can not find application.yml file)');
+
+    $dbname = 'midgard2';
+
+    if (file_exists($dir.'/'.$dbname.'.db')) {
+        // if (file_exists($dir.'/'.$dbname.'.db.bak')) {
+        //     pake_remove($dbname.'.db.bak', $dir);
+        // }
+        pake_rename($dir.'/'.$dbname.'.db', $dir.'/'.$dbname.'.db.bak');
+    } else {
+        pake_echo_error('Can not find old database file. Got nothing to backup');
+    }
+
+    init_mvc_stage2($dir, $dbname);
+}
+
+
+// HELPERS
 function get_mvc_components(array $application, $target_dir)
 {
     pake_echo_comment('fetching MidgardMVC components');
@@ -241,14 +280,6 @@ function init_mvc_stage2($dir, $dbname)
     );
 }
 
-function run__init_mvc_stage2($task, $args)
-{
-    $dir = $args[0];
-    $dbname = $args[1];
-
-    init_database($dir, $dbname);
-}
-
 function init_database($dir, $dbname)
 {
     _connect($dir, $dbname);
@@ -326,7 +357,7 @@ function create_env_fs($dir)
 
     if (file_exists($dir))
     {
-        throw new pakeException("Directory {$target_dir} already exists");
+        throw new pakeException("Directory {$dir} already exists");
     }
 
     pake_mkdirs($dir);
