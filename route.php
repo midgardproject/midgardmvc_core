@@ -307,10 +307,33 @@ class midgardmvc_core_route
             }
             else
             {
-                $matched[$varname] = $values[$index];
-                if ($type_hint == 'int')
+                $value = $values[$index];
+                switch($type_hint)
                 {
-                    $matched[$varname] = (int) $matched[$varname];
+                    case 'string':
+                    case '':
+                        $matched[$varname] = $value;
+                        break;
+
+                    case 'int':
+                        if (!is_numeric($value))
+                        {
+                            throw new UnexpectedValueException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not numeric");
+                        }
+                        $matched[$varname] = (int) $value;
+                        break;
+
+                    case 'float':
+                    case 'double':
+                        if (!is_numeric($value))
+                        {
+                            throw new UnexpectedValueException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not numeric");
+                        }
+                        $matched[$varname] = (double) $value;
+                        break;
+
+                    default:
+                        throw new UnexpectedValueException("Variable '{$varname}' is type hinted as '{$type_hint}' the hint is not understood");
                 }
             }
 

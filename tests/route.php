@@ -97,6 +97,7 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7.5, $matched['baz']);
+        $this->assertType('double', $matched['baz']);
 
         $unmatched = $route->check_match('/foo/baz/five/');
         $this->assertEquals(null, $unmatched);
