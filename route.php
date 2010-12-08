@@ -24,6 +24,24 @@ class midgardmvc_core_route
     );
     public $mimetype = 'text/html';
 
+    /**
+     * Constructor
+     *
+     * The path can have variables in the following fashion:
+     *
+     * /path/to/route/ (route with static arguments)
+     * /path/to/{$varname}/ (with variable argument)
+     * /path/to/{$varname}/{$varname2}/ (with two variable arguments)
+     * /path/to/{$(int|float|guid):varname}/ (variable argument with type hinting/checking)
+     * /path/to/@ (with variable lenght argument list at end of path)
+     *
+     * @param string $id route identifier
+     * @param string $path route path (see details about the path definition)
+     * @param string $controller controller class name 
+     * @param string $action action method name
+     * @param array $template_aliases keys are template names to override, values template names to use in their place
+     * @param string $mimetype 
+     */
     public function __construct($id, $path, $controller, $action, array $template_aliases, $mimetype = 'application/xhtml+xml')
     {
         $this->id = $id;
