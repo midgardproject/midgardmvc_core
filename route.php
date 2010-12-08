@@ -69,6 +69,7 @@ class midgardmvc_core_route
                         continue;
                     }
                     $path = str_replace('@', '/' . implode('/', $value), $path);
+                    continue;
                 }
                 $value_array = array();
                 foreach ($value as $part)
@@ -110,7 +111,7 @@ class midgardmvc_core_route
             }
             if ($path_backup === $path)
             {
-                throw new InvalidArgumentException("Argument '{key}' could not be placed, likely the value is of wrong type");
+                throw new InvalidArgumentException("Argument '{$key}' could not be placed, likely the value is of wrong type");
             }
         }
 
@@ -168,6 +169,10 @@ class midgardmvc_core_route
                     var_dump($args_matches);
                     */
                     $matched = array();
+                    if (substr($args_matches[1], -1, 1) == '/')
+                    {
+                        $args_matches[1] = substr($args_matches[1], 0, -1);
+                    }
                     $matched['variable_arguments'] = explode('/', $args_matches[1]);
                     return $matched;
                 }
