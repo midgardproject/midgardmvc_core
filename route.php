@@ -98,7 +98,14 @@ class midgardmvc_core_route
                     $path = str_replace(array("{\${$key}}", "{\$float:{$key}}"), $value, $path);
                     break;
                 case 'string':
-                    $path = str_replace(array("{\${$key}}", "{\$guid:{$key}}"), $value, $path);
+                    if (mgd_is_guid($value))
+                    {
+                        $path = str_replace(array("{\${$key}}", "{\$guid:{$key}}"), $value, $path);
+                    }
+                    else
+                    {
+                        $path = str_replace(array("{\${$key}}", "{\$string:{$key}}"), $value, $path);
+                    }
                     break;
             }
             if ($path_backup === $path)
@@ -144,7 +151,7 @@ class midgardmvc_core_route
                 }
                 else
                 {
-                    return $this->check_match_get($route_get, $query);
+                    return $this->check_match_get($route_get, $query, $argv_str);
                 }
             }
     
@@ -152,10 +159,16 @@ class midgardmvc_core_route
             if ($route_args) // Route @ set
             {
                 $path = explode('@', $route_path);
-                if (preg_match('%' . str_replace('/', '\/', $path[0]) . '/(.*)\/%', $argv_str, $matches))
+                $args_regex = '^' . str_replace('@', '(.+?)', mb_ereg_replace('\{(.+?)\}', '[^/]+?', $route_path)) . '$';
+                //echo "DEBUG: args_regex:{$args_regex} argv_str:{$argv_str}\n";
+                if (mb_ereg($args_regex, $argv_str, $args_matches))
                 {
+                    /*
+                    echo "DEBUG: args_matches\n";
+                    var_dump($args_matches);
+                    */
                     $matched = array();
-                    $matched['variable_arguments'] = explode('/', $matches[1]);
+                    $matched['variable_arguments'] = explode('/', $args_matches[1]);
                     return $matched;
                 }
             }
@@ -163,16 +176,16 @@ class midgardmvc_core_route
             return null;
         }
         // "complex" route (with variable arguments)
-        //if(preg_match('%@%', $this->path, $match))
-        if (strpos('@', $this->path) !== false)
+        //echo "DEBUG: route_args:{$route_args}  route_path:{$route_path} this->path:{$this->path}\n";
+        if (strpos($route_path, '@') !== false)
         {
-            $route_path_regex = '^' . mb_ereg_replace('\{(.+?)\}\@', '([^/]+?)', $route_path) . '$';
+            $route_path_regex = '^' . str_replace('@', '.*?', mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $route_path)) . '$';
         }
         else 
         {
             $route_path_regex = '^' . mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $route_path) . '$';
         }
-        // echo "DEBUG: route_path_regex:{$route_path_regex} argv_str:{$argv_str}\n";
+        //echo "DEBUG: route_path_regex:{$route_path_regex} argv_str:{$argv_str}\n";
         $route_path_regex_matches = array();
         if (!mb_ereg($route_path_regex, $argv_str, $route_path_regex_matches))
         {
@@ -180,9 +193,29 @@ class midgardmvc_core_route
             return null;
         }
 
+        /*
+        echo "DEBUG: route_path_regex_matches\n";
+        var_dump($route_path_regex_matches);
+        */
+
+        if ($route_args) // Route @ set
+        {
+            $path = explode('@', $route_path);
+            $args_regex = '^' . str_replace('@', '(.+?)', mb_ereg_replace('\{(.+?)\}', '[^/]+?', $route_path)) . '$';
+            //echo "DEBUG: args_regex:{$args_regex} argv_str:{$argv_str}\n";
+            if (mb_ereg($args_regex, $argv_str, $args_matches))
+            {
+                /*
+                echo "DEBUG: args_matches\n";
+                var_dump($args_matches);
+                */
+                $variable_matched = explode('/', $args_matches[1]);
+            }
+        }
+
         if ($route_get)
         {
-            $get_matched = $this->check_match_get($route_get, $query);
+            $get_matched = $this->check_match_get($route_get, $query, $argv_str);
             if (!$get_matched)
             {
                 // We have GET part that could not be matched, NEXT!
@@ -195,11 +228,23 @@ class midgardmvc_core_route
         array_shift($route_path_regex_matches);
 
         // We have a complete match, setup route_id arguments and return
-        $matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches);
+        $matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches, $argv_str);
         if ($route_get)
         {
             $matched = array_merge($matched, $get_matched);
+            unset($get_matched);
         }
+        if (   $route_args
+            && isset($variable_matched))
+        {
+            $matched['variable_arguments'] = $variable_matched;
+            unset($variable_matched);
+        }
+        /*
+        echo "DEBUG: matched\n";
+        var_dump($matched);
+        */
+
         return $matched;
     }
 
@@ -212,7 +257,7 @@ class midgardmvc_core_route
      *
      * @fixme Move action arguments to subarray
      */
-    private function check_match_get($route_get, array $query)
+    private function check_match_get($route_get, array $query, $argv_str)
     {
         if (!preg_match_all('%\&?(.+?)=\{(.+?)\}%', $route_get, $route_get_matches))
         {
@@ -241,7 +286,7 @@ class midgardmvc_core_route
 
         // Unlike in route_matches falling through means match
 
-        return $this->normalize_variables($route_get_matches[1], $matches);
+        return $this->normalize_variables($route_get_matches[1], $matches, $argv_str);
     }
 
     private function tokenize_argument($argument)
@@ -281,7 +326,7 @@ class midgardmvc_core_route
         return $tokens;
     }
 
-    private function normalize_variables($variables, $values)
+    private function normalize_variables($variables, $values, $argv_str)
     {
         // Map variable arguments
         $matched = array();
@@ -315,6 +360,14 @@ class midgardmvc_core_route
                         $matched[$varname] = $value;
                         break;
 
+                    case 'guid':
+                        if (!mgd_is_guid($value))
+                        {
+                            throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not guid");
+                        }
+                        $matched[$varname] = $value;
+                        break;
+
                     case 'int':
                         if (!is_numeric($value))
                         {
@@ -337,16 +390,8 @@ class midgardmvc_core_route
                 }
             }
 
-            //if (preg_match('%@%', $this->path, $match)) // Route @ set
-            if (strpos('@', $this->path) !== false)
-            {
-                $path = explode('@', $route_path);
-                if (mb_ereg(str_replace('/', '\/', mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $path[0])) . '/(.*)\/', $argv_str, $matches))
-                {
-                    $matched = explode('/', $matches[1]);
-                }
-            }
         }
+
         return $matched;
     }
 
@@ -356,12 +401,20 @@ class midgardmvc_core_route
      */
     private function normalize_path($path)
     {
-        // If path has no GET variables and does not end in trailing slash, add trailing slash
+        // Make sure the @ has a preceding slash
+        if (   ($at_position = strpos($path, '@')) !== false
+            && substr($path, max(array($at_position-1,0)), 2) !== '/@')
+        {
+            $path = str_replace('@', '/@', $path);
+        }
+        // If path has no GET variables and does not end in trailing slash (or @), add trailing slash
         if (   strpos($path, '?') === false
-            && substr($path, -1, 1) !== '/')
+            && substr($path, -1, 1) !== '/'
+            && substr($path, -1, 1) !== '@')
         {
             $path .= '/';
         }
+
         // Convert doubled slashes to single ones
         return mb_ereg_replace('/{2,}', '/', $path);
     }
