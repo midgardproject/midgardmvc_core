@@ -32,7 +32,7 @@ class midgardmvc_core_route
      * /path/to/route/ (route with static arguments)
      * /path/to/{$varname}/ (with variable argument)
      * /path/to/{$varname}/{$varname2}/ (with two variable arguments)
-     * /path/to/{$(int|float|guid):varname}/ (variable argument with type hinting/checking)
+     * /path/to/{$(int|float|guid):varname}/ (variable argument with type hinting/checking, NOTE: string is the implicit default type)
      * /path/to/@ (with variable lenght argument list at end of path)
      *
      * @param string $id route identifier
@@ -86,6 +86,7 @@ class midgardmvc_core_route
                 $key = "token:{$key}";
             }
 
+            $path_backup = (string)$path;
             $type = gettype($value);
             switch($type)
             {
@@ -97,15 +98,20 @@ class midgardmvc_core_route
                     $path = str_replace(array("{\${$key}}", "{\$float:{$key}}"), $value, $path);
                     break;
                 case 'string':
-                    $path = str_replace(array("{\${$key}}", "{\${$key}}"), $value, $path);
+                    $path = str_replace(array("{\${$key}}", "{\$guid:{$key}}"), $value, $path);
                     break;
-                
+            }
+            if ($path_backup === $path)
+            {
+                throw new InvalidArgumentException("Argument '{key}' could not be placed, likely the value is of wrong type");
             }
         }
 
-        if (mb_ereg_match('\{$(.+?)\}', $path))
+        // PONDER: what is wrong with the mb_ereg here (todo: check posix vs perl flavor differences)
+        //if (mb_ereg_match('\{\$([^}]+)\}', $path))
+        if (preg_match('%\{\$[^}]+\}%', $path))
         {
-            throw new UnexpectedValueException("Missing arguments for route '{$this->id}': " . implode(', ', $link_remaining_args));
+            throw new UnexpectedValueException("Missing arguments for route '{$this->id}'");
         }
 
         return explode('/', $path);

@@ -35,11 +35,13 @@ class midgardmvc_core_tests_route extends PHPUnit_FrameWork_TestCase
         $this->assertEquals('/foo/foo/1', implode('/', $path));
     }
 
-    public function test_set_emptyvariables()
+    /**
+     * @expectedException UnexpectedValueException
+     */
+    public function test_set_variables_missing()
     {
         $route = new midgardmvc_core_route('index', '/foo/{$bar}', 'foo', 'bar', array());
         $data = $route->set_variables(array());
-        $this->assertFalse(isset($data[2]));
     }
 
     /**
