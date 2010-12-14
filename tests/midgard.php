@@ -12,7 +12,7 @@
  *
  * @package midgardmvc_core
  */
-abstract class midgardmvc_core_tests_midgard extends PHPUnit_FrameWork_TestCase
+abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
 {
     private $config = null;
     public $dbtype = 'SQLite';
