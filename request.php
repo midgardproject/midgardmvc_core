@@ -256,6 +256,15 @@ class midgardmvc_core_request
         return $this->data[$key];
     }
 
+    public function __get($key)
+    {
+        switch ($key)
+        {
+            case 'uri':
+                return $this->get_path();
+        }
+    }
+
     public function get_data()
     {
         return $this->data;

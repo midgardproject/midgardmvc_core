@@ -296,6 +296,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
 
         $tal->midgardmvc = $this->midgardmvc;
+        $tal->request = $request;
         
         // FIXME: Remove this once Qaiku has upgraded
         $tal->MIDCOM = $this->midgardmvc;
