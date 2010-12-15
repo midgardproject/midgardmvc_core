@@ -49,8 +49,17 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
 
     public function get_configuration()
     {
-        // TODO: load configuration from parameter
-        return array();
+        static $configuration = array();
+        if (!$configuration)
+        {
+            $configuration_param = $this->node->get_parameter('midgardmvc_core', 'configuration');
+            if ($configuration_param)
+            {
+                $configuration = midgardmvc_core::read_yaml($configuration_param);
+            }
+        }        
+
+        return $configuration;
     }
 
     public function get_component()
