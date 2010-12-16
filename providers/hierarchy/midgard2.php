@@ -95,7 +95,94 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         return $node;
     }
 
-    public function prepare_nodes(array $nodes, $destructive = false)
+    private static function prepare_node(midgardmvc_core_node $node, array $node_data, $destructive)
     {
+        $node->title = $node_data['title'];
+        $node->component = $node_data['component'];
+        if (   $destructive
+            || !$node->content)
+        {
+            $node->content = $node_data['content'];
+        }
+
+        if ($node->guid)
+        {
+            $node->update();
+        }
+        else
+        {
+            $node->create();
+        }
+
+        if (isset($node_data['configuration']))
+        {
+            $node->set_parameter('midgardmvc_core', 'configuration', midgardmvc_core::write_yaml($node_data['configuration']));
+        }
+
+        self::prepare_node_children($node, $node_data, $destructive);
+    }
+
+    private static function prepare_node_children(midgardmvc_core_node $node, array $node_data, $destructive)
+    {
+        if (   !isset($node_data['children'])
+            || empty($node_data['children']))
+        {
+            return;
+        }
+
+        $qb = new midgard_query_builder('midgardmvc_core_node');
+        $qb->add_constraint('up', '=', $node->id);
+        $children = $qb->execute();
+        foreach ($children as $child)
+        {
+            if (!isset($node_data['children'][$child->name]))
+            {
+                // Child node in database that is missing from config
+                if ($destructive)
+                {
+                    $child->delete();
+                }
+                continue;
+            }
+
+            self::prepare_node($child, $node_data['children'][$child->name], $destructive);
+
+            unset($node_data['children'][$child->name]);
+        }
+
+        // Handle missing children
+        foreach ($node_data['children'][$child->name] as $name => $child_data)
+        {
+            $child = new midgardmvc_core_node();
+            $child->name = $name;
+            $child->up = $node->id;
+            self::prepare_node($child, $child_data, $destructive);
+        }
+    }
+
+    public static function prepare_nodes(array $nodes, $destructive = false)
+    {
+        // Get root node
+        $qb = new midgard_query_builder('midgardmvc_core_node');
+        if (midgardmvc_core::get_instance()->configuration->midgardmvc_root_page)
+        {
+            $qb->add_constraint('guid', '=', midgardmvc_core::get_instance()->configuration->midgardmvc_root_page);
+        }
+        else
+        {
+            $qb->add_constraint('up', '=', 0);
+            $qb->add_constraint('name', '=', 'midgardmvc_root');
+        }
+        $roots = $qb->execute();
+
+        if (count($roots) == 0)
+        {
+            // Initialize a new root node
+            $root = new midgardmvc_core_node();
+            $root->up = 0;
+            $root->name = 'midgardmvc_root';
+        }
+
+        self::prepare_node($root, $nodes, $destructive);
     }
 }

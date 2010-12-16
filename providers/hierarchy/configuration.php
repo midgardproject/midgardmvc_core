@@ -84,7 +84,7 @@ class midgardmvc_core_providers_hierarchy_configuration implements midgardmvc_co
         return false;
     }
 
-    public function prepare_nodes(array $nodes, $destructive = false)
+    public static function prepare_nodes(array $nodes, $destructive = false)
     {
         // Configuration nodes don't need to be created
         return;
