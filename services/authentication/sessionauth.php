@@ -37,6 +37,8 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
 
     public function check_session()
     {
+        $this->user = null;
+        $this->person = null;
         if ($this->session_cookie->read_login_session())
         {
             $sessionid = $this->session_cookie->get_session_id();

@@ -22,8 +22,7 @@ class midgardmvc_core_controllers_authentication
     {
         $app = midgardmvc_core::get_instance();
         $app->authentication->logout();
-        $app->dispatcher->header('Location: /');
-        $app->dispatcher->end_request();
+        midgardmvc_core::get_instance()->head->relocate('/');
     }
     
     public function get_login(array $args)

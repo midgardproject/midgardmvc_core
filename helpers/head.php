@@ -28,7 +28,7 @@ class midgardmvc_core_helpers_head
     // private $link_head = array();
     
     private $enable_jquery_noconflict = false;
-    private $jquery_inits = "";
+    private $jquery_inits = '';
     private $jquery_statuses = array();
     private $jquery_statuses_append = array();
 
@@ -36,6 +36,18 @@ class midgardmvc_core_helpers_head
     
     public function __construct()
     {
+        $this->link_head = array();
+        $this->link_head_urls = array();
+        $this->meta_head = array();
+        $this->js_head = array();
+        $this->prepend_script_head = array();
+        $this->script_head = array();
+        $this->enable_jquery_noconflict = false;
+        $this->jquery_inits = '';
+        $this->jquery_statuses = array();
+        $this->jquery_statuses_append = array();
+        $this->jquery_enabled = false;
+
         $this->configuration = midgardmvc_core::get_instance()->configuration;
         if ($this->configuration->enable_jquery_framework)
         {
