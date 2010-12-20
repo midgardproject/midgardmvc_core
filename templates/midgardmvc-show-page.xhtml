@@ -1,5 +1,5 @@
-<article xmlns:mgd="http://www.midgard-project.org/midgard2/9.03" tal:attributes="mgd:type current_component/type; mgd:guid current_component/object/guid">
-    <h1 mgd:property="title" tal:content="current_component/object/title">Title</h1>
+<article xmlns:mgd="http://www.midgard-project.org/midgard2/9.03" tal:attributes="typeof string:mgd:${current_component/type}; about string:urn:uuid:${current_component/object/guid}">
+    <h1 property="mgd:title" tal:content="current_component/object/title">Title</h1>
 
-    <div mgd:property="content" tal:content="structure current_component/object/content">Content</div>
+    <div property="mgd:content" tal:content="structure current_component/object/content">Content</div>
 </article>
