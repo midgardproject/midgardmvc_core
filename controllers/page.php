@@ -32,15 +32,7 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     
     public function get_url_update()
     {
-        return midgardmvc_core::get_instance()->dispatcher->generate_url
-        (
-            $this->request,
-            'mvcadmin_crud_update', array
-            (
-                'type' => 'midgardmvc_core_node', 
-                'guid' => $this->object->guid
-            )
-        );
+        return $this->request->get_prefix();
     }
 }
 ?>
