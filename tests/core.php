@@ -162,7 +162,7 @@ class midgardmvc_core_tests_core extends PHPUnit_Framework_TestCase
         ob_start();
         midgardmvc_core::get_instance()->serve($request);
         $content = ob_get_clean();
-        $this->assertTrue(strpos($content, '<h1 mgd:property="title">Midgard MVC</h1>') !== false);
+        $this->assertTrue(strpos($content, '<h1 property="mgd:title">Midgard MVC</h1>') !== false);
     }
 }
 ?>

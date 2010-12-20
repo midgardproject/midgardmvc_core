@@ -37,7 +37,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
         $element = midgardmvc_core::get_instance()->templating->get_element($this->_core->context->get_request(), 'ROOT');
         $this->assertNotEquals($original_element, $element, 'Template returned by templating service should not be the same as the template file because of includes');
 
-        $this->assertTrue(strpos($element, '<h1 mgd:property="title" tal:content="current_component/object/title">Title</h1>') !== false);
+        $this->assertTrue(strpos($element, '<h1 property="mgd:title" tal:content="current_component/object/title">Title</h1>') !== false);
 
         midgardmvc_core::get_instance()->context->delete();
     }
@@ -70,7 +70,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
     {
         // Test with returned output
         $content = midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'index', array(), true);
-        $this->assertTrue(strpos($content, '<h1 mgd:property="title">Subfolder</h1>') !== false);
+        $this->assertTrue(strpos($content, '<h1 property="mgd:title">Subfolder</h1>') !== false);
 
         // Test with direct output
         ob_start();
