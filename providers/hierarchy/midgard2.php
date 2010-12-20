@@ -17,11 +17,19 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         }
 
         $this->midgardmvc = midgardmvc_core::get_instance();
-        try
+        if ($this->midgardmvc->configuration->midgardmvc_root_page)
         {
-            $node = new midgardmvc_core_node($this->midgardmvc->configuration->midgardmvc_root_page);
+            try
+            {
+                $node = new midgardmvc_core_node($this->midgardmvc->configuration->midgardmvc_root_page);
+            }
+            catch (midgard_error_exception $e)
+            {
+                $node = new midgardmvc_core_node();
+                $node->get_by_path('/midgardmvc_root');
+            }
         }
-        catch (midgard_error_exception $e)
+        else
         {
             $node = new midgardmvc_core_node();
             $node->get_by_path('/midgardmvc_root');
