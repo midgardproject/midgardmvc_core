@@ -16,6 +16,8 @@ class midgardmvc_core_controllers_page extends midgardmvc_core_controllers_basec
     public function load_object(array $args)
     {
         $this->object = $this->request->get_node()->get_object();
+
+        midgardmvc_core::get_instance()->head->set_title($this->request->get_node()->title);
     }
     
     public function prepare_new_object(array $args)

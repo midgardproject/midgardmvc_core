@@ -278,7 +278,7 @@ class midgardmvc_core_helpers_head
         }
         if (isset($this->title))
         {
-            echo ("<title>{$this->title}</title>");
+            echo ("        <title>{$this->title}</title>\n");
         }
 
         foreach ($this->script_head as $js_call)
