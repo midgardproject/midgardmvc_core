@@ -151,7 +151,7 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         }
 
         // Handle missing children
-        foreach ($node_data['children'][$child->name] as $name => $child_data)
+        foreach ($node_data['children'] as $name => $child_data)
         {
             $child = new midgardmvc_core_node();
             $child->name = $name;
