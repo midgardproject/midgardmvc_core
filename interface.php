@@ -404,5 +404,45 @@ class midgardmvc_core
         }
         return $yaml_function($yaml_string);
     }
+
+    public static function write_yaml($yaml)
+    {
+        if (empty($yaml))
+        {
+            return '';
+        }
+
+        static $use_yaml = null;
+        static $yaml_function = null;
+        if (is_null($use_yaml))
+        {
+            // Check for YAML extension
+            if (extension_loaded('yaml'))
+            {
+                $yaml_function = 'yaml_emit';
+                $use_yaml = true;
+            }
+            elseif (extension_loaded('syck'))
+            {
+                $yaml_function = 'syck_dump';
+                $use_yaml = true;
+            }
+
+            if (!$use_yaml)
+            {
+                // YAML PHP extension is not loaded, include the pure-PHP implementation
+                if (!class_exists('sfYaml'))
+                {
+                    require MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
+                }
+            }
+        }
+
+        if (!$use_yaml)
+        {
+            return sfYaml::dump($yaml);
+        }
+        return $yaml_function($yaml);
+    }
 }
 ?>
