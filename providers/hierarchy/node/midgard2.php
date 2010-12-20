@@ -29,6 +29,11 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
 
     public function __construct(midgardmvc_core_node $node)
     {
+        $this->refresh_node($node);
+    }
+
+    public function refresh_node(midgardmvc_core_node $node)
+    {
         $this->node = $node;
         $this->name =& $node->name;
         $this->title =& $node->title;

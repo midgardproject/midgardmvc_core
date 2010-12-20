@@ -37,6 +37,18 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         $this->root_node_id = $node->id;
 
         $this->root_node = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
+
+        // Subscribe to node editing signals
+        midgard_object_class::connect_default('midgardmvc_core_node', 'action-updated', array($this, 'refresh_node'), array());
+    }
+
+    public function refresh_node(midgardmvc_core_node $node)
+    {
+        if (!isset(midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$node->id]))
+        {
+            return;
+        }
+        midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$node->id]->refresh_node($node);
     }
 
     public function get_root_node()
