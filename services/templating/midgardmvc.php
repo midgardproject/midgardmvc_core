@@ -101,10 +101,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         {
             $this->midgardmvc->context->create($request);
         }
-        
-        // Dynamic call with GET
-        // FIXME: Define a way to pass POST etc to a dynamic load
-        $request->set_method('get');
 
         // Run process injector for this request too
         $this->midgardmvc->component->inject($request, 'process');
