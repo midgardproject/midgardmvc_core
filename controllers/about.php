@@ -24,7 +24,7 @@ class midgardmvc_core_controllers_about
 
         $this->data['versions'] = array
         (
-            'midgardmvc'  => midgardmvc_core::get_instance()->componentloader->manifests['midgardmvc_core']['version'],
+            'midgardmvc'  => '',
             'php'     => phpversion(),
         );
 
@@ -34,22 +34,16 @@ class midgardmvc_core_controllers_about
         }
         
         $this->data['components'] = array();
-        foreach (midgardmvc_core::get_instance()->componentloader->manifests as $component => $manifest)
+        $components = midgardmvc_core::get_instance()->component->get_components();
+        foreach ($components as $component)
         {
-            if ($component == 'midgardmvc_core')
+            if ($component->name == 'midgardmvc_core')
             {
                 continue;
             }
             
-            $this->data['components'][$component] = array
-            (
-                'name'    => $manifest['component'],
-                'version' => $manifest['version'],
-            );
+            $this->data['components'][$component->name] = $component;
         }
-        
-        $this->data['authors'] = midgardmvc_core::get_instance()->componentloader->authors;
-        ksort($this->data['authors']);
     }
 
     public function get_database(array $args)

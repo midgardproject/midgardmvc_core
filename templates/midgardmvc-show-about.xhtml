@@ -20,7 +20,6 @@
         <tbody tal:repeat="component midgardmvc_core/components">
             <tr>
                 <th tal:content="component/name">Some component</th>
-                <td tal:content="component/version">1.0</td>
             </tr>
         </tbody>
     </table>
@@ -30,8 +29,8 @@
 
     <p property="dc:description">
         Midgard MVC is an <a href="http://en.wikipedia.org/wiki/Model-view-controller">application framework</a> for
-        the PHP programming language. It runs on top of Midgard, a Free Software 
-        <a href="http://en.wikipedia.org/wiki/Persistent_storage">persistent storage</a> plaftorm for 
+        the PHP programming language. It runs on top of Midgard2, a Free Software 
+        <a href="http://en.wikipedia.org/wiki/Persistent_storage">persistent storage</a> platform for 
         interactive web application development.
     </p>
     
@@ -44,19 +43,6 @@
     <p>
         <a href="http://www.midgard-project.org/" rel="foaf:homepage">www.midgard-project.org</a>
     </p>
-    
-    <h2>Credits</h2>
-    
-    <ul class="developers" tal:repeat="author midgardmvc_core/authors">
-        <li class="vcard" typeof="foaf:Person" about="http://example.net" tal:attributes="about author/url">
-            <link rel="foaf:member" href="http://www.midgard-project.org/" />
-            <span class="fn" rel="foaf:member">
-                <a href="http://example.net" rel="foaf:homepage" property="foaf:name" class="url" tal:attributes="href author/url" tal:content="author/name">
-                    Alice
-                </a>
-            </span>
-        </li>
-    </ul>
     
     <div class="logos">
         <a href="http://www.gnu.org/licenses/lgpl.html" rel="license">
