@@ -156,10 +156,25 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
         }
 
         $matched_routes = array_reverse($matched_routes);
+        $routes_tried = 0;
         foreach ($matched_routes as $route_id => $arguments)
         {
             $request->set_route($routes[$route_id]);
-            $this->dispatch_route($request, $arguments);
+            $routes_tried++;
+            try
+            {
+                $this->dispatch_route($request, $arguments);
+            }
+            catch (Exception $e)
+            {
+                if ($routes_tried == count($matched_routes))
+                {
+                    // Last route, throw the exception
+                    throw $e;
+                }
+                // Otherwise we try the next route
+                continue;
+            }
         }
     }
     
