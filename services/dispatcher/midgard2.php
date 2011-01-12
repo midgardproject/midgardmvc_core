@@ -175,6 +175,8 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
                 // Otherwise we try the next route
                 continue;
             }
+            // This route worked, stop here
+            break;
         }
     }
     
