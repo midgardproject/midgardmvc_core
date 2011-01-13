@@ -17,6 +17,7 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
     private $argv = array();
     private $path = null;
     private $children = array();
+    private $configuration = null;
 
     public $name = '';
     public $title = '';
@@ -49,17 +50,17 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
 
     public function get_configuration()
     {
-        static $configuration = array();
-        if (!$configuration)
+        if (is_null($this->configuration))
         {
             $configuration_param = $this->node->get_parameter('midgardmvc_core', 'configuration');
+            $this->configuration = array();
             if ($configuration_param)
             {
-                $configuration = midgardmvc_core::read_yaml($configuration_param);
+                $this->configuration = midgardmvc_core::read_yaml($configuration_param);
             }
-        }        
+        }
 
-        return $configuration;
+        return $this->configuration;
     }
 
     public function get_component()
