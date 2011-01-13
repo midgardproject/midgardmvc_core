@@ -1,8 +1,8 @@
 <?php
 class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_providers_hierarchy
 {
-    private $root_node = null;
-    private $root_node_id = null;
+    private static $root_node = null;
+    private static $root_node_id = null;
 
     public function __construct()
     {
@@ -28,6 +28,11 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
 
     private function load_root_node()
     {
+        if (self::$root_node)
+        {
+            return;
+        }
+
         $midgardmvc = midgardmvc_core::get_instance();
         if ($midgardmvc->configuration->midgardmvc_root_page)
         {
@@ -46,9 +51,9 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
             $node = new midgardmvc_core_node();
             $node->get_by_path('/midgardmvc_root');
         }
-        $this->root_node_id = $node->id;
+        self::$root_node_id = $node->id;
 
-        $this->root_node =  midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($node);
+        self::$root_node =  midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($node);
     }
 
     public function refresh_node(midgardmvc_core_node $node)
@@ -59,7 +64,7 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
 
     public function get_root_node()
     {
-        return $this->root_node;
+        return self::$root_node;
     }
 
     public function get_node_by_path($path)
@@ -72,14 +77,14 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         }
         if ($path == '')
         {
-            $this->root_node->set_arguments(array());
-            return $this->root_node;
+            self::$root_node->set_arguments(array());
+            return self::$root_node;
         }
         
         $path = explode('/', $path);
         $real_path = array();
         $argv = $path; 
-        $node = $this->root_node;
+        $node = self::$root_node;
         foreach ($path as $i => $p)
         {
             $child = $node->get_child_by_name($p);
@@ -108,8 +113,8 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         $qb = new midgard_query_builder('midgardmvc_core_node');
         $qb->add_constraint('component', '=', $component);
         $qb->begin_group('OR');
-            $qb->add_constraint('up', 'INTREE', $this->root_node_id);
-            $qb->add_constraint('id', '=', $this->root_node_id);
+            $qb->add_constraint('up', 'INTREE', self::$root_node_id);
+            $qb->add_constraint('id', '=', self::$root_node_id);
         $qb->end_group();
         $qb->set_limit(1);
         $nodes = $qb->execute();
