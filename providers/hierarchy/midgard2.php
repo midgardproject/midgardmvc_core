@@ -6,6 +6,15 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
 
     public function __construct()
     {
+        $this->check_dependencies();
+        $this->load_root_node();
+
+        // Subscribe to node editing signals
+        midgard_object_class::connect_default('midgardmvc_core_node', 'action-updated', array($this, 'refresh_node'), array());
+    }
+
+    private function check_dependencies()
+    {
         if (!extension_loaded('midgard2'))
         {
             throw new Exception('The midgardmvc hierarchy provider requires Midgard2 PHP extension to be present. If you\'re not running MVC with Midgard2 then use the configuration node provider');
@@ -15,13 +24,16 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         {
             throw new Exception('The Midgard2 schemas needed for the midgardmvc hierarchy provider are not loaded. Check your Midgard2 schema directory');
         }
+    }
 
-        $this->midgardmvc = midgardmvc_core::get_instance();
-        if ($this->midgardmvc->configuration->midgardmvc_root_page)
+    private function load_root_node()
+    {
+        $midgardmvc = midgardmvc_core::get_instance();
+        if ($midgardmvc->configuration->midgardmvc_root_page)
         {
             try
             {
-                $node = new midgardmvc_core_node($this->midgardmvc->configuration->midgardmvc_root_page);
+                $node = new midgardmvc_core_node($midgardmvc->configuration->midgardmvc_root_page);
             }
             catch (midgard_error_exception $e)
             {
@@ -36,19 +48,13 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         }
         $this->root_node_id = $node->id;
 
-        $this->root_node = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
-
-        // Subscribe to node editing signals
-        midgard_object_class::connect_default('midgardmvc_core_node', 'action-updated', array($this, 'refresh_node'), array());
+        $this->root_node =  midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($node);
     }
 
     public function refresh_node(midgardmvc_core_node $node)
     {
-        if (!isset(midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$node->id]))
-        {
-            return;
-        }
-        midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$node->id]->refresh_node($node);
+        $hierarchy_node = midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($node);
+        $hierarchy_node->refresh_node();
     }
 
     public function get_root_node()
@@ -111,8 +117,7 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         {
             return null;
         }
-        $node = new midgardmvc_core_providers_hierarchy_node_midgard2($nodes[0]);
-        return $node;
+        return midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($nodes[0]);
     }
 
     private static function prepare_node(midgardmvc_core_node $node, array $node_data, $destructive)

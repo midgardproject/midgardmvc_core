@@ -16,6 +16,7 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
     private $node = null;
     private $argv = array();
     private $path = null;
+    private $children = array();
 
     public $name = '';
     public $title = '';
@@ -38,13 +39,7 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
         $this->name =& $node->name;
         $this->title =& $node->title;
         $this->content =& $node->content;
-
-        // Store the node to local cache to speed up parent requests
-        self::$nodes[$node->id] = $this;
-        if (!isset(self::$nodes_by_component[$node->component]))
-        {
-            self::$nodes_by_component[$node->component] = $this;
-        }
+        $this->path = null;
     }
 
     public function get_object()
@@ -82,10 +77,6 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
         $this->argv = $argv;
     }
 
-    private function construct_path()
-    {
-    }
-
     public function get_path()
     {
         if (is_null($this->path))
@@ -110,34 +101,41 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
 
     public function get_child_nodes()
     {
-        $children = array();
+        if (!empty($this->children))
+        {
+            return $this->children;
+        }
         $qb = new midgard_query_builder('midgardmvc_core_node');
         $qb->add_constraint('up', '=', $this->node->id);
         $nodes = $qb->execute();
         foreach ($nodes as $node)
         {
-            $children[] = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
+            $this->children[] = self::get_instance($node);
         }
-        return $children;
+        return $this->children;
     }
 
     public function get_child_by_name($name)
     {
-        $qb = new midgard_query_builder('midgardmvc_core_node');
-        $qb->add_constraint('up', '=', $this->node->id);
-        $qb->add_constraint('name', '=', $name);
-        $qb->set_limit(1);
-        $nodes = $qb->execute();
-        if (count($nodes) == 0)
+        $children = $this->get_child_nodes();
+        foreach ($children as $child)
         {
-            return null;
+            if ($child->name == $name)
+            {
+                return $child;
+            }
         }
-        $node = new midgardmvc_core_providers_hierarchy_node_midgard2($nodes[0]);
-        return $node;
+        return null;
     }
 
     public function has_child_nodes()
     {
+        if (!empty($this->children))
+        {
+            // We already know this from cache
+            return true;
+        }
+
         $qb = new midgard_query_builder('midgardmvc_core_node');
         $qb->add_constraint('up', '=', $this->node->id);
         if ($qb->count() > 0)
@@ -158,14 +156,26 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
         {
             // Get from database
             $node = new midgardmvc_core_node($this->node->up);
-            $parent = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
-        }
-        else
-        {
-            // Get from local cache
-            $parent = midgardmvc_core_providers_hierarchy_node_midgard2::$nodes[$this->node->up];
+            return self::get_instance($node);
         }
 
-        return $parent;
+        // Get from local cache
+        return self::$nodes[$this->node->up];
+    }
+
+    public static function get_instance(midgardmvc_core_node $node)
+    {
+        if (isset(self::$nodes[$node->id]))
+        {
+            return self::$nodes[$node->id];
+        }
+        self::$nodes[$node->id] = new midgardmvc_core_providers_hierarchy_node_midgard2($node);
+
+        if (!isset(self::$nodes_by_component[$node->component]))
+        {
+            self::$nodes_by_component[$node->component] = self::$nodes[$node->id];
+        }
+
+        return self::$nodes[$node->id];
     }
 }
