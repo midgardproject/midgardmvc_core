@@ -154,17 +154,26 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
 
     public function get_template($template)
     {
-        return $this->path . "/templates/{$template}.xhtml";
+        $mvc = midgardmvc_core::get_instance();
+        if (isset($mvc->context->subtemplate))
+        {
+            return array($this->path . "/templates/{$mvc->context->subtemplate}/{$template}.xhtml", $this->path . "/templates/{$template}.xhtml");
+        }
+        return array($this->path . "/templates/{$template}.xhtml");
     }
 
     public function get_template_contents($template)
     {
-        $path = $this->get_template($template);
-        if (!file_exists($path))
+        $paths = $this->get_template($template);
+        foreach ($paths as $path)
         {
-            return null;
+            if (!file_exists($path))
+            {
+                continue;
+            }
+            return file_get_contents($path);
         }
-        return file_get_contents($path);
+        return null;
     }
 
     public function get_configuration()
