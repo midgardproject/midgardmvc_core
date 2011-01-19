@@ -24,6 +24,10 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
     {
         $request = new midgardmvc_core_request();
         $request->set_method($this->appserver_context['env']['REQUEST_METHOD']);
+        if (isset($this->appserver_context['env']['HTTP_X_HTTP_METHOD_OVERRIDE']))
+        {
+            $request->set_method($this->appserver_context['env']['HTTP_X_HTTP_METHOD_OVERRIDE']);
+        }
 
         // Parse URL into components (Mjolnir doesn't do this for us)
         $url_components = parse_url("http://{$this->appserver_context['env']['HTTP_HOST']}{$this->appserver_context['env']['REQUEST_URI']}");
