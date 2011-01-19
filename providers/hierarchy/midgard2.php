@@ -59,7 +59,7 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
     public function refresh_node(midgardmvc_core_node $node)
     {
         $hierarchy_node = midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($node);
-        $hierarchy_node->refresh_node();
+        $hierarchy_node->refresh_node($node);
     }
 
     public function get_root_node()
