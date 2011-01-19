@@ -132,6 +132,11 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
         throw new StartNewRequestException();
     }
 
+    public function get_stdin()
+    {
+        return $this->appserver_context['stdin'];
+    }
+
     public function _get_status()
     {
         return $this->status;
