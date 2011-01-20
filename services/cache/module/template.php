@@ -21,32 +21,17 @@ class midgardmvc_core_services_cache_module_template
     public function __construct(array $configuration)
     {
         $this->configuration = $configuration;
-        
-        if (!isset($configuration['directory']))
+        if (!isset($this->configuration['directory']))
         {
             throw new Exception("Cache directory not configured");
         }
 
-        if (isset($_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR']))
-        {
-            // Fluid instance has a dynamic cache directory location
-            // FIXME: We need to make configuration more dynamic to support this properly
-            $this->cache_directory = $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'];
-        }
-        elseif (   extension_loaded('midgard2')
-                && isset(midgard_connection::get_instance()->configuration) && midgard_connection::get_instance()->config->cachedir != '')
-        {
-            $this->cache_directory = midgard_connection::get_instance()->config->cachedir;
-        }
-        else
-        {
-            $this->cache_directory = str_replace('__MIDGARDCACHE__', $this->get_cache_directory(), $configuration['directory']);
-        }
-
+        $this->cache_directory = $this->get_cache_directory();
         if (!file_exists($this->cache_directory))
         {
             $res = @mkdir($this->cache_directory, 0777, true);
-            if (false === $res) {
+            if (false === $res)
+            {
                 throw new RuntimeException("Couldn't create '{$this->cache_directory}' cache directory");
             }
         }
@@ -57,22 +42,32 @@ class midgardmvc_core_services_cache_module_template
         }
     }
     
-    private function get_cache_directory()
+    public function get_cache_directory()
     {
-        if (   !isset($_MIDGARD)
-            || empty($_MIDGARD))
+        $cache_root = null;
+        if (extension_loaded('midgard2'))
         {
-            // FIXME: we need a way to access this in Mjolnir
-            return sys_get_temp_dir();
+            $config = midgard_connection::get_instance()->config;
+            if (   $config
+                && $config->cachedir)
+            {
+                $cache_root = $config->cachedir;
+            }
         }
-        switch ($_MIDGARD['config']['prefix'])
+
+        if (isset($_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR']))
         {
-            case '/usr':
-            case '/usr/local':
-                return '/var/cache/midgard';
-            default:
-                return "{$_MIDGARD['config']['prefix']}/var/cache/midgard";
+            // Midgard Runtime
+            $cache_root = $_ENV['MIDGARD_ENV_GLOBAL_CACHEDIR'];
         }
+
+        if (is_null($cache_root))
+        {
+            // Safe fallback, use /tmp
+            $cache_root = sys_get_temp_dir();
+        }
+
+        return str_replace('__MIDGARDCACHE__', $cache_root, $this->configuration['directory']);
     }
     
     public function check($identifier)

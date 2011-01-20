@@ -280,6 +280,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         }
 
         $tal = new PHPTAL($request->get_identifier());
+        $tal->setPhpCodeDestination($this->midgardmvc->cache->template->get_cache_directory());
         
         $tal->uimessages = false;
         if ($this->midgardmvc->configuration->enable_uimessages)
