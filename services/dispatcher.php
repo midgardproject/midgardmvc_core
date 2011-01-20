@@ -32,6 +32,8 @@ interface midgardmvc_core_services_dispatcher
 
     public function end_request();
 
+    public function get_stdin();
+
     public function session_has_var($name);
 
     public function session_get_var($name);

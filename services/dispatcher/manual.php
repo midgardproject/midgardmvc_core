@@ -191,6 +191,11 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
         return;
     }
 
+    public function get_stdin()
+    {
+        return NULL;
+    }
+
     public function session_has_var($name)
     {
         return isset($_SESSION[$name]);

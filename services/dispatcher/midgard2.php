@@ -129,6 +129,11 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
         exit();
     }
 
+    public function get_stdin()
+    {
+        return fopen("php://input", "r");
+    }
+
     /**
      * Load a component and dispatch the request to it
      */
