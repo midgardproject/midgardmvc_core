@@ -57,7 +57,7 @@ class midgardmvc_core_helpers_head
     
     public function set_title($title)
     {
-        $this->title = $title;   
+        $this->title = strip_tags($title);   
     }
     
     public function enable_jquery($version = '1.4.2')
