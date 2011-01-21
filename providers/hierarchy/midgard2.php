@@ -99,7 +99,7 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         // Set remaining parts of the path as node arguments
         $node->set_arguments($argv);
         // Set the actual path of the node (with arguments removed)
-        $node->set_path('/' . implode('/', $real_path));
+        $node->set_path('/' . implode('/', $real_path) . '/');
         return $node;
     }
 
@@ -211,6 +211,10 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
             $root = new midgardmvc_core_node();
             $root->up = 0;
             $root->name = 'midgardmvc_root';
+        }
+        else
+        {
+            $root = $roots[0];
         }
 
         self::prepare_node($root, $nodes, $destructive);
