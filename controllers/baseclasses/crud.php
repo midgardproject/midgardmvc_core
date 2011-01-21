@@ -167,9 +167,9 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->load_object($args);
         $this->data['object'] =& $this->object;
         
-        // Make a frozen form for display purposes
+        // Make a read-only form for display purposes
         $this->load_form();
-        //$this->form->freeze();
+        $this->form->set_readonly(true);
         $this->data['form'] =& $this->form;
         
         midgardmvc_core::get_instance()->authorization->require_do('midgard:delete', $this->object);
