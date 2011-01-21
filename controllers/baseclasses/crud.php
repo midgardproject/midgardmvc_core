@@ -72,22 +72,21 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
     public function get_create(array $args)
     { 
         $node = $this->request->get_node();
-        if ($node instanceof midgardmvc_core_providers_hierarchy_node_midgardmvc)
+        if ($node instanceof midgardmvc_core_providers_hierarchy_node_midgard2)
         {
             // If we have a Midgard node we can assign that as a "default parent"
             $this->data['parent'] = $node->get_object();
         }
-        
-        $this->data['object'] =& $this->object;
-        
+
         // Prepare the new object that form will eventually create
         $this->prepare_new_object($args);
+        $this->data['object'] =& $this->object;
 
         if (isset($this->data['parent']))
         {
             midgardmvc_core::get_instance()->authorization->require_do('midgard:create', $this->data['parent']);
         }
-        
+
         $this->load_form();
         $this->data['form'] =& $this->form;
     }
@@ -97,8 +96,11 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
         $this->get_create($args);
         try
         {
+            $transaction = new midgard_transaction();
+            $transaction->begin();
             $this->process_form();
             $this->object->create();
+            $transaction->commit();
             
             // TODO: add uimessage of $e->getMessage();
             $this->relocate_to_read();
@@ -147,8 +149,11 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
 
         try
         {
+            $transaction = new midgard_transaction();
+            $transaction->begin();
             $this->process_form();
             $this->object->update();
+            $transaction->commit();
 
             // FIXME: We can remove this once signals work again
             midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
@@ -181,7 +186,11 @@ abstract class midgardmvc_core_controllers_baseclasses_crud
 
         if (isset($_POST['delete']))
         {
+            $transaction = new midgard_transaction();
+            $transaction->begin();
             $this->object->delete();
+            $transaction->commit();
+
             // FIXME: We can remove this once signals are used for this
             midgardmvc_core::get_instance()->cache->invalidate(array($this->object->guid));
             midgardmvc_core::get_instance()->head->relocate(midgardmvc_core::get_instance()->context->get_request()->get_prefix());
