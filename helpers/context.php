@@ -152,6 +152,10 @@ class midgardmvc_core_helpers_context
      **/
     public function __isset($key)
     {
+        if (!isset($this->requests[$this->current_request]))
+        {
+            return false;
+        }
         return $this->requests[$this->current_request]->isset_data_item($key);
     }
 }
