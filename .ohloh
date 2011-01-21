@@ -1,0 +1,3 @@
+Disallow: /static/jQuery
+Disallow: /helpers/sfYaml
+Disallow: /helpers/markdown.php
