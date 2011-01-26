@@ -89,7 +89,12 @@ class midgardmvc_core_providers_hierarchy_node_midgard2 implements midgardmvc_co
             }
             else
             {
-                $this->path = $parent->get_path() . $this->name . '/';
+                $parent_path = $parent->get_path();
+                if (substr($parent_path, -1, 1) != '/')
+                {
+                    $parent_path .= '/';
+                }
+                $this->path = "{$parent_path}{$this->name}/";
             }
         }
         return $this->path;
