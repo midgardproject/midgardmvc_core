@@ -191,6 +191,10 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
 
         // Initialize controller and pass it the request object
         $controller_class = $route->controller;
+        if (!class_exists($controller_class))
+        {
+            throw new midgardmvc_exception_httperror("Controller class {$controller_class} not found", 500);
+        }
         $controller = new $controller_class($request);
         
         // Define the action method for the route_id
