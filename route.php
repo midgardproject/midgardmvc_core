@@ -233,7 +233,16 @@ class midgardmvc_core_route
         array_shift($route_path_regex_matches);
 
         // We have a complete match, setup route_id arguments and return
-        $matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches, $argv_str);
+        try
+        {
+            $matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches, $argv_str);
+        }
+        catch (InvalidArgumentException $e)
+        {
+            // Type checks failed, this URL doesn't match
+            return null;
+        }
+
         if ($route_get)
         {
             $matched = array_merge($matched, $get_matched);
