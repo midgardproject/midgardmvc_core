@@ -49,6 +49,9 @@ class midgardmvc_core_tests_core extends PHPUnit_Framework_TestCase
         unset($midgardmvc->newproperty);
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function test_singleton_nullable()
     {
         $midgardmvc = midgardmvc_core::get_instance();
@@ -59,7 +62,7 @@ class midgardmvc_core_tests_core extends PHPUnit_Framework_TestCase
         midgardmvc_core::clear_instance();
 
         $midgardmvc = midgardmvc_core::get_instance($this->configuration);
-        $this->assertEquals(false, $midgardmvc_new->newproperty);
+        $midgardmvc->newproperty;
     }
 
     public function test_known_providers_match()
