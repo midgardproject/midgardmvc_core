@@ -22,7 +22,12 @@ class midgardmvc_core_tests_services_authentication extends midgardmvc_core_test
 
     public function test_login_failed()
     {
-        $this->assertFalse(midgardmvc_core::get_instance()->authentication->login('admin', 'wrongpassword'));
+        $tokens = array
+        (
+            'login' => 'admin',
+            'password' => 'wrongpassword',
+        );
+        $this->assertFalse(midgardmvc_core::get_instance()->authentication->login($tokens));
         $this->assertFalse(midgardmvc_core::get_instance()->authentication->is_user());
         $this->assertEquals(null, midgardmvc_core::get_instance()->authentication->get_user());
         $this->assertEquals(null, midgardmvc_core::get_instance()->authentication->get_person());
@@ -30,7 +35,12 @@ class midgardmvc_core_tests_services_authentication extends midgardmvc_core_test
 
     public function test_login()
     {
-        $this->assertTrue(midgardmvc_core::get_instance()->authentication->login('admin', 'password'));
+        $tokens = array
+        (
+            'login' => 'admin',
+            'password' => 'password',
+        );
+        $this->assertTrue(midgardmvc_core::get_instance()->authentication->login($tokens));
         $this->assertTrue(midgardmvc_core::get_instance()->authentication->is_user());
     }
 }
