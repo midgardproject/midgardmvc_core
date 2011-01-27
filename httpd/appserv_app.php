@@ -6,6 +6,8 @@ class StartNewRequestException extends RuntimeException {}
 
 class midgardmvc_appserv_app
 {
+    private $mgd;
+
     public function __construct()
     {
         if (ini_get('midgard.http') == 1) {
@@ -17,8 +19,8 @@ class midgardmvc_appserv_app
         $config = new midgard_config();
         $config->read_file_at_path($filepath);
 
-        $mgd = midgard_connection::get_instance();
-        $mgd->open_config($config);
+        $this->mgd = midgard_connection::get_instance();
+        $this->mgd->open_config($config);
 
         // starting mvc
         $application_config = get_cfg_var('midgardmvc.application_config');
@@ -31,6 +33,9 @@ class midgardmvc_appserv_app
 
     public function __invoke($context)
     {
+        // making sure, that db-connection is still active
+        $this->mgd->reopen();
+
         // setting emulated superglobals
         $_SERVER = $context['env'];
         $_COOKIE = $context['_COOKIE'];
