@@ -8,6 +8,19 @@ class midgardmvc_appserv_app
 {
     public function __construct()
     {
+        if (ini_get('midgard.http') == 1) {
+            throw new LogicException("midgard.http should be set to 'Off', while running via AiP");
+        }
+
+        // opening connection
+        $filepath = get_cfg_var("midgard.configuration_file");
+        $config = new midgard_config();
+        $config->read_file_at_path($filepath);
+
+        $mgd = midgard_connection::get_instance();
+        $mgd->open_config($config);
+
+        // starting mvc
         $application_config = get_cfg_var('midgardmvc.application_config');
         if (!$application_config)
         {
