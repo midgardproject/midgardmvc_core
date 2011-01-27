@@ -378,8 +378,7 @@ class midgardmvc_core_request
             $identifier_source .= ';CONTENT=' . $this->route->template_aliases['content'];
         }
         
-        if (   isset($this->data['cache_enabled'])
-            && $this->data['cache_enabled'])
+        if (isset($this->data['cache_strategy']))
         {
             switch ($this->data['cache_strategy'])
             {
@@ -389,10 +388,10 @@ class midgardmvc_core_request
                     break;
                 default:
                     // Per-user cache
-                    if ($_core->authentication->is_user())
+                    if (midgardmvc_core::get_instance()->authentication->is_user())
                     {
-                        $user = $_core->authentication->get_person();
-                        $identifier_source .= ";USER={$user->username}";
+                        $user = midgardmvc_core::get_instance()->authentication->get_user();
+                        $identifier_source .= ";USER={$user->login}";
                     }
                     else
                     {
