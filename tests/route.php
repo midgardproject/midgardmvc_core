@@ -87,9 +87,6 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $unmatched);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function test_check_match_typedvar_int_invalid()
     {
         $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$int:baz}', 'foo', 'bar', array());
@@ -103,8 +100,8 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
 
-        // This should throw exception
         $unmatched = $route->check_match('/foo/baz/five/');
+        $this->assertEquals(null, $unmatched);
     }
 
 
@@ -121,9 +118,6 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $unmatched);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function test_check_match_typedvar_fload_invalid()
     {
         $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$float:baz}', 'foo', 'bar', array());
@@ -138,6 +132,7 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
 
         // This should throw exception
         $unmatched = $route->check_match('/foo/baz/five/');
+        $this->assertEquals(null, $unmatched);
     }
 
 
@@ -153,9 +148,6 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $unmatched);
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function test_check_match_typedvar_guid_invalid()
     {
         $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$guid:baz}', 'foo', 'bar', array());
@@ -167,8 +159,8 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
 
-        // This should throw exception
         $unmatched = $route->check_match('/foo/baz/graphene/');
+        $this->assertEquals(null, $unmatched);
     }
 
 
