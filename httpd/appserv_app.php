@@ -33,8 +33,11 @@ class midgardmvc_appserv_app
 
     public function __invoke($context)
     {
-        // making sure, that db-connection is still active
-        $this->mgd->reopen();
+        if (method_exists($this->mgd, 'reopen'))
+        {
+            // making sure, that db-connection is still active
+            $this->mgd->reopen();
+        }
 
         // setting emulated superglobals
         $_SERVER = $context['env'];
