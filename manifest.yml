@@ -37,20 +37,6 @@ routes:
         root_only: true
         template_aliases: 
             content: midgardmvc-invalidate-cache
-    midgardmvc_about:
-        controller: midgardmvc_core_controllers_about
-        action: about
-        path: /mgd:about/
-        root_only: true
-        template_aliases: 
-            content: midgardmvc-show-about
-    midgardmvc_about_database:
-        controller: midgardmvc_core_controllers_about
-        action: database
-        path: /mgd:about/database
-        root_only: true
-        template_aliases: 
-            content: midgardmvc-show-database
     login:
         controller: midgardmvc_core_controllers_authentication
         action: login
