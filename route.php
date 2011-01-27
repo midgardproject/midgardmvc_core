@@ -87,7 +87,7 @@ class midgardmvc_core_route
                 $key = "token:{$key}";
             }
 
-            $path_backup = (string)$path;
+            $path_backup = (string) $path;
             $type = gettype($value);
             switch($type)
             {
@@ -102,13 +102,12 @@ class midgardmvc_core_route
                     if (mgd_is_guid($value))
                     {
                         $path = str_replace(array("{\${$key}}", "{\$guid:{$key}}"), $value, $path);
+                        break;
                     }
-                    else
-                    {
-                        $path = str_replace(array("{\${$key}}", "{\$string:{$key}}"), $value, $path);
-                    }
+                    $path = str_replace(array("{\${$key}}", "{\$string:{$key}}"), $value, $path);
                     break;
             }
+
             if ($path_backup === $path)
             {
                 throw new InvalidArgumentException("Argument '{$key}' could not be placed, likely the value is of wrong type");
