@@ -234,8 +234,9 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
                 continue;
             }
 
-            if (isset($route['test_only'])
-                && $route['test_only'])
+            if (   isset($route['test_only'])
+                && $route['test_only']
+                && !$request->isset_data_item('test_mode'))
             {
                 // Drop test-only routes when not in unit tests
                 continue;

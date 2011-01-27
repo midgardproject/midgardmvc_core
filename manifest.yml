@@ -49,7 +49,6 @@ routes:
         action: logout
         path: /mgd:logout
         root_only: true
-    # Routes below should be transferred to some better place
     variable_test_route:
         controller: midgardmvc_core_controllers_page
         action: read

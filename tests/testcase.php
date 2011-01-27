@@ -54,6 +54,7 @@ abstract class midgardmvc_core_tests_testcase extends midgardmvc_core_tests_midg
         $this->_core = midgardmvc_core::get_instance($this->local_configuration);
         $request = new midgardmvc_core_request();
         $request->add_component_to_chain($this->_core->component->get('midgardmvc_core'));
+        $request->set_data_item('test_mode', true);
         $this->_core->context->create($request);
     }
     
