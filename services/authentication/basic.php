@@ -36,7 +36,7 @@ class midgardmvc_core_services_authentication_basic extends midgardmvc_core_serv
 
     public function login(array $tokens)
     {
-        if (!isset($tokens['login'])))
+        if (!isset($tokens['login']))
         {
             throw new InvalidArgumentException("Login tokens need to provide a login");
         }
