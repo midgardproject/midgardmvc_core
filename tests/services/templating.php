@@ -52,6 +52,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
 
     public function test_dynamic_call()
     {
+        midgardmvc_core::get_instance()->head = new midgardmvc_core_helpers_head();
         $data = midgardmvc_core::get_instance()->templating->dynamic_call('/subdir', 'index', array());
         $this->assertTrue(is_array($data), "Test whether dynamic call returned data");
         $this->assertTrue(isset($data['object']), "Test whether route returned an object");
@@ -69,6 +70,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
     public function test_dynamic_load()
     {
         // Test with returned output
+        midgardmvc_core::get_instance()->head = new midgardmvc_core_helpers_head();
         $content = midgardmvc_core::get_instance()->templating->dynamic_load('/subdir', 'index', array(), true);
         $this->assertTrue(strpos($content, '<h1 property="mgd:title">Subfolder</h1>') !== false);
 
