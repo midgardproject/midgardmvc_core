@@ -13,6 +13,13 @@
  */
 interface midgardmvc_core_services_authentication
 {
+    /**
+     * This method is called in the beginning of each request in order to check
+     * whether users have a valid login session open.
+     *
+     * When implementing this in an authentication service, do whatever that service
+     * requires for session validation and authenticate as necessary.
+     */
     public function check_session();
 
     public function on_auth_changed();
@@ -20,8 +27,13 @@ interface midgardmvc_core_services_authentication
     public function get_person();
     
     public function is_user();
-    
-    public function login($username, $password);
+
+    /**
+     * Authenticate user with the provided tokens.
+     * Typical tokens include 'login' and 'password', but may vary depending 
+     * on the actual authentication implementation
+     */
+    public function login(array $tokens);
     
     public function logout();
     

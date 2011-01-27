@@ -20,8 +20,7 @@ class midgardmvc_core_controllers_authentication
     
     public function get_logout(array $args)
     {
-        $app = midgardmvc_core::get_instance();
-        $app->authentication->logout();
+        midgardmvc_core::get_instance()->authentication->logout();
         midgardmvc_core::get_instance()->head->relocate('/');
     }
     
@@ -31,6 +30,7 @@ class midgardmvc_core_controllers_authentication
         {
             midgardmvc_core::get_instance()->head->relocate('/');
         }
+
         $exception_data = array();
         $exception_data['message'] = midgardmvc_core::get_instance()->i18n->get
         (
@@ -41,11 +41,15 @@ class midgardmvc_core_controllers_authentication
 
     public function post_login(array $args)
     {
-        // TODO: Fix some more intelligent way to determine login method
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
         {
-            midgardmvc_core::get_instance()->authentication->login($_POST['username'], $_POST['password']);
+            $tokens = array
+            (
+                'login' => $_POST['username'],
+                'password' => $_POST['password'],
+            );
+            midgardmvc_core::get_instance()->authentication->login($tokens);
         }
         $this->get_login($args);
     }

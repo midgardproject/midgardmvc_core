@@ -10,17 +10,11 @@
  * Provides a session based authentication method.
  * Session and login data is stored to midgardmvc_core_loginsession_db
  *
- * TODO: Refactoring is needed. Perhaps all more advanced authentication
- * methods should inherit the very basic authentication
- *
  * @package midgardmvc_core
  */
 
-class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_core_services_authentication
+class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_core_services_authentication_midgard2
 {
-    private $user = null;
-    private $person = null;
-    private $sitegroup = null;
     private $session_cookie = null;
     
     private $current_session_id = null;
@@ -30,9 +24,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     public function __construct()
     {
         $this->session_cookie = new midgardmvc_core_services_authentication_cookie();
-
-        // Connect to the Midgard "auth-changed" signal so we can get information from external authentication handlers
-        midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed_callback'), array());
+        parent::__construct();
     }
 
     public function check_session()
@@ -46,34 +38,17 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         }
     }
 
-    /**
-     * Signal callback for authentication state change
-     */
-    public function on_auth_changed_callback()
+    public function login(array $tokens)
     {
-        midgardmvc_core::get_instance()->authentication->on_auth_changed();
-    }
-
-    /**
-     * Refresh Midgard MVC internal authentication change information based on authentication state of Midgard Connection
-     */
-    public function on_auth_changed()
-    {
-        $this->user = midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->get_user();
-    }
-
-    public function login($username, $password, $read_session = true)
-    {
-        if (   $read_session
-            && $this->session_cookie->read_login_session())
+        if (!isset($tokens['login']))
         {
-            $sessionid = $this->session_cookie->get_session_id();
-            return $this->authenticate_session($sessionid);
+            throw new InvalidArgumentException('Login tokens need to provide a login');
         }
-        return $this->create_login_session($username, $password);
+
+        return $this->create_login_session($tokens);
     }
     
-    public function trusted_login($username)
+    public function trusted_login(array $tokens)
     {
         if ($this->session_cookie->read_login_session())
         {
@@ -81,108 +56,26 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             return $this->authenticate_session($sessionid);
         }
         $this->trusted_auth = true;
-        return $this->create_login_session($username, $password = '');
-    }    
-    
-    public function is_user()
-    {
-        if (! $this->user)
+
+        if (!isset($tokens['login']))
         {
-            return false;
+            throw new InvalidArgumentException("Trusted login tokens need to provide a login");
         }
-        
-        return true;
-    }
-    
-    public function get_person()
-    {
-        if (! $this->is_user())
+
+        if (isset($tokens['password']))
         {
-            return null;
+            unset($tokens['password']);
         }
-        
-        if (is_null($this->person))
-        {
-            $this->person = $this->user->get_person();
-            midgardmvc_core::get_instance()->cache->register_object($this->person->guid);
-        }
-        return $this->person;
-    }
-    
-    public function get_user()
-    {
-        return $this->user;
+
+        return $this->create_login_session($tokens);
     }
 
-    private function prepare_tokens($username, $password)
-    {
-        $auth_type = midgardmvc_core::get_instance()->configuration->get('services_authentication_authtype');
-        $login_tokens = array
-        (
-            'login' => $username,
-            'authtype' => $auth_type,
-        );
-        switch ($auth_type)
-        {
-            case 'Plaintext':
-                // Compare plaintext to plaintext
-                $login_tokens['password'] = $password;
-                break;
-            case 'SHA1':
-                $login_tokens['password'] = sha1($password);
-                break;
-            case 'SHA256':
-                $login_tokens['password'] = hash('sha256', $password);
-                break;
-            case 'MD5':
-                $login_tokens['password'] = md5($password);
-                break;
-            default:
-                throw new midgardmvc_exception_httperror('Unsupported authentication type attempted', 500);
-        }
-        // TODO: Support other types
-        
-        return $login_tokens;
-    }
-  
-    /**
-     * Executes the login to midgard.
-     * @param username
-     * @param password
-     * @return bool 
-     */
-    private function do_midgard_login($username, $password)
-    {
-        try
-        {
-            $user = new midgard_user($this->prepare_tokens($username, $password));
-            if ($user->login())
-            {
-                $this->user = $user;
-            }
-        }
-        catch (Exception $e)
-        {
-            midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$username}", 'warning');
-            $this->session_cookie->delete_login_session_cookie(); 
-            return false;
-        }
-        
-        return true;
-    }
-    
     /**
      * Function creates the login session entry to the database
      * TODO: Function does not produce any nice exceptions 
-     *
-     * @param username
-     * @param password
-     * @clientip determined automatically if not set
      */
-    private function create_login_session($username, $password, $clientip = null)
+    private function create_login_session(array $tokens, $clientip = null)
     {
-        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');    
-    
         if (is_null($clientip))
         {
             if (isset($_SERVER['REMOTE_ADDR']))
@@ -196,23 +89,33 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             }
         }
         
-        if (! $this->do_midgard_login($username, $password))
+        if (!$this->do_midgard_login($tokens))
         {
             return false;
         }
-        
+
+        // Create session to DB
+        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');
         $session = new midgardmvc_core_login_session();
         $session->userid = $this->user->guid;
-        $session->username = $username;
-        $session->password = $this->_obfuscate_password($password);
+        $session->username = $tokens['login'];
+        if (isset($tokens['password']))
+        {
+            $session->password = $this->_obfuscate_password($tokens['password']);
+        }
+        if (isset($tokens['authtype']))
+        {
+            $session->authtype = $tokens['authtype'];
+        }
         $session->clientip = $clientip;
         $session->timestamp = time();
         $session->trusted = $this->trusted_auth; // for trusted authentication
-        if (! $session->create())
+        if (!$session->create())
         {
-            // TODO: Add some exception?
+            midgardmvc_core::get_instance()->authorization->leave_sudo();
             return false;
         }
+        midgardmvc_core::get_instance()->authorization->leave_sudo();
 
         $result = array
         (
@@ -221,16 +124,14 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         );
         
         $this->current_session_id = $session->guid;
+
+        // By default the session expires when browser is closed
+        $expire_session = 0;
         if (isset($_POST['remember_login']))
         {
-            $this->session_cookie->create_login_session_cookie($session->guid, $this->user->guid, time() + 24 * 3600 * 365);
+            $expire_session = time() + 24 * 3600 * 365;
         }
-        else
-        {
-            $this->session_cookie->create_login_session_cookie($session->guid, $this->user->guid);
-        }
-
-        midgardmvc_core::get_instance()->authorization->leave_sudo();         
+        $this->session_cookie->create_login_session_cookie($session->guid, $this->user->guid, $expire_session);
 
         return $result;
     
@@ -239,7 +140,6 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     /**
      * Function deletes login session row from database and
      * cleans away the cookie
-     * TODO: Write the actual functionality
      */
     public function logout()
     {
@@ -248,20 +148,23 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
             $this->user->logout();
         }
 
+        // Remove session cookie from browser
+        $this->session_cookie->delete_login_session_cookie();
+
+        // Delete login session from DB
+        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');
         $qb = new midgard_query_builder('midgardmvc_core_login_session');
         $qb->add_constraint('guid', '=', $this->session_cookie->get_session_id());
         $res = $qb->execute();
-        $this->session_cookie->delete_login_session_cookie();
-        if (! $res)
+        if (!$res)
         {
             return false;
         }
-
-        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');
         $res[0]->delete();
         $res[0]->purge();
         midgardmvc_core::get_instance()->authorization->leave_sudo();
 
+        // Initialize a fresh session cookie handler
         $this->session_cookie = new midgardmvc_core_services_authentication_cookie();
         return true;
     }
@@ -269,8 +172,6 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
     /**
      * This function authenticates a session that has been created 
      * previously with load_login_session (mandatory)
-     * 
-     * On success ... TODO: Write more
      *
      * If authentication fails, given session id will be deleted
      * from database immediately.
@@ -280,27 +181,33 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      */
     public function authenticate_session($sessionid)
     {
-        $qb = new midgard_query_builder('midgardmvc_core_login_session');
-        $qb->add_constraint('guid', '=', $sessionid);
-        $res = $qb->execute();
-        if (!$res)
+        try
         {
+            $session = new midgardmvc_core_login_session($sessionid);
+        }
+        catch (midgard_error_exception $e)
+        {
+            midgardmvc_core::get_instance()->log(__CLASS__, "Failed to read session {$sessionid}", 'warning');
             $this->session_cookie->delete_login_session_cookie();
             return false;
         }
-        $session = $res[0];
 
-        $username = $session->username;
-        $password = $this->_unobfuscate_password($session->password);
-        $this->trusted_auth = $session->trusted;        
-        if (! $this->do_midgard_login($username, $password))
+        $tokens = array
+        (
+            'login' => $session->username,
+            'password' => $this->_unobfuscate_password($session->password),
+            'authtype' => $session->authtype,
+        );
+        $this->trusted_auth = $session->trusted;
+        if (!$this->do_midgard_login($tokens))
         {
-            if (!$session->delete())
-            {
-                // TODO: Throw exception
-                // TODO: Sessions must be purged time to time
-            }
+            // Session information was invalid, delete it
             $this->session_cookie->delete_login_session_cookie();
+
+            midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');
+            $session->delete();
+            $session->purge();
+            midgardmvc_core::get_instance()->authorization->leave_sudo();
             return false;
         }
 
@@ -314,7 +221,7 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         $session = new midgardmvc_core_login_session($this->session_cookie->get_session_id());
         $session->password = $pw;
         $session->update();
-    }    
+    }
     
     /**
      * This function obfuscates a password in some way so that accidential
@@ -332,7 +239,6 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      * @see _unobfuscate_password()
      * @access private
      */
-    
     private function _obfuscate_password($password)
     {
         return base64_encode($password);
@@ -346,11 +252,11 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
      * @see _unobfuscate_password()
      * @access private
      */
-    function _unobfuscate_password($password)
+    private function _unobfuscate_password($password)
     {
         return base64_decode($password);
     }
-    
+
     public function handle_exception(Exception $exception)
     {
         $app = midgardmvc_core::get_instance();
@@ -359,7 +265,13 @@ class midgardmvc_core_services_authentication_sessionauth implements midgardmvc_
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
         {
-            if ($this->login($_POST['username'], $_POST['password']))
+            $tokens = array
+            (
+                'login' => $_POST['username'],
+                'password' => $_POST['password'],
+            );
+
+            if ($this->login($tokens))
             {
                 // Dispatch again since now we have a user
                 $app->dispatcher->dispatch($request);
