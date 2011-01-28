@@ -108,6 +108,9 @@ abstract class midgardmvc_core_services_authentication_midgard2 implements midga
                 $tokens = $this->hash_password($tokens);
                 break;
         }
+
+        // Ensure that only active accounts can log in
+        $tokens['active'] = true;
         
         return $tokens;
     }
