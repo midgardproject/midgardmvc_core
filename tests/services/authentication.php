@@ -43,4 +43,28 @@ class midgardmvc_core_tests_services_authentication extends midgardmvc_core_test
         $this->assertTrue(midgardmvc_core::get_instance()->authentication->login($tokens));
         $this->assertTrue(midgardmvc_core::get_instance()->authentication->is_user());
     }
+
+    public function test_login_inactive()
+    {
+        $tokens = array
+        (
+            'login' => 'admin',
+            'password' => 'password',
+        );
+        $this->assertTrue(midgardmvc_core::get_instance()->authentication->login($tokens));
+
+        $user = midgardmvc_core::get_instance()->authentication->get_user();
+        $user->active = false;
+        $user->update();
+
+        $tokens = array
+        (
+            'login' => 'admin',
+            'password' => 'password',
+        );
+        $this->assertFalse(midgardmvc_core::get_instance()->authentication->login($tokens));
+
+        $user->active = true;
+        $user->update();
+    }
 }
