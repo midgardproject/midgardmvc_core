@@ -23,17 +23,15 @@ class midgardmvc_core_helpers_head
     
     private $prepend_script_head = array();
     private $script_head = array();
-    
-    // private $prepend_link_head = array();
-    // private $link_head = array();
-    
+
     private $enable_jquery_noconflict = false;
     private $jquery_inits = '';
     private $jquery_statuses = array();
     private $jquery_statuses_append = array();
 
-    public $jquery_enabled = false;    
-    
+    public $jquery_enabled = false;
+    public $jquery_ui_enabled = false;
+
     public function __construct()
     {
         $this->link_head = array();
@@ -47,6 +45,7 @@ class midgardmvc_core_helpers_head
         $this->jquery_statuses = array();
         $this->jquery_statuses_append = array();
         $this->jquery_enabled = false;
+        $this->jquery_ui_enabled = false;
 
         $this->configuration = midgardmvc_core::get_instance()->configuration;
         if ($this->configuration->enable_jquery_framework)
@@ -60,7 +59,7 @@ class midgardmvc_core_helpers_head
         $this->title = strip_tags($title);   
     }
     
-    public function enable_jquery($version = '1.4.2')
+    public function enable_jquery($version = '1.4.4')
     {
         if ($this->jquery_enabled)
         {
@@ -83,6 +82,35 @@ class midgardmvc_core_helpers_head
         }
         
         $this->jquery_enabled = true;
+    }
+
+    public function enable_jquery_ui($version = '1.8.9')
+    {
+        if ($this->jquery_ui_enabled)
+        {
+            return;
+        }
+
+        if (!$this->jquery_enabled)
+        {
+            // jQuery UI requires jQuery
+            $this->enable_jquery();
+        }
+
+        if ($this->configuration->jquery_load_from_google)
+        {
+            $ui_include  = "        <script>\n";
+            $ui_include .= "            google.load('jqueryui', '{$version}');\n"; 
+            $ui_include .= "        </script>\n";
+            $this->add_script($ui_include, true);
+        }
+        else
+        {
+            // Load from jQuery bundled with Midgard MVC package
+            $this->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-ui-{$version}.min.js");
+        }
+        
+        $this->jquery_ui_enabled = true;
     }
     
     /**
