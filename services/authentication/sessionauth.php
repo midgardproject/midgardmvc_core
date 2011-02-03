@@ -15,9 +15,9 @@
 
 class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_core_services_authentication_midgard2
 {
-    private $session_cookie = null;
+    protected $session_cookie = null;
     
-    private $current_session_id = null;
+    protected $current_session_id = null;
     
     private $trusted_auth = false;
         
@@ -74,7 +74,7 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
      * Function creates the login session entry to the database
      * TODO: Function does not produce any nice exceptions 
      */
-    private function create_login_session(array $tokens, $clientip = null)
+    protected function create_login_session(array $tokens, $clientip = null)
     {
         if (is_null($clientip))
         {
