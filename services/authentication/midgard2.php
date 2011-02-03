@@ -129,9 +129,24 @@ abstract class midgardmvc_core_services_authentication_midgard2 implements midga
                 $this->user = $user;
             }
         }
+        catch (midgard_error_exception $e)
+        {
+            midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$tokens['login']}: " . $e->getMessage(), 'warning');
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item
+            (
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('authentication failed', 'midgardmvc_core')
+            );
+            return false;
+        }
         catch (Exception $e)
         {
             midgardmvc_core::get_instance()->log(__CLASS__, "Failed authentication attempt for {$tokens['login']}: " . $e->getMessage(), 'warning');
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item
+            (
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('authentication failed: ' . $e->getMessage(), 'midgardmvc_core')
+            );
             return false;
         }
         

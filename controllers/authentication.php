@@ -13,9 +13,9 @@
  */
 class midgardmvc_core_controllers_authentication
 {
-    public function __construct()
+    public function __construct(midgardmvc_core_request $request)
     {
-        $this->configuration = midgardmvc_core::get_instance()->configuration;
+        $this->request = $request;
     }
     
     public function get_logout(array $args)
@@ -41,12 +41,10 @@ class midgardmvc_core_controllers_authentication
             midgardmvc_core::get_instance()->head->relocate($this->data['redirect_url']);
         }
 
-        $exception_data = array();
-        $exception_data['message'] = midgardmvc_core::get_instance()->i18n->get
-        (
-            'please enter your username and password', 'midgardmvc_core'
-        );
-        midgardmvc_core::get_instance()->context->midgardmvc_core_exceptionhandler = $exception_data;
+        if (!$this->request->isset_data_item('midgardmvc_core_services_authentication_message'))
+        {
+            $this->request->set_data_item('midgardmvc_core_services_authentication_message', midgardmvc_core::get_instance()->i18n->get('please enter your username and password', 'midgardmvc_core'));
+        }
     }
 
     public function post_login(array $args)

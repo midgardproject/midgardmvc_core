@@ -50,6 +50,10 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         $ldapuser = $this->ldap_authenticate($tokens);
         if (!$ldapuser)
         {
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('ldap authentication failed', 'midgardmvc_core')
+            );
             return false;
         }
 
@@ -62,6 +66,10 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         // Otherwise we need to create the necessary Midgard account
         if (!$this->create_account($ldapuser, $tokens))
         {
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('midgard account creation failed', 'midgardmvc_core')
+            );
             return false;
         }
 

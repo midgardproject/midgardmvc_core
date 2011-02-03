@@ -113,6 +113,10 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
         if (!$session->create())
         {
             midgardmvc_core::get_instance()->authorization->leave_sudo();
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('authentication session creation failed', 'midgardmvc_core')
+            );
             return false;
         }
         midgardmvc_core::get_instance()->authorization->leave_sudo();
@@ -292,6 +296,12 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
         $request->set_route($route);
         
         $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
+        $request->set_data_item
+        (
+            'midgardmvc_core_services_authentication_message', 
+            $data['message']
+        );
+
         $request->set_data_item('cache_enabled', false);
 
         // Do normal templating
