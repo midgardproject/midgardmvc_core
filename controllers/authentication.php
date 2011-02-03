@@ -26,9 +26,19 @@ class midgardmvc_core_controllers_authentication
     
     public function get_login(array $args)
     {
+        if (!isset($this->data['redirect_url']))
+        {
+            $this->data['redirect_url'] = '/';
+
+            if (isset($_GET['redirect']))
+            {
+                $this->data['redirect_url'] = $_GET['redirect'];
+            }
+        }
+
         if (midgardmvc_core::get_instance()->authentication->is_user())
         {
-            midgardmvc_core::get_instance()->head->relocate('/');
+            midgardmvc_core::get_instance()->head->relocate($this->data['redirect_url']);
         }
 
         $exception_data = array();
@@ -41,6 +51,11 @@ class midgardmvc_core_controllers_authentication
 
     public function post_login(array $args)
     {
+        if (isset($_POST['redirect']))
+        {
+            $this->data['redirect_url'] = $_POST['redirect'];
+        }
+
         if (   isset($_POST['username']) 
             && isset($_POST['password']))
         {

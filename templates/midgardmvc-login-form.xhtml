@@ -19,6 +19,7 @@
             <div class="errors" tal:content="midgardmvc_core_exceptionhandler/message">Lorem ipsum</div>
             
             <form method='post' action=''>
+                <input type="hidden" name="redirect" tal:attributes="value current_component/redirect_url" />
                 <table>
                 	<tr>
                 		<td>
