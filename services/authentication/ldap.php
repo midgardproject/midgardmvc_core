@@ -53,6 +53,9 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
             return false;
         }
 
+        // LDAP authentication handled, we don't need the password any longer
+        unset($tokens['password']);
+
         // If user is already in DB we can just log in
         if (parent::create_login_session($tokens, $clientip))
         {
