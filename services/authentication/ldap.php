@@ -186,7 +186,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
 
         ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-        if (@ldap_bind($ds, "cn={$tokens['login']},{$this->dn},{$tokens['password']}")) 
+        if (@ldap_bind($ds, "cn={$tokens['login']},{$this->dn}", $tokens['password'])) 
         {
             // Valid account
             $userinfo = $this->ldap_search($ds, $tokens['login']);
