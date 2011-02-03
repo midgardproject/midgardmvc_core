@@ -82,13 +82,13 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
 
         $qb = new midgard_query_builder('midgard_person');
         $qb->add_constraint('firstname', '=', $ldapuser['firstname']);
-        $qb->add_constraint('email', '=', $ldapuser['email']);
+        $qb->add_constraint('lastname', '=', $ldapuser['email']);
         $persons = $qb->execute();
         if (count($persons) == 0)
         {
             $person = new midgard_person();
             $person->firstname = $ldapuser['firstname'];
-            $person->email = $ldapuser['email'];
+            $person->lastname = $ldapuser['email'];
             if (!$person->create())
             {
                 midgardmvc_core::get_instance()->log
