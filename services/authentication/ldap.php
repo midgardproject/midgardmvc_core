@@ -91,6 +91,13 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
             $person->email = $ldapuser['email'];
             if (!$person->create())
             {
+                midgardmvc_core::get_instance()->log
+                (
+                    __CLASS__,
+                    "Creating midgard_person for LDAP user failed: " . midgard_connection::get_instance()->get_error_string(),
+                    'warning'
+                );
+
                 $transaction->rollback();
                 midgardmvc_core::get_instance()->authorization->leave_sudo();
                 return false;
@@ -110,6 +117,13 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         $user->set_person($person);
         if (!$user->create())
         {
+            midgardmvc_core::get_instance()->log
+            (
+                __CLASS__,
+                "Creating midgard_user for LDAP user failed: " . midgard_connection::get_instance()->get_error_string(),
+                'warning'
+            );
+
             $transaction->rollback();   
             midgardmvc_core::get_instance()->authorization->leave_sudo();
             return false;
