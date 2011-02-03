@@ -50,10 +50,6 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         $ldapuser = $this->ldap_authenticate($tokens);
         if (!$ldapuser)
         {
-            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
-                'midgardmvc_core_services_authentication_message', 
-                midgardmvc_core::get_instance()->i18n->get('ldap authentication failed', 'midgardmvc_core')
-            );
             return false;
         }
 
@@ -66,7 +62,8 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         // Otherwise we need to create the necessary Midgard account
         if (!$this->create_account($ldapuser, $tokens))
         {
-            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item
+            (
                 'midgardmvc_core_services_authentication_message', 
                 midgardmvc_core::get_instance()->i18n->get('midgard account creation failed', 'midgardmvc_core')
             );
@@ -136,12 +133,16 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
      */
     private function ldap_search($ldap_connection, $username)
     {
-        $username = 'uid=' . $username;
-        $sr = ldap_search($ldap_connection, $this->dn, $username);
+        $sr = ldap_search($ldap_connection, $this->dn, "uid={$username}");
         $info = ldap_get_entries($ldap_connection, $sr);
 
         if ($info['count'] == 0)
         {
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('ldap authentication failed: no user information found', 'midgardmvc_core')
+            );
+
             return null;
         }
 
@@ -164,12 +165,22 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         if (   !isset($tokens['login'])
             || !isset($tokens['password']))
         {
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('ldap authentication requires login and password', 'midgardmvc_core')
+            );
+
             return null;
         }
 
         $ds = ldap_connect($this->server);
         if (!$ds)
         {
+            midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+                'midgardmvc_core_services_authentication_message', 
+                midgardmvc_core::get_instance()->i18n->get('ldap authentication failed: no connection to server', 'midgardmvc_core')
+            );
+
             return null;
         }
 
@@ -184,6 +195,10 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         }
 
         ldap_close($ds);
+        midgardmvc_core::get_instance()->context->get_request()->set_data_item(
+            'midgardmvc_core_services_authentication_message', 
+            midgardmvc_core::get_instance()->i18n->get('ldap authentication failed: login and password don\'t match', 'midgardmvc_core')
+        );
 
         return null;
     }
