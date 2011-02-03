@@ -110,6 +110,8 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         {
             $person = $persons[0];
         }
+
+        $person->set_parameter('midgardmvc_core_services_authentication_ldap', 'employeenumber', $ldapuser['employeenumber']);
         
         $user = new midgard_user();
         $user->login = $tokens['login'];
