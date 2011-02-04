@@ -57,7 +57,11 @@ class midgardmvc_core_route
 
     public function set_variables(array $arguments)
     {
-        $path = $this->path;
+        return self::set_variables_to_urlpattern($this->path, $arguments);
+    }
+
+    public static function set_variables_to_urlpattern($path, array $arguments)
+    {
         foreach ($arguments as $key => $value)
         {
             if (is_array($value))
@@ -118,7 +122,7 @@ class midgardmvc_core_route
         //if (mb_ereg_match('\{\$([^}]+)\}', $path))
         if (preg_match('%\{\$[^}]+\}%', $path))
         {
-            throw new UnexpectedValueException("Missing arguments for route '{$this->id}'");
+            throw new UnexpectedValueException("Missing arguments for route");
         }
 
         return explode('/', $path);
