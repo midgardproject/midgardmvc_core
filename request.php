@@ -424,7 +424,7 @@ class midgardmvc_core_request
         {
             throw new InvalidArgumentException("No intent provided");
         }
-        if (mgd_is_guid($intent))
+        if (function_exists('mgd_is_guid') && mgd_is_guid($intent))
         {
             // MgdSchema node GUID given
             $intent = new midgardmvc_core_node($intent);
