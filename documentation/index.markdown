@@ -107,7 +107,8 @@ A component is a functional module that runs inside Midgard MVC. It is usually r
      - `controllername.php`: A controller class for the component
   * models
      - `classname.xml`: Midgard Schema used by the component, registers type `classname`
-     - `viewname.xml`: Midgard View used by the component, registers view `viewname`
+     - views
+         - `viewname.xml`: Midgard View used by the component, registers view `viewname`
      - `classname.php`: PHP class that extends a Midgard Schema
   * services
      - `authentication.php`: component-specific implementation of Midgard MVC Authentication Service
