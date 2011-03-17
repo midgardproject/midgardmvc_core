@@ -18,21 +18,21 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
 {
     /**
      * Simple constructor.
-     * 
+     *
      * @access public
      */
-     
+
     private $tr = array();
     private $language = null;
-     
+
     public function __construct()
     {
         // Adding Midgard MVC core messages to the translation domains
         bindtextdomain('midgardmvc_core', MIDGARDMVC_ROOT . '/midgardmvc_core/locale/');
-        
-        try 
+
+        try
         {
-            // set language to use for this session (first valid language will 
+            // set language to use for this session (first valid language will
             // be used)
             $this->language = midgardmvc_core::get_instance()->configuration->get('default_language');
         }
@@ -40,24 +40,51 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
         {
             echo $e;
         }
-        
+
         $path = MIDGARDMVC_ROOT . "/midgardmvc_core/locale/";
         $this->tr['midgardmvc_core'] = new PHPTAL_GetTextTranslator();
         $this->tr['midgardmvc_core']->addDomain('midgardmvc_core', $path);
     }
-    
-    public function get($key, $component = null)
+
+    /**
+     * Gets a string from the i18n database
+     * If substitutes given then it will return the string with substitued elements
+     *
+     * @param string $key the msgid to lookup
+     * @param component mvc component
+     * @param array $subs associative array with $name => $value pairs
+     *
+     * @return string the translated string
+     */
+    public function get($key, $component = null, $subs = array())
     {
         if (is_null($component))
         {
-            return gettext($key);
+            $msgstr = gettext($key);
         }
         else
         {
-            return dgettext($component, $key);
+            $msgstr = dgettext($component, $key);
         }
+
+        if (! count($subs))
+        {
+            // no substitutions, return the string
+            return $msgstr;
+        }
+
+        if ($msgstr)
+        {
+            foreach ($subs as $name => $value )
+            {
+                // lookup the name prefixed with $ sign in msgstr and if replace it if found
+                $msgstr = str_replace('${' . $name . '}', $value, $msgstr);
+            }
+        }
+
+        return $msgstr;
     }
-    
+
     public function &set_translation_domain($component_name)
     {
         // If no component name is set, then it's from the core
@@ -66,14 +93,14 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
         {
             $component_name = 'midgardmvc_core';
         }
-        
+
          // Checking if TAL translator is already available
-        if ( isset($this->tr[$component_name])) 
-        { 
-            // useDomain must be called. Otherwise gettext context is not changed 
-            $this->tr[$component_name]->useDomain($component_name); 
-            return $this->tr[$component_name]; 
-        } 
+        if ( isset($this->tr[$component_name]))
+        {
+            // useDomain must be called. Otherwise gettext context is not changed
+            $this->tr[$component_name]->useDomain($component_name);
+            return $this->tr[$component_name];
+        }
 
         try
         {
@@ -90,14 +117,14 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
 
         // specify current domain
         $this->tr[$component_name]->useDomain($component_name);
-        return $this->tr[$component_name]; 
+        return $this->tr[$component_name];
     }
-    
+
     //public function set_language(midgard_language $language, $switch_content_language)
     public function set_language($locale, $switch_content_language)
     {
         $this->language = $locale;
-        
+
         foreach($this->tr as $key => $val)
         {
             $this->tr[$key]->setLanguage($this->language.'.utf8', $this->language);
@@ -110,11 +137,11 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
             $this->set_content_language($language);
         }
     }
-    
+
     public function set_content_language(midgard_language $language)
     {
-        die("Not implemented yet");        
+        die("Not implemented yet");
     }
-    
+
 }
 ?>
