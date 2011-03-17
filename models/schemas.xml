@@ -13,6 +13,9 @@
         <property name="password" type="string">
             <description>Authenticated user's password</description>
         </property>
+        <property name="authtype" type="string">
+            <description>Midgard authentication type used for session</description>
+        </property>
         <property name="clientip" type="string">
             <description>IP address user is authenticated from</description>
         </property>
