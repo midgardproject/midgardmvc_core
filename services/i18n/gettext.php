@@ -45,17 +45,44 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
         $this->tr['midgardmvc_core'] = new PHPTAL_GetTextTranslator();
         $this->tr['midgardmvc_core']->addDomain('midgardmvc_core', $path);
     }
-    
-    public function get($key, $component = null)
+
+    /**
+     * Gets a string from the i18n database
+     * If substitutes given then it will return the string with substitued elements
+     *
+     * @param string $key the msgid to lookup
+     * @param component mvc component
+     * @param array $subs associative array with $name => $value pairs
+     *
+     * @return string the translated string
+     */
+    public function get($key, $component = null, $subs = array())
     {
         if (is_null($component))
         {
-            return gettext($key);
+            $msgstr = gettext($key);
         }
         else
         {
-            return dgettext($component, $key);
+            $msgstr = dgettext($component, $key);
         }
+
+        if (! count($subs))
+        {
+            // no substitutions, return the string
+            return $msgstr;
+        }
+
+        if ($msgstr)
+        {
+            foreach ($subs as $name => $value )
+            {
+                // lookup the name prefixed with $ sign in msgstr and if replace it if found
+                $msgstr = str_replace('${' . $name . '}', $value, $msgstr);
+            }
+        }
+
+        return $msgstr;
     }
     
     public function &set_translation_domain($component_name)
