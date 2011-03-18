@@ -1,7 +1,7 @@
 Midgard Web Framework
 =====================
 
-Midgard MVC applications are written in the PHP language, and consist of a collection of loadable modules, or _components_.
+Midgard MVC is a web framework for PHP. Being a framework, it provides a standard way to build and deploy web applications. Your applications provide a set of interfaces that Midgard MVC calls when a matching HTTP request is made.
 
 Basic building blocks:
 ----------------------
@@ -15,12 +15,20 @@ Basic building blocks:
 Installation
 ------------
 
-* Download Midgard MVC and copy it to a place where your web server can access the files
-* Download and [install PHPTAL](http://phptal.org/download.html) for TAL templating support
-* If you're using Midgard MVC with the Midgard Content Repository, as you probably are:
-  - [Install php5-midgard2](http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/) for your distribution (or compile from sources)
-  - Enable the Midgard2 extension in your `php.ini` with an `extension=midgard2.so`
-  - Copy Midgard MVC database definitions (`midgardmvc_core/configuration/mgdschema.xml`) to the Midgard schema directory (by default `/usr/share/midgard2/schema/`)
+The easiest way to install Midgard MVC is by using the `midgardmvc_installer` tool. You can install the tool with PEAR by running the following:
+
+    $ sudo pear channel-discover pear.indeyets.pp.ru
+    $ sudo pear install indeyets/midgardmvc_installer
+
+After this you can install Midgard MVC applications by pointing the Midgard MVC installer to a _application configuration_ YAML file and a target directory. For example:
+
+    $ midgardmvc install https://github.com/bergie/org_midgardproject_productsite/raw/master/rdf.yml ~/midgardexample
+
+The Midgard MVC installer will install Midgard MVC, and all components and libraries required by the application. It will also generate a Midgard2 database for the application. Now running the application is easy:
+
+    $ ~/midgardexample/run
+
+By default the [AppServer in PHP](https://github.com/indeyets/appserver-in-php/wiki) used for running Midgard MVC will be available in <http://localhost:8001>.
 
 Application configuration
 -------------------------
@@ -42,46 +50,8 @@ You can also define a custom location for your application configuration file by
 
     midgardmvc.application_config=/etc/midgard2/example.yml
 
-Running Midgard MVC
--------------------
-
-Midgard MVC is usually run from a _rootfile_ that is set as the target of a rewrite rule on your web server. With lighttpd, the rule might look like the following:
-
-    url.rewrite-once = ( "^/midgardmvc-static/(.*)$" => "/midgardmvc-static/$1",   "^(.*)\.*" => "midgard-root.php")
-
-The folder `midgardmvc_core/httpd` contains example rootfiles for different setups. A barebones rootfile would look like the following:
-
-    <?php
-    // Load Midgard MVC
-    // Note: your Midgard MVC base directory has to be in PHP include_path
-    require('midgardmvc_core/framework.php');
-    // In this case we configure MVC with an array. You could also provide path to your application.yml
-    $config = array
-    (
-        'services_dispatcher' => 'midgard2',
-        'providers_component' => 'midgardmvc',
-    );
-    $midgardmvc = midgardmvc_core::get_instance($config);
-        
-    // Process the request
-    $request = $midgardmvc->process();
-
-    // Serve the request
-    $midgardmvc->serve($request);
-
-    // End
-    unset($midgardmvc);
-    ?>
-
-If you want to use Midgard content repository together with Midgard MVC, ensure that you have the `midgard2` extension enabled in your `php.ini` with `midgard.configuration_file` pointing to your database configuration and `midgard.http=On`.
-
-### Running Midgard MVC with the PHP AppServer
-
-It is also possible to run Midgard MVC using the PHP-based AppServer as your web server. In that case you need an installation of the AppServer in your PHP include path, and just have to run the following command:
-
-    $ php midgardmvc_core/httpd/midgardmvc-root-appserv.php
-
-### Midgard MVC request process
+Midgard MVC request process
+---------------------------
 
 * Bootstrapping
   * Midgard MVC bootstrap PHP file (`framework.php`) is called
@@ -137,7 +107,8 @@ A component is a functional module that runs inside Midgard MVC. It is usually r
      - `controllername.php`: A controller class for the component
   * models
      - `classname.xml`: Midgard Schema used by the component, registers type `classname`
-     - `viewname.xml`: Midgard View used by the component, registers view `viewname`
+     - views
+         - `viewname.xml`: Midgard View used by the component, registers view `viewname`
      - `classname.php`: PHP class that extends a Midgard Schema
   * services
      - `authentication.php`: component-specific implementation of Midgard MVC Authentication Service
