@@ -38,6 +38,17 @@ class midgardmvc_core
         $this->context = new midgardmvc_core_helpers_context();
 
         $this->configuration = new midgardmvc_core_services_configuration_chain($local_configuration);
+
+        if (!$this->configuration->development_mode)
+        {
+            // Disable assertions
+            assert_options(ASSERT_ACTIVE, false);
+            return;
+        }
+
+        assert_options(ASSERT_ACTIVE, true);
+        assert_options(ASSERT_WARNING, true);
+        assert_options(ASSERT_CALLBACK, 'midgardmvc_core_exceptionhandler::handle_assert');
     }
     
     /**

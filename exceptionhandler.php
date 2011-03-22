@@ -121,6 +121,13 @@ class midgardmvc_core_exceptionhandler
         }
     }
 
+    public static function handle_assert($file, $line, $expression) 
+    {
+        $message = "Assertion '{$expression}' failed, {$file} line {$line}";
+        midgardmvc_core::get_instance()->log('midgardmvc_core', "Assertion {$expression} failed, {$file} {$line}", 'warning');
+        throw new RunTimeException($message);
+    }
+
     private static function show_error_plaintext($http_code, $message_type, $message, $dispatcher = null)
     {
         if (is_null($dispatcher))
