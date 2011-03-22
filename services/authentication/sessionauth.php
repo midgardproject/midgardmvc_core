@@ -303,6 +303,8 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
         );
 
         $request->set_data_item('cache_enabled', false);
+        
+        midgardmvc_core::get_instance()->dispatcher->header(midgardmvc_core_exceptionhandler::header_by_code($exception->getCode()));
 
         // Do normal templating
         $app->templating->template($request);
@@ -310,6 +312,8 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
         
         // Clean up and finish
         $app->context->delete();
+        
+        midgardmvc_core::get_instance()->dispatcher->end_request();
     }
 
 }

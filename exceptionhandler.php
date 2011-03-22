@@ -138,7 +138,7 @@ class midgardmvc_core_exceptionhandler
         $dispatcher->end_request();
     }
 
-    private static function header_by_code($code)
+    public static function header_by_code($code)
     {
         $headers = array
         (
