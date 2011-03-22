@@ -325,35 +325,10 @@ class midgardmvc_core
             return self::$instance;
         }
 
-        if (is_array($local_configuration))
-        {
-            // Configuration passed as a PHP array
-            $configuration = $local_configuration;
-        }
-        elseif (   is_string($local_configuration)
-                && substr($local_configuration, 0, 1) == '/')
-        {
-            // Application YAML file provided, load configuration from it
-            if (!file_exists($local_configuration))
-            {
-                throw new Exception("Application configuration file {$local_configuration} not found");
-            }
-            $configuration_yaml = file_get_contents($local_configuration);
-            $configuration = midgardmvc_core::read_yaml($configuration_yaml);
-        }
-        else
-        {
-            throw new Exception('Unrecognized configuration given for Midgard MVC initialization');
-        }
-
-        if (!isset($configuration['services_dispatcher']))
-        {
-            throw new Exception('Dispatcher not defined in configuration given for Midgard MVC initialization');
-        }
-        if (!isset($configuration['providers_component']))
-        {
-            throw new Exception('Component provider not defined in configuration given for Midgard MVC initialization');
-        }
+        $configuration = self::validate_configuration
+        (
+            self::read_configuration($local_configuration)
+        );
 
         // Load and return MVC instance
         self::$instance = new midgardmvc_core();
@@ -364,6 +339,43 @@ class midgardmvc_core
     public static function clear_instance()
     {
         self::$instance = null;
+    }
+
+    private static function read_configuration($local_configuration = null)
+    {
+        if (is_array($local_configuration))
+        {
+            // Configuration passed as a PHP array
+            return $local_configuration;
+        }
+        elseif (   is_string($local_configuration)
+                && substr($local_configuration, 0, 1) == '/')
+        {
+            // Application YAML file provided, load configuration from it
+            if (!file_exists($local_configuration))
+            {
+                throw new Exception("Application configuration file {$local_configuration} not found");
+            }
+            $configuration_yaml = file_get_contents($local_configuration);
+            return midgardmvc_core::read_yaml($configuration_yaml);
+        }
+
+        throw new Exception('Unrecognized configuration given for Midgard MVC initialization');
+    }
+    
+    private static function validate_configuration(array $configuration)
+    {
+        if (!isset($configuration['services_dispatcher']))
+        {
+            throw new Exception('Dispatcher not defined in configuration given for Midgard MVC initialization');
+        }
+
+        if (!isset($configuration['providers_component']))
+        {
+            throw new Exception('Component provider not defined in configuration given for Midgard MVC initialization');
+        }
+        
+        return $configuration;
     }
 
     public static function read_yaml($yaml_string)
