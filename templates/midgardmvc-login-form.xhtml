@@ -16,7 +16,7 @@
                 </div>
             </header>
             
-            <div class="errors" tal:content="midgardmvc_core_services_authentication_message">Lorem ipsum</div>
+            <div tal:condition="exists:midgardmvc_core_services_authentication_message" class="errors" tal:content="midgardmvc_core_services_authentication_message">Lorem ipsum</div>
             
             <form method='post' action=''>
                 <input tal:condition="exists:current_component/redirect_url" type="hidden" name="redirect" tal:attributes="value current_component/redirect_url" />
