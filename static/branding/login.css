@@ -7,11 +7,7 @@ body.error #container {
     margin-left: auto;
     margin-right: auto;
     margin-top: 5%;
-    border: 2px solid #000000;
     font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
-    border-radius: 8px;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
     background-color: #ffffff;
     -moz-box-shadow: 2px 2px 5px #888;
     -webkit-box-shadow: 2px 2px 5px #888;
