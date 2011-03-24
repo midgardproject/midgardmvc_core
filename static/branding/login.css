@@ -70,3 +70,13 @@ body.error #container .errors
     -webkit-border-radius: 6px;
     text-align: center;
 }
+
+body.error #container footer {
+    padding: 1em;
+    padding-bottom: 0.4em;
+    color: #2e3436;
+}
+
+body.error #container footer a {
+    color: #2e3436;
+}
