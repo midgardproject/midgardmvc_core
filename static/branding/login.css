@@ -16,9 +16,9 @@ body.error #container {
 
 body.error #container header {
     display: block;
-    background-color: #2e3436;
-    background: -webkit-linear-gradient(#000000, #2e3436);
-    background: -moz-linear-gradient(100% 100% 90deg, #000000, #2e3436);
+    background-color: #343c3d;
+    background: -webkit-linear-gradient(#343c3d, #1b1f20);
+    background: -moz-linear-gradient(100% 100% 90deg, #343c3d, #1b1f20);
     padding: 1em;
     margin-bottom: 1em;
     height: 70px;
@@ -47,9 +47,9 @@ body.error #container input.submit {
     border: 1px solid #000000;
     color: #ffffff;
     padding: 0.4em;
-    background-color: #2e3436;
-    background: -webkit-linear-gradient(#000000, #2e3436);
-    background: -moz-linear-gradient(100% 100% 90deg, #000000, #2e3436);
+    background-color: #343c3d;
+    background: -webkit-linear-gradient(#343c3d, #1b1f20);
+    background: -moz-linear-gradient(100% 100% 90deg, #343c3d, #1b1f20);
     border-radius: 6px;
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
