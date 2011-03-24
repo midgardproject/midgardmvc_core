@@ -6,11 +6,20 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
 
     public function __construct()
     {
+        static $connected = false;
+
         $this->check_dependencies();
         $this->load_root_node();
+        
+        if ($connected) {
+            return;
+        }
 
         // Subscribe to node editing signals
-        midgard_object_class::connect_default('midgardmvc_core_node', 'action-updated', array($this, 'refresh_node'), array());
+        midgard_object_class::connect_default('midgardmvc_core_node', 'action-updated', array($this, 'refresh_node'));
+        midgard_object_class::connect_default('midgardmvc_core_node', 'action-create', array($this, 'check_node'));
+        midgard_object_class::connect_default('midgardmvc_core_node', 'action-created', array($this, 'refresh_node_parent'));
+        $connected = true;
     }
 
     private function check_dependencies()
@@ -60,6 +69,38 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
     {
         $hierarchy_node = midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($node);
         $hierarchy_node->refresh_node($node);
+    }
+
+    public function refresh_node_parent(midgardmvc_core_node $node)
+    {
+        if (!$node->up)
+        {
+            return;
+        }
+        $parent = new midgardmvc_core_node($node->up);
+        $hierarchy_node = midgardmvc_core_providers_hierarchy_node_midgard2::get_instance($parent);
+        $hierarchy_node->refresh_node($parent);
+    }
+
+    public function check_node(midgardmvc_core_node $node)
+    {
+        if (   !$node->up
+            && !is_null(self::$root_node))
+        {
+            $node->up = midgardmvc_core::get_instance()->context->get_request()->get_node()->get_object()->id;
+        }
+        
+        if (!$node->name)
+        {
+            if (midgardmvc_core::get_instance()->component->is_installed('midgardmvc_helper_urlize'))
+            {
+                $node->name = midgardmvc_helper_urlize::string($node->title);
+            }
+            else
+            {
+                $node->name = strtolower(str_replace(' ', '_', $node->title));
+            }
+        }
     }
 
     public function get_root_node()
