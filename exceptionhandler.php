@@ -86,9 +86,8 @@ class midgardmvc_core_exceptionhandler
                 {
                     throw $exception;
                 }
-
                 $route = $request->get_route();
-                $route->template_aliases['root'] = 'midcom-show-error';
+                $route->template_aliases['root'] = 'midgardmvc-show-error';
                 
                 $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
                 $request->set_data_item('cache_enabled', false);
@@ -104,16 +103,7 @@ class midgardmvc_core_exceptionhandler
             catch (Exception $e)
             {
                 // Templating isn't working
-                echo "<!DOCTYPE html>\n";
-                echo "<html>\n";
-                echo "    <head>\n";
-                echo "        <title>{$header}</title>\n";
-                echo "    </head>\n";
-                echo "    <body class=\"{$message_type}\">\n";
-                echo "        <h1>{$header}</h1>\n";
-                echo "        <p>{$message}</p>\n";
-                echo "    </body>\n";
-                echo "</html>";
+                self::show_error_untemplated($header, $message_type, $message);
             }
             
             // Clean up and finish
@@ -143,6 +133,20 @@ class midgardmvc_core_exceptionhandler
         
         echo "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n";
         $dispatcher->end_request();
+    }
+    
+    private static function show_error_untemplated($header, $message_type, $message)
+    {
+        echo "<!DOCTYPE html>\n";
+        echo "<html>\n";
+        echo "    <head>\n";
+        echo "        <title>{$header}</title>\n";
+        echo "    </head>\n";
+        echo "    <body class=\"{$message_type}\">\n";
+        echo "        <h1>{$header}</h1>\n";
+        echo "        <p>{$message}</p>\n";
+        echo "    </body>\n";
+        echo "</html>";
     }
 
     public static function header_by_code($code)
