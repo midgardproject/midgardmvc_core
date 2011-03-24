@@ -26,10 +26,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
     private $language = null;
      
     public function __construct()
-    {
-        // Adding Midgard MVC core messages to the translation domains
-        bindtextdomain('midgardmvc_core', MIDGARDMVC_ROOT . '/midgardmvc_core/locale/');
-        
+    {        
         try 
         {
             // set language to use for this session (first valid language will 
@@ -40,10 +37,6 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
         {
             echo $e;
         }
-        
-        $path = MIDGARDMVC_ROOT . "/midgardmvc_core/locale/";
-        $this->tr['midgardmvc_core'] = new PHPTAL_GetTextTranslator();
-        $this->tr['midgardmvc_core']->addDomain('midgardmvc_core', $path);
     }
 
     /**
@@ -67,7 +60,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
             $msgstr = dgettext($component, $key);
         }
 
-        if (! count($subs))
+        if (!count($subs))
         {
             // no substitutions, return the string
             return $msgstr;

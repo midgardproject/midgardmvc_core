@@ -26,19 +26,3 @@ msgstr "Muista minut"
 
 msgid "please enter your username and password"
 msgstr "Anna käyttäjätunnuksesi ja salasanasi"
-
-msgid "create"
-msgstr "Luo"
-
-msgid "create folder"
-msgstr "Luo kansio"
-
-msgid "read"
-msgstr "Lue"
-
-msgid "update"
-msgstr "Päivitä"
-
-msgid "delete"
-msgstr "Poista"
-

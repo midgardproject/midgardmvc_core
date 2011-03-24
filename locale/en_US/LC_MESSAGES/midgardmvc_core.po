@@ -20,20 +20,3 @@ msgstr "Remember me"
 
 msgid "please enter your username and password"
 msgstr "Please enter your username and password"
-
-msgid "create"
-msgstr "Create"
-
-msgid "create folder"
-msgstr "Create folder"
-
-msgid "read"
-msgstr "Read"
-
-msgid "update"
-msgstr "Update"
-
-msgid "delete"
-msgstr "Delete"
-
-
