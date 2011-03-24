@@ -182,6 +182,10 @@ class midgardmvc_core_providers_hierarchy_midgard2 implements midgardmvc_core_pr
         }
         else
         {
+            if (isset($node_data['guid']))
+            {
+                $node->set_guid($node_data['guid']);
+            }
             $node->create();
         }
 
