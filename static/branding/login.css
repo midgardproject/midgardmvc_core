@@ -1,0 +1,72 @@
+body.error {
+    background-color: #eeeeec;
+}
+
+body.error #container {
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    border: 2px solid #000000;
+    font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    background-color: #ffffff;
+    -moz-box-shadow: 2px 2px 5px #888;
+    -webkit-box-shadow: 2px 2px 5px #888;
+    box-shadow: 2px 2px 5px #888;
+}
+
+body.error #container header {
+    display: block;
+    background-color: #2e3436;
+    background: -webkit-linear-gradient(#000000, #2e3436);
+    background: -moz-linear-gradient(100% 100% 90deg, #000000, #2e3436);
+    padding: 1em;
+    margin-bottom: 1em;
+    height: 70px;
+}
+
+body.error #container header h1 {
+    background-image: url('midgardmvc_white_70.png');
+    background-position: left;
+    background-repeat: no-repeat;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 80px;
+	font-family: Cantarell, Helvetica, Arial, sans-serif;
+	color: #ffffff;
+	font-size: 40px;
+	margin-top: 9px;
+}
+
+body.error #container article {
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+}
+
+body.error #container input.submit {
+    border: 1px solid #000000;
+    color: #ffffff;
+    padding: 0.4em;
+    background-color: #2e3436;
+    background: -webkit-linear-gradient(#000000, #2e3436);
+    background: -moz-linear-gradient(100% 100% 90deg, #000000, #2e3436);
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+}
+
+body.error #container .errors
+{
+    background-color: #fcaf3e;
+    padding: 0.4em;
+    font-size: larger;
+    margin-bottom: 1em;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    text-align: center;
+}
