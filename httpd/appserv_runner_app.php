@@ -1,9 +1,10 @@
 <?php
 
-use MFS\AppServer\Apps\FileServe\FileServe as file_server;
-use MFS\AppServer\Middleware\PHP_Compat\PHP_Compat as aip_php_compat;
-use MFS\AppServer\Middleware\Logger\Logger as aip_logger;
-use MFS\AppServer\Middleware\Session\Session as aip_session;
+use AiP\App\FileServe as file_server;
+use AiP\Middleware\HTTPParser as aip_php_compat;
+use AiP\Middleware\Logger as aip_logger;
+use AiP\Middleware\Session as aip_session;
+use AiP\Middleware\URLMap as aip_urlmap;
 
 require __DIR__.'/appserv_app.php';
 
@@ -28,7 +29,7 @@ class midgardmvc_appserv_runner_app
             $urlmap["/midgardmvc-static/{$component->name}"] = new file_server("{$_midgardmvc_root}{$component->name}/static", 4000000);
         }
 
-        $map = new \MFS\AppServer\Middleware\URLMap\URLMap($urlmap);
+        $map = new aip_urlmap($urlmap);
 
         // we also want logging
         $this->app = new aip_logger($map, STDOUT);
