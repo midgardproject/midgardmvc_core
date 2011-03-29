@@ -20,7 +20,7 @@ class midgardmvc_core_tests_helpers_head extends midgardmvc_core_tests_testcase
         ob_start();
         $head->print_elements();
         $headers = ob_get_clean();
-        $this->assertTrue(strpos($headers, '<script type="text/javascript" src="/midgardmvc-static/midgardmvc_core/jQuery/jquery-1.4.4.min.js"></script>') !== false, 'Check for jQuery script tag');
+        $this->assertTrue(strpos($headers, '<script type="text/javascript" src="/midgardmvc-static/midgardmvc_core/jQuery/jquery-1.5.1.min.js"></script>') !== false, 'Check for jQuery script tag');
 
         $stat = $head->enable_jquery();
         $this->assertEquals(null, $stat, 'Ensure that jQuery is enabled only once');
