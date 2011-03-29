@@ -59,7 +59,7 @@ class midgardmvc_core_helpers_head
         $this->title = strip_tags($title);   
     }
     
-    public function enable_jquery($version = '1.4.4')
+    public function enable_jquery($version = '1.5.1')
     {
         if ($this->jquery_enabled)
         {
