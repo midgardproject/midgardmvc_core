@@ -58,7 +58,7 @@ class midgardmvc_appserv_app
             $mvc = midgardmvc_core::get_instance();
             $mvc->dispatcher->set_request_data($context);
 
-            call_user_func($context['logger'], "-> starting midgardmvc");
+            // call_user_func($context['logger'], "-> starting midgardmvc");
             try {
                 ob_start();
                 $request = $mvc->process();
@@ -66,7 +66,7 @@ class midgardmvc_appserv_app
                 $body = ob_get_clean();
             } catch (StartNewRequestException $e) {
                 $body = ob_get_clean();
-                call_user_func($context['logger'], "--> [!] StartNewRequestException exception arrived");
+                // call_user_func($context['logger'], "--> [!] StartNewRequestException exception arrived");
             } catch (midgardmvc_exception $e) {
                 ob_end_clean();
 
@@ -85,7 +85,7 @@ class midgardmvc_appserv_app
                 throw $e;
             }
 
-            call_user_func($context['logger'], "-> done with midgardmvc");
+            // call_user_func($context['logger'], "-> done with midgardmvc");
 
             return array(
                 $mvc->dispatcher->_get_status(),
