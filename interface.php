@@ -182,30 +182,29 @@ class midgardmvc_core
      */
     public static function autoload($class_name)
     {
-        $class_parts = explode('_', $class_name);
-        $component = '';
-        foreach ($class_parts as $i => $part)
+        $components = scandir(MIDGARDMVC_ROOT, -1);
+        foreach ($components as $component)
         {
-            if ($component == '')
+            $component_length = strlen($component);
+            if (substr($class_name, 0, $component_length) != $component)
             {
-                $component = $part;
+                continue;
             }
-            else
-            {
-                $component .= "_{$part}";
-            }
-            unset($class_parts[$i]);
-            if (is_dir(MIDGARDMVC_ROOT . "/{$component}"))
-            {
-                break;
-            }
+            return self::autoload_from_component($component, substr($class_name, $component_length));
         }
-        $path_under_component = implode('/', $class_parts);
-        if ($path_under_component == '')
+    }
+    
+    private static function autoload_from_component($component, $class_name)
+    {
+        if (empty($class_name))
         {
-            $path_under_component = 'interface';
+            $path = MIDGARDMVC_ROOT . "/{$component}/interface.php";
         }
-        $path = MIDGARDMVC_ROOT . "/{$component}/{$path_under_component}.php";
+        else
+        {
+            $path = MIDGARDMVC_ROOT . "/{$component}/" . str_replace('_', '/', $class_name) . '.php';
+        }
+        
         if (!file_exists($path))
         {
             return;
