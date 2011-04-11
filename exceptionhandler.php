@@ -16,7 +16,7 @@ class midgardmvc_core_exceptionhandler
     public static function handle(Exception $exception)
     {
         $message_type = get_class($exception);
-        $http_code = code_by_exception($exception);
+        $http_code = self::code_by_exception($exception);
 
         $message = strip_tags($exception->getMessage());
         $message = str_replace("\n", ' ', $message);
