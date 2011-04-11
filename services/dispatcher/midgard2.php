@@ -138,7 +138,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
      * Load a component and dispatch the request to it
      */
     public function dispatch(midgardmvc_core_request $request)
-    {
+    {    
         $routes = $this->midgardmvc->component->get_routes($request);
         
         $matched_routes = array();

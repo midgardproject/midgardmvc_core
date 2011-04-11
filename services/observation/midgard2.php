@@ -26,7 +26,7 @@ class midgardmvc_core_services_observation_midgard2 implements midgardmvc_core_s
         if (is_null($types))
         {
             // Empty types means connecting to every type
-            $types = $this->_core->dispatcher->get_mgdschema_classes();
+            $types = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
         }
         
         foreach ($types as $type)

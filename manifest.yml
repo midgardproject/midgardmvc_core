@@ -70,4 +70,3 @@ routes:
         test_only: true
         template_aliases: 
             content: midgardmvc-show-page
- 
