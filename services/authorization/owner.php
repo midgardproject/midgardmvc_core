@@ -24,38 +24,34 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
      */
     public function __construct()
     {
-        $mgdschemas = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
-        foreach ($mgdschemas as $mgdschema)
-        {
-            $this->connect_to_signals($mgdschema);
-        }
+        $this->connect_to_signals();
     }
     
     private function connect_to_signals($class)
     {
-        midgard_object_class::connect_default($class, 'action-loaded-hook', array(
-            $this, 'on_loading'
-        ), array(
-            $class
-        ));
-        midgard_object_class::connect_default($class, 'action-create-hook', array(
-            $this, 'on_creating'
-        ), array(
-            $class
-        ));
-        midgard_object_class::connect_default($class, 'action-update-hook', array(
-            $this, 'on_updating'
-        ), array(
-            $class
-        ));
-        midgard_object_class::connect_default($class, 'action-delete-hook', array(
-            $this, 'on_deleting'
-        ), array(
-            $class
-        ));
+        midgardmvc_core::get_instance()->observation->add_listener
+        (
+            array($this, 'on_loading'),
+            array('action-loaded-hook')
+        );
+        midgardmvc_core::get_instance()->observation->add_listener
+        (
+            array($this, 'on_creating'),
+            array('action-create-hook')
+        );
+        midgardmvc_core::get_instance()->observation->add_listener
+        (
+            array($this, 'on_updating'),
+            array('action-update-hook')
+        );
+        midgardmvc_core::get_instance()->observation->add_listener
+        (
+            array($this, 'on_deleting'),
+            array('action-delete-hook')
+        );
     }
     
-    public function on_loading($object, $params)
+    public function on_loading($object)
     {
         if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:read', $object))
         {
@@ -64,7 +60,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
         }
     }
     
-    public function on_creating($object, $params)
+    public function on_creating($object)
     {
         if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:create', $object))
         {
@@ -72,7 +68,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
         }
     }
     
-    public function on_updating($object, $params)
+    public function on_updating($object)
     {
         if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:update', $object))
         {
@@ -80,7 +76,7 @@ class midgardmvc_core_services_authorization_owner implements midgardmvc_core_se
         }
     }
     
-    public function on_deleting($object, $params)
+    public function on_deleting($object)
     {
         if (! midgardmvc_core::get_instance()->authorization->can_do('midgard:delete', $object))
         {
