@@ -13,7 +13,7 @@
  */
 interface midgardmvc_core_services_observation
 {
-    public function add_listener($callback, array $events, array $types = null, array $data = null);
+    public function add_listener($callback, array $events, array $types = null);
     
     public function get_listeners();
 }

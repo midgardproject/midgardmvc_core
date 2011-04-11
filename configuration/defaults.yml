@@ -7,6 +7,7 @@ services_authentication_authtypes:
     - SHA256
     - MD5
 services_authorization: midgardmvc_core_services_authorization_simple
+services_observation: midgardmvc_core_services_observation_midgard2
 services_templating: midgardmvc_core_services_templating_midgardmvc
 services_templating_components:
     - midgardmvc_core

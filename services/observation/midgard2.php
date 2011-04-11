@@ -16,7 +16,7 @@ class midgardmvc_core_services_observation_midgard2 implements midgardmvc_core_s
     private $type_callbacks = array();
     private $connected_types = array();
 
-    public function add_listener($callback, array $events, array $types = null, array $data = null)
+    public function add_listener($callback, array $events, array $types = null)
     {
         if (!is_callable($callback))
         {
@@ -51,34 +51,21 @@ class midgardmvc_core_services_observation_midgard2 implements midgardmvc_core_s
         }
     }
     
-    public function trigger(midgard_object $object, $data)
+    public function trigger(midgard_object $object, $type, $event)
     {
-        if (   !isset($this->type_callbacks[$data['type']])
-            || !isset($this->type_callbacks[$data['type']][$data['event']]))
+        if (   !isset($this->type_callbacks[$type])
+            || !isset($this->type_callbacks[$type][$event]))
         {
             return;
         }
         
-        foreach ($this->type_callbacks[$data['type']] as $callback)
+        foreach ($this->type_callbacks[$type][$event] as $callback)
         {
-            call_user_func($callback, $object, $data);
+            call_user_func($callback, $object);
         }
     }
     
-    private function prepare_data($type, $event, array $data = null)
-    {
-        if (!$data)
-        {
-            $data = array();
-        }
-        
-        $data['type'] = $type;
-        $data['event'] = $event;
-        
-        return $data;
-    }
-    
-    private function connect_type($type, array $events, array $data = null)
+    private function connect_type($type, array $events)
     {
         if (!isset($this->connected_types[$type]))
         {
@@ -99,8 +86,12 @@ class midgardmvc_core_services_observation_midgard2 implements midgardmvc_core_s
                 array
                 (
                     $this,
-                    'trigger',
-                    $this->prepare_data($type, $event, $data)
+                    'trigger'
+                ),
+                array
+                (
+                    'type' => $type,
+                    'event' => $event
                 )
             );
         }
