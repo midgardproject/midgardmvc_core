@@ -237,10 +237,17 @@ class midgardmvc_exception_unauthorized extends midgardmvc_exception
  */
 class midgardmvc_exception_httperror extends midgardmvc_exception
 {
+    protected $httpcode = 500;
     // Redefine the exception so message isn't optional
     public function __construct($message, $code = 500) 
     {
+        $this->httpcode = $code;
         parent::__construct($message, $code);
+    }
+
+    public function getHttpCode()
+    {
+        return $this->httpcode;
     }
 }
 
