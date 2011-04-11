@@ -37,6 +37,35 @@ class midgardmvc_core_tests_services_observation extends midgardmvc_core_tests_t
         
         $this->assertTrue($called);
     }
+
+    public function test_load_person()
+    {
+        $called = 0;
+        if (!class_exists('midgard_person'))
+        {
+            $this->markTestSkipped();
+        }
+        
+        // Connect
+        midgardmvc_core::get_instance()->observation->add_listener
+        (
+            function($object) use (&$called)
+            {
+                $called++;
+            }, 
+            array
+            (
+                'action-loaded-hook',
+                'action-loaded'
+            ), 
+            array('midgard_person')
+        );
+
+        $person = new midgard_person(1);   
+        $person->update();
+        
+        $this->assertEquals(2, $called);
+    }
     
     public function test_update_person()
     {
