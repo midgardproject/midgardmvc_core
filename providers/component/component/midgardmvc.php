@@ -29,6 +29,13 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         {
             $this->parent = midgardmvc_core::get_instance()->component->get($manifest['extends']);
         }
+        
+        array_walk($manifest['observations'], array($this, 'register_observation'));
+    }
+    
+    public function register_observation(array $observation)
+    {
+        midgardmvc_core::get_instance()->observation->add_listener($observation['callback'], $observation['event'], $observation['type']);
     }
 
     public function get_parent()

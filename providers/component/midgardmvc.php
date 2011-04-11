@@ -184,6 +184,27 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
             // This component has an injector for the template() phase
             $this->injectors['template'][$component] = $manifest['template_injector'];
         }
+        
+        if (!isset($manifest['observations']))
+        {
+            $manifest['observations'] = array();
+        }
+        
+        foreach ($manifest['observations'] as $index => $observation)
+        {
+            if (!is_array($observation['type']))
+            {
+                $observation['type'] = array($observation['type']);
+            }
+
+            if (!is_array($observation['event']))
+            {
+                $observation['event'] = array($observation['event']);
+            }
+            
+            $manifest['observations'][$index] = $observation;
+        }
+        
         return $manifest;
     }
 
