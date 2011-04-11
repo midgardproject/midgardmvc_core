@@ -303,8 +303,9 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
         );
 
         $request->set_data_item('cache_enabled', false);
-        
-        midgardmvc_core::get_instance()->dispatcher->header(midgardmvc_core_exceptionhandler::header_by_code($exception->getCode()));
+
+        $http_code = midgardmvc_core_exceptionhandler::code_by_exception($exception);      
+        midgardmvc_core::get_instance()->dispatcher->header(midgardmvc_core_exceptionhandler::header_by_code($http_code));
 
         // Do normal templating
         $app->templating->template($request);
@@ -316,6 +317,4 @@ class midgardmvc_core_services_authentication_sessionauth extends midgardmvc_cor
         midgardmvc_core::get_instance()->dispatcher->end_request();
     }
 
-}
-
-    
+}   

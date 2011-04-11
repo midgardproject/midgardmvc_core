@@ -15,19 +15,8 @@ class midgardmvc_core_exceptionhandler
 {
     public static function handle(Exception $exception)
     {
-        // Different HTTP error codes for different Exceptions
         $message_type = get_class($exception);
-        switch ($message_type)
-        {
-            case 'midgardmvc_exception_notfound':
-            case 'midgardmvc_exception_unauthorized':
-            case 'midgardmvc_exception_httperror':
-                $http_code = $exception->getCode();
-                break;
-            default:
-                $http_code = 500;
-                break;
-        }
+        $http_code = code_by_exception($exception);
 
         $message = strip_tags($exception->getMessage());
         $message = str_replace("\n", ' ', $message);
@@ -148,6 +137,19 @@ class midgardmvc_core_exceptionhandler
         echo "    </body>\n";
         echo "</html>";
     }
+    
+    public static function code_by_exception(Exception $exception)
+    {
+        // Different HTTP error codes for different Exceptions
+        switch (get_class($exception))
+        {
+            case 'midgardmvc_exception_notfound':
+            case 'midgardmvc_exception_unauthorized':
+            case 'midgardmvc_exception_httperror':
+                return $exception->getHttpCode();
+        }
+        return 500;
+    }
 
     public static function header_by_code($code)
     {
@@ -177,7 +179,18 @@ class midgardmvc_core_exceptionhandler
  *
  * @package midgardmvc_core
  */
-class midgardmvc_exception extends Exception {}
+class midgardmvc_exception extends Exception 
+{
+    public function __construct($message, $code = 500) 
+    {
+        parent::__construct($message, $code);
+    }
+    
+    public function getHttpCode()
+    {
+        return 500;
+    }
+}
 
 /**
  * Midgard MVC "not found" exception
@@ -190,6 +203,11 @@ class midgardmvc_exception_notfound extends midgardmvc_exception
     public function __construct($message, $code = 404) 
     {
         parent::__construct($message, $code);
+    }
+
+    public function getHttpCode()
+    {
+        return 404;
     }
 }
 
@@ -204,6 +222,11 @@ class midgardmvc_exception_unauthorized extends midgardmvc_exception
     public function __construct($message, $code = 401) 
     {
         parent::__construct($message, $code);
+    }
+    
+    public function getHttpCode()
+    {
+        return 401;
     }
 }
 
