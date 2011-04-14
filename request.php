@@ -70,6 +70,7 @@ class midgardmvc_core_request
     private $data = array();
 
     private $cache_identifier = null;
+    private $template_identifier = null;
 
     /**
      * Whether the request object is a subrequest (i.e. dynamic_load or dynamic_call)
@@ -190,6 +191,7 @@ class midgardmvc_core_request
 
         // Clear cache identifier
         $this->cache_identifier = null;
+        $this->template_identifier = null;
     }
 
     public function get_route()
@@ -366,25 +368,49 @@ class midgardmvc_core_request
         }
 
         $identifier_source  = 'URI=' . $this->get_path();
-        $identifier_source .= ";COMP={$this->component->name}";
         
         // TODO: Check language settings
         $identifier_source .= ';LANG=ALL';
 
-        // Template info too
-        if ($this->route)
-        {
-            foreach ($this->route->template_aliases as $alias => $template)
-            {
-                $identifier_source .= ";{$alias}={$template}";
-            }
-        }
+        $identifier_source .= $this->get_template_identifier_components();
         $identifier_source .= $this->get_identifier_for_user();
 
         midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Cache identifier for request is ' . $identifier_source, 'debug');
 
         $this->cache_identifier = md5($identifier_source);
         return $this->cache_identifier;
+    }
+
+    /**
+     * Get a simplified request identifier for template use
+     */
+    public function get_template_identifier()
+    {
+        if (!is_null($this->template_identifier))
+        {
+            // An injector has generated this already, let it be
+            return $this->template_identifier;
+        }
+
+        $identifier = $this->get_template_identifier_components();
+        midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Template identifier for request is ' . $identifier, 'debug');
+
+        $this->template_identifier = md5($identifier);
+        return $this->template_identifier;
+    }
+
+    private function get_template_identifier_components()
+    {
+        $identifier = ";COMP={$this->component->name}";
+        if (!$this->route)
+        {
+            return $identifier;
+        }
+        foreach ($this->route->template_aliases as $alias => $template)
+        {
+            $identifier .= ";{$alias}={$template}";
+        }
+        return $identifier;
     }
 
     private function get_identifier_for_user()

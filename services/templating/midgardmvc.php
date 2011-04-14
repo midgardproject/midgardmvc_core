@@ -186,17 +186,17 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $this->midgardmvc->component->inject($request, 'template');
         // Check if we have the element in cache already
         if (   !$this->midgardmvc->configuration->development_mode
-            && $this->midgardmvc->cache->template->check($request->get_identifier()))
+            && $this->midgardmvc->cache->template->check($request->get_template_identifier()))
         {
             return;
         }
 
         // Register current page to cache
 
-        $this->midgardmvc->cache->template->register($request->get_identifier(), array($request->get_component()->name));
+        $this->midgardmvc->cache->template->register($request->get_template_identifier(), array($request->get_component()->name));
         $element = $this->get_element($request, $element_identifier);
         // Template cache didn't have this template, collect it
-        $this->midgardmvc->cache->template->put($request->get_identifier(), $element);
+        $this->midgardmvc->cache->template->put($request->get_template_identifier(), $element);
     }
     
     /**
@@ -208,7 +208,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     {
         $data =& $request->get_data();
 
-        $template_file = $this->midgardmvc->cache->template->get($request->get_identifier());
+        $template_file = $this->midgardmvc->cache->template->get($request->get_template_identifier());
 
         $fp = fopen($template_file, 'r');
         flock($fp, LOCK_SH);
@@ -279,7 +279,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             require('PHPTAL.php');
         }
 
-        $tal = new PHPTAL($request->get_identifier());
+        $tal = new PHPTAL($request->get_template_identifier());
         $tal->setPhpCodeDestination($this->midgardmvc->cache->template->get_cache_directory());
         
         $tal->uimessages = false;
