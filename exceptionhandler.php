@@ -15,89 +15,32 @@ class midgardmvc_core_exceptionhandler
 {
     public static function handle(Exception $exception)
     {
-        $message_type = get_class($exception);
-        $http_code = self::code_by_exception($exception);
-
-        $message = strip_tags($exception->getMessage());
-        $message = str_replace("\n", ' ', $message);
+        $data = self::prepare_exception_data($exception);
 
         $midgardmvc = null;
         try
         {
             $midgardmvc = midgardmvc_core::get_instance();
-            $midgardmvc->log($message_type, $message, 'warning');
+            $midgardmvc->log($data['message_type'], $data['message'], 'warning');
         }
         catch (Exception $e)
         {
             // MVC not initialized, display original message and exit
-            self::show_error_plaintext($http_code, $message_type, $message);
-            // This will exit
+            return self::show_error_plaintext($data);
         }
-        $header = self::header_by_code($http_code);
-        if ($midgardmvc->dispatcher->headers_sent())
+
+        if (!$midgardmvc->dispatcher->headers_sent())
         {
-            self::show_error_plaintext($http_code, $message_type, $message, $midgardmvc->dispatcher);
-            // This will exit
+            $midgardmvc->dispatcher->header("X-MidgardMVC-Error: {$data['message']}");
+            $midgardmvc->dispatcher->header($data['header']);
         }
         
-        $midgardmvc->dispatcher->header("X-MidgardMVC-Error: {$message}");
-        $midgardmvc->dispatcher->header($header);
-
-        if ($http_code != 304)
+        if ($data['http_code'] == 304)
         {
-            if (isset($midgardmvc->dispatcher))
-            {
-                $midgardmvc->dispatcher->header('Content-Type: text/html; charset=utf-8');
-            }
-
-            $data['header'] = $header;
-            $data['message_type'] = $message_type;
-            $data['message'] = $message;
-            $data['exception'] = $exception;
-
-            $data['trace'] = false;
-
-            if (!$midgardmvc)
-            {
-                return;
-            }
-
-            if (   $midgardmvc->configuration 
-                && $midgardmvc->configuration->enable_exception_trace)
-            {
-                $data['trace'] = $exception->getTrace();
-            }
-
-            try
-            {
-                $request = $midgardmvc->context->get_request();
-                if (!$request)
-                {
-                    throw $exception;
-                }
-                $route = $request->get_route();
-                $route->template_aliases['root'] = 'midgardmvc-show-error';
-                
-                $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
-                $request->set_data_item('cache_enabled', false);
-
-                if (!$midgardmvc->templating)
-                {
-                    throw new Exception('no templating found');
-                }
-
-                $midgardmvc->templating->template($request);
-                $midgardmvc->templating->display($request);
-            }
-            catch (Exception $e)
-            {
-                // Templating isn't working
-                self::show_error_untemplated($header, $message_type, $message);
-            }
-            
-            // Clean up and finish
-            $midgardmvc->context->delete();
+            return;
         }
+
+        self::show_error_templated($data, $midgardmvc);
     }
 
     public static function handle_assert($file, $line, $expression) 
@@ -107,35 +50,96 @@ class midgardmvc_core_exceptionhandler
         throw new RunTimeException($message);
     }
 
-    private static function show_error_plaintext($http_code, $message_type, $message, $dispatcher = null)
+    private static function prepare_exception_data(Exception $exception)
     {
+        $data = array();
+        $data['message_type'] = get_class($exception);
+        $data['http_code'] = self::code_by_exception($exception);
+        $data['message'] = strip_tags($exception->getMessage());
+        $data['header'] = self::header_by_code($data['http_code']);
+        $data['exception'] = $exception;
+        $data['trace'] = null;
+        return $data;
+    }
+
+    private static function show_error_plaintext(array $data, $dispatcher = null)
+    {
+        $message = "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$data['http_code']}).</p>\n\n<p>{$data['message_type']}: {$data['message']}</p>\n";
         if (is_null($dispatcher))
         {
             // We got an exception before MVC was fully initialized
             if (!headers_sent())
             {
-                header("X-MidgardMVC-Error: {$message}");
-                header(self::header_by_code($http_code));
+                header("X-MidgardMVC-Error: {$data['message']}");
+                header(self::header_by_code($data['http_code']));
             }
-            die("<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n");
+            die($message);
         }
         
-        echo "<h1>Unexpected Error</h1>\n\n<p>Headers were sent so we don't have correct HTTP code ({$http_code}).</p>\n\n<p>{$message_type}: {$message}</p>\n";
+        echo $message;
         $dispatcher->end_request();
     }
+
+    private static function show_error_templated(array $data, midgardmvc_core $midgardmvc)
+    {
+        $midgardmvc->dispatcher->header('Content-Type: text/html; charset=utf-8');
+
+        if ($midgardmvc->configuration->enable_exception_trace)
+        {
+            $data['trace'] = $exception->getTrace();
+        }
+
+        try
+        {
+            $request = $midgardmvc->context->get_request();
+            if (!$request)
+            {
+                // Exception happened before request was set to context
+                $request = self::bootstrap_request();
+            }
+            $route = $request->get_route();
+            $route->template_aliases['root'] = 'midgardmvc-show-error';
+                
+            $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
+            $request->set_data_item('cache_enabled', false);
+
+            $midgardmvc->templating->template($request);
+            $midgardmvc->templating->display($request);
+        }
+        catch (Exception $e)
+        {
+            // Templating isn't working
+            self::show_error_untemplated($data);
+        }
+            
+        // Clean up and finish
+        $midgardmvc->context->delete();
+    }
     
-    private static function show_error_untemplated($header, $message_type, $message)
+    private static function show_error_untemplated(array $data) 
     {
         echo "<!DOCTYPE html>\n";
         echo "<html>\n";
         echo "    <head>\n";
-        echo "        <title>{$header}</title>\n";
+        echo "        <title>{$data['header']}</title>\n";
         echo "    </head>\n";
-        echo "    <body class=\"{$message_type}\">\n";
-        echo "        <h1>{$header}</h1>\n";
-        echo "        <p>{$message}</p>\n";
+        echo "    <body class=\"{$data['message_type']}\">\n";
+        echo "        <h1>{$data['header']}</h1>\n";
+        echo "        <p>{$data['message']}</p>\n";
         echo "    </body>\n";
         echo "</html>";
+    }
+
+    private static function bootstrap_request()
+    {
+        $request = new midgardmvc_core_request();
+        $core = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
+        $request->add_component_to_chain($core);
+        $route = new midgardmvc_core_route('midgardmvc_show_error', '', '', '', array());
+        $request->set_route($route);
+        $request->set_component($core);
+        midgardmvc_core::get_instance()->context->create($request);
+        return $request;
     }
     
     public static function code_by_exception(Exception $exception)
