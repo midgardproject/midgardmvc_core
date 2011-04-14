@@ -379,7 +379,7 @@ class midgardmvc_core_request
         }
         $identifier_source .= $this->get_identifier_for_user();
 
-        midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Cache identifier for request is ' . $identifier_source, 'info');
+        midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Cache identifier for request is ' . $identifier_source, 'debug');
 
         $this->cache_identifier = md5($identifier_source);
         return $this->cache_identifier;

@@ -88,24 +88,26 @@ interface midgardmvc_core_services_cache
 
 abstract class midgardmvc_core_services_cache_base
 {
-    protected $_core;
     private $modules = array();
     private $configuration = array();
 
     public function __construct()
     {
-        $this->_core = midgardmvc_core::get_instance();
-
-        $this->configuration = $this->_core->configuration->get('services_cache_configuration');
+        $this->configuration = midgardmvc_core::get_instance()->configuration->services_cache_configuration;
 
         // Move these values to context so modules and components can manipulate them as needed
-        $this->_core->context->cache_expiry = $this->configuration['expiry'];
-        $this->_core->context->cache_strategy = $this->configuration['strategy'];
-        $this->_core->context->cache_enabled = $this->configuration['enabled'];
-
-        if ($this->_core->context->cache_enabled)
+        $request = midgardmvc_core::get_instance()->context->get_request();
+        if (!$request)
         {
-            $mgdschemas = $this->_core->dispatcher->get_mgdschema_classes();
+            return;
+        }
+        $request->set_data_item('cache_expiry', $this->configuration['expiry']);
+        $request->set_data_item('cache_strategy', $this->configuration['strategy']);
+        $request->set_data_item('cache_enabled', $this->configuration['enabled']);
+
+        if ($request->get_data_item('cache_enabled'))
+        {
+            $mgdschemas = midgardmvc_core::get_instance()->dispatcher->get_mgdschema_classes();
             foreach ($mgdschemas as $mgdschema)
             {
                 $this->connect_to_signals($mgdschema);
@@ -123,13 +125,13 @@ abstract class midgardmvc_core_services_cache_base
 
     public function register_object($object, $params = null)
     {
-        if (!isset($this->_core->context->cache_request_identifier))
+        if (!isset(midgardmvc_core::get_instance()->context->cache_request_identifier))
         {
             return;
         }
 
         // Register loaded objects to content cache
-        $this->_core->cache->content->register($this->_core->context->cache_request_identifier, array($object->guid));
+        midgardmvc_core::get_instance()->cache->content->register(midgardmvc_core::get_instance()->context->cache_request_identifier, array($object->guid));
     }
 
     /**
@@ -139,7 +141,7 @@ abstract class midgardmvc_core_services_cache_base
      */
     public function invalidate_object($object, $params = null)
     {
-        $this->_core->cache->invalidate(array($object->guid));
+        midgardmvc_core::get_instance()->cache->invalidate(array($object->guid));
     }
 
     /**
@@ -205,7 +207,7 @@ abstract class midgardmvc_core_services_cache_base
             $module->invalidate_all();
         }
         // Manifest caching doesn't have a module of its own
-        $this->_core->cache->delete_all('manifest');
+        midgardmvc_core::get_instance()->cache->delete_all('manifest');
     }
     
     private function prepare_modules()
@@ -215,4 +217,3 @@ abstract class midgardmvc_core_services_cache_base
         $this->load_module('template');        
     }
 }
-?>
