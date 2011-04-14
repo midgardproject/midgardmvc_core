@@ -377,32 +377,34 @@ class midgardmvc_core_request
             $identifier_source .= ';TEMPLATE=' . $this->route->template_aliases['root'];
             $identifier_source .= ';CONTENT=' . $this->route->template_aliases['content'];
         }
-        
-        if (isset($this->data['cache_strategy']))
-        {
-            switch ($this->data['cache_strategy'])
-            {
-                case 'public':
-                    // Shared cache for everybody
-                    $identifier_source .= ';USER=EVERYONE';
-                    break;
-                default:
-                    // Per-user cache
-                    if (midgardmvc_core::get_instance()->authentication->is_user())
-                    {
-                        $user = midgardmvc_core::get_instance()->authentication->get_user();
-                        $identifier_source .= ";USER={$user->login}";
-                    }
-                    else
-                    {
-                        $identifier_source .= ';USER=ANONYMOUS';
-                    }
-                    break;
-            }
-        }
+        $identifier_source .= $this->get_identifier_for_user();
+
+        midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Cache identifier for request is ' . $identifier_source, 'info');
 
         $this->cache_identifier = md5($identifier_source);
         return $this->cache_identifier;
+    }
+
+    private function get_identifier_for_user()
+    {
+        if (!isset($this->data['cache_strategy']))
+        {
+            $this->data['cache_strategy'] = 'private';
+        }
+
+        if ($this->data['cache_strategy'] == 'public')
+        {
+            // Shared cache for everybody
+            return ';USER=EVERYONE';
+        }
+
+        // Per-user cache
+        if (midgardmvc_core::get_instance()->authentication->is_user())
+        {
+            $user = midgardmvc_core::get_instance()->authentication->get_user();
+            return ";USER={$user->login}";
+        }
+        return ';USER=ANONYMOUS';
     }
 
     /**
