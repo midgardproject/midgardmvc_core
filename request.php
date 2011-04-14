@@ -374,8 +374,10 @@ class midgardmvc_core_request
         // Template info too
         if ($this->route)
         {
-            $identifier_source .= ';TEMPLATE=' . $this->route->template_aliases['root'];
-            $identifier_source .= ';CONTENT=' . $this->route->template_aliases['content'];
+            foreach ($this->route->template_aliases as $alias => $template)
+            {
+                $identifier_source .= ";{$alias}={$template}";
+            }
         }
         $identifier_source .= $this->get_identifier_for_user();
 
