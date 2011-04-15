@@ -70,6 +70,7 @@ class midgardmvc_core_request
     private $data = array();
 
     private $cache_identifier = null;
+    private $template_identifier = null;
 
     /**
      * Whether the request object is a subrequest (i.e. dynamic_load or dynamic_call)
@@ -190,6 +191,7 @@ class midgardmvc_core_request
 
         // Clear cache identifier
         $this->cache_identifier = null;
+        $this->template_identifier = null;
     }
 
     public function get_route()
@@ -366,43 +368,71 @@ class midgardmvc_core_request
         }
 
         $identifier_source  = 'URI=' . $this->get_path();
-        $identifier_source .= ";COMP={$this->component->name}";
         
         // TODO: Check language settings
         $identifier_source .= ';LANG=ALL';
 
-        // Template info too
-        if ($this->route)
-        {
-            $identifier_source .= ';TEMPLATE=' . $this->route->template_aliases['root'];
-            $identifier_source .= ';CONTENT=' . $this->route->template_aliases['content'];
-        }
-        
-        if (isset($this->data['cache_strategy']))
-        {
-            switch ($this->data['cache_strategy'])
-            {
-                case 'public':
-                    // Shared cache for everybody
-                    $identifier_source .= ';USER=EVERYONE';
-                    break;
-                default:
-                    // Per-user cache
-                    if (midgardmvc_core::get_instance()->authentication->is_user())
-                    {
-                        $user = midgardmvc_core::get_instance()->authentication->get_user();
-                        $identifier_source .= ";USER={$user->login}";
-                    }
-                    else
-                    {
-                        $identifier_source .= ';USER=ANONYMOUS';
-                    }
-                    break;
-            }
-        }
+        $identifier_source .= $this->get_template_identifier_components();
+        $identifier_source .= $this->get_identifier_for_user();
+
+        midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Cache identifier for request is ' . $identifier_source, 'debug');
 
         $this->cache_identifier = md5($identifier_source);
         return $this->cache_identifier;
+    }
+
+    /**
+     * Get a simplified request identifier for template use
+     */
+    public function get_template_identifier()
+    {
+        if (!is_null($this->template_identifier))
+        {
+            // An injector has generated this already, let it be
+            return $this->template_identifier;
+        }
+
+        $identifier = $this->get_template_identifier_components();
+        midgardmvc_core::get_instance()->log('Midgard MVC Request', 'Template identifier for request is ' . $identifier, 'debug');
+
+        $this->template_identifier = md5($identifier);
+        return $this->template_identifier;
+    }
+
+    private function get_template_identifier_components()
+    {
+        $identifier = ";COMP={$this->component->name}";
+        if (!$this->route)
+        {
+            return $identifier;
+        }
+        foreach ($this->route->template_aliases as $alias => $template)
+        {
+            $identifier .= ";{$alias}={$template}";
+        }
+        return $identifier;
+    }
+
+    private function get_identifier_for_user()
+    {
+        if (!isset($this->data['cache_strategy']))
+        {
+            $this->data['cache_strategy'] = 'private';
+        }
+
+        if ($this->data['cache_strategy'] == 'public')
+        {
+            // Shared cache for everybody
+            return ';USER=EVERYONE';
+        }
+
+        // Per-user cache
+        if (midgardmvc_core::get_instance()->authentication->is_user())
+        {
+            $user = midgardmvc_core::get_instance()->authentication->get_user();
+            return ";USER={$user->login}";
+        }
+        return ';USER=ANONYMOUS';
     }
 
     /**

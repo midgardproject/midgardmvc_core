@@ -41,7 +41,6 @@ class midgardmvc_core_services_dispatcher_appserv extends midgardmvc_core_servic
         }
 
         $request->resolve_node($url_components['path']);
-        //midgardmvc_core::get_instance()->log("Path is {$url_components['path']}", 'debug');
 
         return $request;
     }
