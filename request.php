@@ -98,7 +98,7 @@ class midgardmvc_core_request
         {
             $path .= '/';
         }
-        return preg_replace('%/{2,}%', '/', $path);
+        return rtrim(preg_replace('%/{2,}%', '/', $path), '/');
     }
 
     /**
