@@ -42,7 +42,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
     }
 
     /**
-     * Validate user against LDAP and then generate a session 
+     * Validate user against LDAP and then generate a session
      */
     protected function create_login_session(array $tokens, $clientip = null)
     {
@@ -68,7 +68,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         {
             midgardmvc_core::get_instance()->context->get_request()->set_data_item
             (
-                'midgardmvc_core_services_authentication_message', 
+                'midgardmvc_core_services_authentication_message',
                 midgardmvc_core::get_instance()->i18n->get('midgard account creation failed', 'midgardmvc_core')
             );
             return false;
@@ -80,19 +80,19 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
 
     private function create_account(array $ldapuser, array $tokens)
     {
-        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core'); 
+        midgardmvc_core::get_instance()->authorization->enter_sudo('midgardmvc_core');
         $transaction = new midgard_transaction();
         $transaction->begin();
 
         $qb = new midgard_query_builder('midgard_person');
         $qb->add_constraint('firstname', '=', $ldapuser['firstname']);
-        $qb->add_constraint('lastname', '=', $ldapuser['email']);
+        $qb->add_constraint('lastname', '=', $ldapuser['lastname']);
         $persons = $qb->execute();
         if (count($persons) == 0)
         {
             $person = new midgard_person();
             $person->firstname = $ldapuser['firstname'];
-            $person->lastname = $ldapuser['email'];
+            $person->lastname = $ldapuser['lastname'];
             if (!$person->create())
             {
                 midgardmvc_core::get_instance()->log
@@ -113,7 +113,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         }
 
         $person->set_parameter('midgardmvc_core_services_authentication_ldap', 'employeenumber', $ldapuser['employeenumber']);
-        
+
         $user = new midgard_user();
         $user->login = $tokens['login'];
         $user->password = '';
@@ -130,7 +130,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
                 'warning'
             );
 
-            $transaction->rollback();   
+            $transaction->rollback();
             midgardmvc_core::get_instance()->authorization->leave_sudo();
             return false;
         }
@@ -159,17 +159,20 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         if ($info['count'] == 0)
         {
             midgardmvc_core::get_instance()->context->get_request()->set_data_item(
-                'midgardmvc_core_services_authentication_message', 
+                'midgardmvc_core_services_authentication_message',
                 midgardmvc_core::get_instance()->i18n->get('ldap authentication failed: no user information found', 'midgardmvc_core')
             );
 
             return null;
         }
 
+        // @todo: if we have UTF-8 encoded strings, then ldap will return values starting with :
+        //        in this case these values must be base64 decoded
         return array
         (
             'username' => $info[0]['uid'][0],
-            'firstname' => $info[0]['cn'][0],
+            'firstname' => $info[0]['givenname'][0],
+            'lastname' => $info[0]['sn'][0],
             'email' => $info[0]['mail'][0],
             'employeenumber' => $info[0]['employeenumber'][0],
         );
@@ -186,7 +189,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
             || !isset($tokens['password']))
         {
             midgardmvc_core::get_instance()->context->get_request()->set_data_item(
-                'midgardmvc_core_services_authentication_message', 
+                'midgardmvc_core_services_authentication_message',
                 midgardmvc_core::get_instance()->i18n->get('ldap authentication requires login and password', 'midgardmvc_core')
             );
 
@@ -197,7 +200,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
         if (!$ds)
         {
             midgardmvc_core::get_instance()->context->get_request()->set_data_item(
-                'midgardmvc_core_services_authentication_message', 
+                'midgardmvc_core_services_authentication_message',
                 midgardmvc_core::get_instance()->i18n->get('ldap authentication failed: no connection to server', 'midgardmvc_core')
             );
 
@@ -206,7 +209,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
 
         ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-        if (@ldap_bind($ds, "cn={$tokens['login']},{$this->dn}", $tokens['password'])) 
+        if (@ldap_bind($ds, "cn={$tokens['login']},{$this->dn}", $tokens['password']))
         {
             // Valid account
             $userinfo = $this->ldap_search($ds, $tokens['login']);
@@ -216,7 +219,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
 
         ldap_close($ds);
         midgardmvc_core::get_instance()->context->get_request()->set_data_item(
-            'midgardmvc_core_services_authentication_message', 
+            'midgardmvc_core_services_authentication_message',
             midgardmvc_core::get_instance()->i18n->get('ldap authentication failed: login and password don\'t match', 'midgardmvc_core')
         );
 
