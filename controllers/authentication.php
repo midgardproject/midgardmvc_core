@@ -7,7 +7,7 @@
  */
 
 /**
- * Comet listeners controller
+ * Login/logout controller
  *
  * @package midgardmvc_core
  */
