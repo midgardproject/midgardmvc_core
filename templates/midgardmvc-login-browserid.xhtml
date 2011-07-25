@@ -1,0 +1,26 @@
+<tal:block tal:condition="php: !midgardmvc.authentication.is_user()">
+    <img id="browserid" src="https://browserid.org/i/sign_in_green.png" />
+    <script>
+        jQuery(document).ready(function() {
+            if (!navigator.id) {
+                jQuery('#browserid').hide();
+                return;
+            }
+
+            jQuery('#browserid').click(function() {
+                navigator.id.getVerifiedEmail(function(assertion) {
+                    if (!assertion) {
+                        return; 
+                    }
+
+                    jQuery.post('/mgd:login/', {
+                        username: 'browserid',
+                        password: assertion
+                    }, function(data) {
+                        window.location.reload(true);
+                    });
+                });
+            });
+        });
+    </script>
+</tal:block>
