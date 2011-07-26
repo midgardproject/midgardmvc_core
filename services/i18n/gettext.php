@@ -133,7 +133,12 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
     
     public function set_content_language(midgard_language $language)
     {
-        die("Not implemented yet");        
+        die("Not implemented yet");
+    }
+
+    public function get_language()
+    {
+        return $this->language;
     }
     
 }
