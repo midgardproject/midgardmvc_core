@@ -100,12 +100,12 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
             $request->set_data_item($component->name, $data);
         }
         $request->set_data_item('current_component', $data);
-        
+
         // Set other request data from route
         $route = $request->get_route();
         $request->set_data_item('mimetype', $route->mimetype);
     }
-    
+
     /**
      * Generates an URL for given route_id with given arguments
      *
@@ -157,7 +157,7 @@ class midgardmvc_core_services_dispatcher_manual implements midgardmvc_core_serv
                 {
                     continue;
                 }
-                if ($parent_class->getName() == 'midgard_object')
+                if ($parent_class->getName() == 'MidgardObject')
                 {
                     $mgdschemas[] = $refclass->getName();
                 }

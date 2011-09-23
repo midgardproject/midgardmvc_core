@@ -16,7 +16,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
 {
     private $config = null;
     public $dbtype = 'SQLite';
-    
+
     // Ensure PHPUnit doesn't serialize/unserialize $_MIDGARD_CONNECTION
     protected $backupGlobals = false;
 
@@ -28,7 +28,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('Midgard extension is not available');
         }
     }
-    
+
     public function check_dbtype()
     {
         if (is_null($this->dbtype))
@@ -50,13 +50,13 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
         $this->config->tablecreate = true;
         $this->config->tableupdate = true;
         $this->config->loglevel = 'critical';
- 
+
         if (!$midgard->open_config($this->config))
         {
             $this->markTestSkipped('Could not open Midgard connection to test database: ' . $midgard->get_error_string());
             return false;
         }
-        
+
         return true;
     }
 
@@ -75,12 +75,12 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
             {
                 continue;
             }
-            if ($parent_class->getName() != 'midgard_object')
+            if ($parent_class->getName() != 'MidgardObject')
             {
                 continue;
             }
             $type = $refclass->getName();
-            
+
             if (midgard_storage::class_storage_exists($type))
             {
                 // FIXME: Skip updates until http://trac.midgard-project.org/ticket/1426 is fixed
@@ -99,7 +99,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
         }
         // And update as necessary
         return;
-        
+
         if (!midgard_user::auth('root', 'password'))
         {
             echo "auth failed\n";
@@ -112,9 +112,9 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->check_extension();        
+        $this->check_extension();
         $this->check_dbtype();
-        
+
         static $connection = false;
         if (!$connection)
         {
@@ -126,7 +126,7 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        
+
         /**
          * FIXME: Delete the database here. No API for it now
          */
