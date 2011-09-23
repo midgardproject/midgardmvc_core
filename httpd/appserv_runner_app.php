@@ -1,7 +1,7 @@
 <?php
 
 if (!class_exists('\AiP\Runner', false))
-    throw new pakeException("You use an old version of AppServer. Please upgrade");
+    throw new Exception("You use an old version of AppServer. Please upgrade");
 
 use AiP\App\FileServe as file_server;
 use AiP\Middleware\HTTPParser as aip_php_compat;

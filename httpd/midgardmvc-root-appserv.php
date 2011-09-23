@@ -1,6 +1,6 @@
 <?php
 
-require 'AppServer/autoload.php';
+require 'AiP/autoload.php';
 require __DIR__.'/appserv_runner_app.php';
 
 try
