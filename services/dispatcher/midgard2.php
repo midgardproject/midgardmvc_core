@@ -48,7 +48,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
          *}
          */
         $request->set_method($_SERVER['REQUEST_METHOD']);
-        
+
         // Parse URL into components
         $url_components = parse_url("http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
 
@@ -138,9 +138,9 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
      * Load a component and dispatch the request to it
      */
     public function dispatch(midgardmvc_core_request $request)
-    {    
+    {
         $routes = $this->midgardmvc->component->get_routes($request);
-        
+
         $matched_routes = array();
         // make a normalized string of $argv
         $argv_str = preg_replace('%/{2,}%', '/', '/' . implode('/', $request->get_arguments()) . '/');
@@ -184,7 +184,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
             break;
         }
     }
-    
+
     private function dispatch_route(midgardmvc_core_request $request, array $arguments)
     {
         $route = $request->get_route();
@@ -196,7 +196,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
             throw new midgardmvc_exception_httperror("Controller class {$controller_class} not found", 500);
         }
         $controller = new $controller_class($request);
-        
+
         // Define the action method for the route_id
         $request_method = $request->get_method();
         $action_method = "{$request_method}_{$route->action}";
@@ -234,7 +234,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
             $request->set_data_item($component->name, $data);
         }
         $request->set_data_item('current_component', $data);
-        
+
         // Set other request data from route
         $route = $request->get_route();
         $request->set_data_item('mimetype', $route->mimetype);
@@ -288,6 +288,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
         // Get the classes from PHP5 reflection
         $re = new ReflectionExtension('midgard2');
         $classes = $re->getClasses();
+
         foreach ($classes as $refclass)
         {
             $parent_class = $refclass->getParentClass();
@@ -296,7 +297,7 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
                 continue;
             }
 
-            if ($parent_class->getName() == 'midgard_object')
+            if ($parent_class->getName() == 'MidgardObject')
             {
                 $mgdschemas[$include_views][] = $refclass->getName();
                 continue;
@@ -304,12 +305,13 @@ class midgardmvc_core_services_dispatcher_midgard2 implements midgardmvc_core_se
 
             if ($include_views)
             {
-                if ($parent_class->getName() == 'midgard_view')
+                if ($parent_class->getName() == 'MidgardView')
                 {
                     $mgdschemas[$include_views][] = $refclass->getName();
                 }
             }
         }
+
         return $mgdschemas[$include_views];
     }
 }
