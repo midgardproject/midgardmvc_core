@@ -151,7 +151,7 @@ class midgardmvc_core_services_authentication_ldap extends midgardmvc_core_servi
      *
      * @return Array with username (uid), firstname (cn) and email (mail) coming from LDAP
      */
-    private function ldap_search($ldap_connection, $username)
+    public function ldap_search($ldap_connection, $username)
     {
         $sr = ldap_search($ldap_connection, $this->dn, "uid={$username}");
         $info = ldap_get_entries($ldap_connection, $sr);
