@@ -55,8 +55,7 @@ class midgardmvc_core_tests_services_observation extends midgardmvc_core_tests_t
             }, 
             array
             (
-                'action-loaded-hook',
-                'action-loaded'
+                'action-loaded-hook'
             ), 
             array('midgard_person')
         );
@@ -64,7 +63,7 @@ class midgardmvc_core_tests_services_observation extends midgardmvc_core_tests_t
         $person = new midgard_person(1);   
         $person->update();
         
-        $this->assertEquals(2, $called);
+        $this->assertEquals(1, $called);
     }
     
     public function test_update_person()
