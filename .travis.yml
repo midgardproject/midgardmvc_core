@@ -4,7 +4,8 @@ php:
   - 5.3
 
 before_script:
-  - pear install http://phptal.org/latest.tar.gz 
+  - sudo apt-get install -y php-pear
+  - sudo pear install http://phptal.org/latest.tar.gz 
 
 script: phpunit --bootstrap framework.php tests/all
 
