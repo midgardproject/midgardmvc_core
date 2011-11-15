@@ -17,6 +17,13 @@ if (!defined('MIDGARDMVC_STATIC_URL'))
     define('MIDGARDMVC_STATIC_URL', '/midgardmvc-static');
 }
 
+if (   getenv('CI')
+    && strpos(get_include_path(), '/usr/share/pear') === false)
+{
+    // Ensure the default PEAR is in include path for Continuous Integration
+    set_include_path(get_include_path() . PATH_SEPARATOR . '/usr/share/pear');
+}
+
 /**
  * Make sure the URLs not having query string have trailing slash or some extension in the "filename".
  * This makes life much, much better when making static copies for whatever reason
