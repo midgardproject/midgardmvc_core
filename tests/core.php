@@ -87,9 +87,13 @@ class midgardmvc_core_tests_core extends PHPUnit_Framework_TestCase
         $midgardmvc = midgardmvc_core::get_instance();
         $services = array
         (
-            'authentication',
             'templating',
         );
+
+        if (extension_loaded('midgard2')) 
+        {
+            $services[] = 'authentication';
+        }
         
         foreach ($services as $service)
         {

@@ -19,6 +19,11 @@ abstract class midgardmvc_core_services_authentication_midgard2 implements midga
 
     public function __construct()
     {
+        if (!extension_loaded('midgard2'))
+        {
+            throw new RuntimeException('This authentication method requires Midgard2 to be installed');
+        }
+
         // Connect to the Midgard2 "auth-changed" signal so we can get information from external authentication handlers
         midgardmvc_core::get_instance()->dispatcher->get_midgard_connection()->connect('auth-changed', array($this, 'on_auth_changed'), array());
 
