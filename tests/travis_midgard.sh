@@ -11,8 +11,8 @@ wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/x
 wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/i386/libmidgard2-2010_10.05.5-1_i386.deb
 wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/i386/midgard2-common_10.05.5-1_i386.deb 
 wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/i386/php5-midgard2_10.05.5-1_i386.deb
-sudo dpkg -i midgard-libgda-4.0-common_4.0.12-1_all.deb  
-sudo dpkg -i midgard-libgda-4.0-4_4.0.12-1_i386.deb
+sudo dpkg -i --force-conflicts midgard-libgda-4.0-common_4.0.12-1_all.deb  
+sudo dpkg -i --force-conflicts midgard-libgda-4.0-4_4.0.12-1_i386.deb
 sudo dpkg -i libmidgard2-2010_10.05.5-1_i386.deb
 sudo dpkg -i midgard2-common_10.05.5-1_i386.deb
 sudo dpkg -i php5-midgard2_10.05.5-1_i386.deb
