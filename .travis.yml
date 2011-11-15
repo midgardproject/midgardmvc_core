@@ -1,0 +1,9 @@
+language: php
+
+php:
+  - 5.3
+
+script: phpunit --bootstrap framework.php tests/all --verbose 
+
+notifications:
+    irc: "irc.freenode.org#midgard"
