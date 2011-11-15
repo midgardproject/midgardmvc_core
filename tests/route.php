@@ -138,6 +138,11 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
 
     public function test_check_match_typedvar_guid()
     {
+        if (!extension_loaded('midgard2'))
+        {
+            $this->markTestSkipped('Midgard2 not installed');
+        }
+
         $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$guid:baz}', 'foo', 'bar', array());
         $matched = $route->check_match('/foo/baz/1dffd6e01102ccafd6e11dfb7306f10c214c77ac77a/');
         $this->assertTrue(isset($matched['bar']));
@@ -150,6 +155,11 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
 
     public function test_check_match_typedvar_guid_invalid()
     {
+        if (!extension_loaded('midgard2'))
+        {
+            $this->markTestSkipped('Midgard2 not installed');
+        }
+
         $route = new midgardmvc_core_route('index', '/foo/{$bar}/{$guid:baz}', 'foo', 'bar', array());
         $matched = $route->check_match('/foo/baz/1dffd6e01102ccafd6e11dfb7306f10c214c77ac77a/');
         $this->assertTrue(isset($matched['bar']));

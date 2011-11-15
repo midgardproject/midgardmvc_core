@@ -21,7 +21,7 @@ abstract class midgardmvc_core_services_authentication_midgard2 implements midga
     {
         if (!extension_loaded('midgard2'))
         {
-            throw new RuntimeException('This authentication method requires Midgard2 to be installed');
+            return;
         }
 
         // Connect to the Midgard2 "auth-changed" signal so we can get information from external authentication handlers
