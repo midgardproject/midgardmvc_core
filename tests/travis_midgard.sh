@@ -12,3 +12,6 @@ wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/x
 sudo dpkg -i --force-depends libmidgard2-2010_10.05.5-1_i386.deb
 sudo dpkg -i midgard2-common_10.05.5-1_i386.deb
 sudo dpkg -i php5-midgard2_10.05.5-1_i386.deb
+
+# We need to enable Midgard correctly
+php --ini
