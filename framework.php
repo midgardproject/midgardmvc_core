@@ -17,11 +17,14 @@ if (!defined('MIDGARDMVC_STATIC_URL'))
     define('MIDGARDMVC_STATIC_URL', '/midgardmvc-static');
 }
 
-if (   getenv('CI')
-    && strpos(get_include_path(), '/usr/share/pear') === false)
+if (getenv('CI'))
 {
-    // Ensure the default PEAR is in include path for Continuous Integration
-    set_include_path(get_include_path() . PATH_SEPARATOR . '/usr/share/pear');
+    $pear_dir = exec('pear config-get php_dir');
+    if (strpos(get_include_path(), $pear_dir) === false)
+    {
+        // Ensure the default PEAR is in include path for Continuous Integration
+        set_include_path(get_include_path() . PATH_SEPARATOR . $pear_dir);
+    }
 }
 
 /**
