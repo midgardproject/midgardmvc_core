@@ -81,7 +81,7 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7, $matched['baz']);
-        $this->assertType('int', $matched['baz']);
+        $this->assertTrue(is_int($matched['baz']));
 
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
@@ -94,7 +94,7 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7, $matched['baz']);
-        $this->assertType('int', $matched['baz']);
+        $this->assertTrue(is_int($matched['baz']));
 
 
         $unmatched = $route->check_match('/foo/baz');
@@ -112,7 +112,7 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7.5, $matched['baz']);
-        $this->assertType('float', $matched['baz']);
+        $this->assertTrue(is_float($matched['baz']));
 
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
@@ -125,7 +125,7 @@ class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
         $this->assertTrue(isset($matched['bar']));
         $this->assertEquals('baz', $matched['bar']);
         $this->assertEquals(7.5, $matched['baz']);
-        $this->assertType('float', $matched['baz']);
+        $this->assertTrue(is_float($matched['baz']));
 
         $unmatched = $route->check_match('/foo/baz');
         $this->assertEquals(null, $unmatched);
