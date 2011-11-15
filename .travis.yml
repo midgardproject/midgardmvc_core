@@ -4,6 +4,7 @@ php:
   - 5.3
 
 env:
+  - MIDGARD=midgard
   - MIDGARD=nomidgard
 
 before_script:

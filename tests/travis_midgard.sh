@@ -4,7 +4,10 @@
 sudo apt-get install -y php-pear
 sudo pear install http://phptal.org/latest.tar.gz 
 
-# Install Midgard from PPA
-sudo apt-add-repository "deb http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/ ./"
-sudo apt-get update
-sudo apt-get install -y php5-midgard2
+# Install Midgard from OBS
+wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/i386/libmidgard2-2010_10.05.5-1_i386.deb
+wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/i386/midgard2-common_10.05.5-1_i386.deb 
+wget http://download.opensuse.org/repositories/home:/midgardproject:/ratatoskr/xUbuntu_10.04/i386/php5-midgard2_10.05.5-1_i386.deb 
+sudo dpkg -i libmidgard2-2010_10.05.5-1_i386.deb
+sudo dpkg -i midgard2-common_10.05.5-1_i386.deb
+sudo dpkg -i php5-midgard2_10.05.5-1_i386.deb
