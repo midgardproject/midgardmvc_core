@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Install TAL
-sudo apt-get install -y php-pear
-sudo pear install http://phptal.org/latest.tar.gz 
+#sudo apt-get install -y php-pear
+#sudo pear install http://phptal.org/latest.tar.gz 
+pyrus install http://phptal.org/latest.tar.gz 
 
 # Install Midgard from OBS
 sudo apt-get install -y dbus libgda-4.0-4 php5-dev
