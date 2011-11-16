@@ -1,0 +1,16 @@
+language: php
+
+php:
+  - 5.3
+
+env:
+  - MIDGARD=midgard
+  - MIDGARD=nomidgard
+
+before_script:
+  - ./tests/travis_${MIDGARD}.sh
+
+script: phpunit --bootstrap framework.php tests/all
+
+notifications:
+    irc: "irc.freenode.org#midgard"
