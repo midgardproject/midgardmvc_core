@@ -17,16 +17,6 @@ if (!defined('MIDGARDMVC_STATIC_URL'))
     define('MIDGARDMVC_STATIC_URL', '/midgardmvc-static');
 }
 
-if (getenv('CI'))
-{
-    $pear_dir = exec('pear config-get php_dir');
-    if (strpos(get_include_path(), $pear_dir) === false)
-    {
-        // Ensure the default PEAR is in include path for Continuous Integration
-        set_include_path(get_include_path() . PATH_SEPARATOR . $pear_dir);
-    }
-}
-
 /**
  * Make sure the URLs not having query string have trailing slash or some extension in the "filename".
  * This makes life much, much better when making static copies for whatever reason
