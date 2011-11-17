@@ -322,7 +322,7 @@ class midgardmvc_core
         }
 
         // Clean up the context
-        $this->context->delete();
+        $this->context->delete_all();
     }
 
     /**
