@@ -98,7 +98,11 @@ class midgardmvc_core_exceptionhandler
                 $request = self::bootstrap_request();
             }
             $route = $request->get_route();
-            $route->template_aliases['root'] = 'midgardmvc-show-error';
+            if ($route) {
+                $errorRoute = clone $route;
+                $errorRoute->template_aliases['root'] = 'midgardmvc-show-error';
+                $request->set_route($errorRoute);
+            }
                 
             $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
             $request->set_data_item('cache_enabled', false);
