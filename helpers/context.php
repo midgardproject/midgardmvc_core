@@ -43,6 +43,12 @@ class midgardmvc_core_helpers_context
         unset($this->requests[$old_request]);
     }
 
+    public function delete_all()
+    {
+        $this->requests = array();
+        $this->current_request = 0;
+    }
+
     public function get_current_context()
     {
         return $this->current_request;
