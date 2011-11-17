@@ -106,7 +106,8 @@ class midgardmvc_core_route
                     $path = str_replace(array("{\${$key}}", "{\$float:{$key}}"), $value, $path);
                     break;
                 case 'string':
-                    if (mgd_is_guid($value))
+                    if (   function_exists('mgd_is_guid') 
+                        && mgd_is_guid($value))
                     {
                         $path = str_replace(array("{\${$key}}", "{\$guid:{$key}}"), $value, $path);
                         break;
@@ -381,7 +382,8 @@ class midgardmvc_core_route
                         break;
 
                     case 'guid':
-                        if (!mgd_is_guid($value))
+                        if (   !function_exists('mgd_is_guid') 
+                            || !mgd_is_guid($value))
                         {
                             throw new InvalidArgumentException("Variable '{$varname}' is type hinted as '{$type_hint}' but parsed value '{$value}' is not guid");
                         }
