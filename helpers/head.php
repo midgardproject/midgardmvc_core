@@ -20,7 +20,7 @@ class midgardmvc_core_helpers_head
     private $configuration = null;
 
     private $js_head = array();
-    
+
     private $prepend_script_head = array();
     private $script_head = array();
 
@@ -53,25 +53,25 @@ class midgardmvc_core_helpers_head
             $this->enable_jquery();
         }
     }
-    
+
     public function set_title($title)
     {
-        $this->title = strip_tags($title);   
+        $this->title = strip_tags($title);
     }
-    
-    public function enable_jquery($version = '1.5.1')
+
+    public function enable_jquery($version = '1.6.2')
     {
         if ($this->jquery_enabled)
         {
             return;
         }
-        
+
         if ($this->configuration->jquery_load_from_google)
         {
             // Let Google host jQuery for us
             $this->jquery_inits  = "        <script src=\"http://www.google.com/jsapi\"></script>\n";
             $this->jquery_inits .= "        <script>\n";
-            $this->jquery_inits .= "            google.load('jquery', '{$version}');\n"; 
+            $this->jquery_inits .= "            google.load('jquery', '{$version}');\n";
             $this->jquery_inits .= "        </script>\n";
         }
         else
@@ -80,11 +80,11 @@ class midgardmvc_core_helpers_head
             $url = MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-{$version}.min.js";
             $this->jquery_inits = "        <script type=\"text/javascript\" src=\"{$url}\"></script>\n";
         }
-        
+
         $this->jquery_enabled = true;
     }
 
-    public function enable_jquery_ui($version = '1.8.9')
+    public function enable_jquery_ui($version = '1.8.16')
     {
         if ($this->jquery_ui_enabled)
         {
@@ -100,19 +100,39 @@ class midgardmvc_core_helpers_head
         if ($this->configuration->jquery_load_from_google)
         {
             $ui_include  = "        <script>\n";
-            $ui_include .= "            google.load('jqueryui', '{$version}');\n"; 
+            $ui_include .= "            google.load('jqueryui', '{$version}');\n";
             $ui_include .= "        </script>\n";
             $this->add_script($ui_include, true);
+            $this->add_link
+            (
+                array
+                (
+                    'rel' => 'stylesheet',
+                    'type' => 'text/css',
+                    'href' => MIDGARDMVC_STATIC_URL . 'http://ajax.googleapis.com/ajax/libs/jqueryui/${version}/themes/base/jquery-ui.css'
+                )
+            );
         }
         else
         {
-            // Load from jQuery bundled with Midgard MVC package
+            // Load from jQuery UI bundled with Midgard MVC package
             $this->add_jsfile(MIDGARDMVC_STATIC_URL . "/midgardmvc_core/jQuery/jquery-ui-{$version}.min.js");
+            // Load jQuery UI CSS
+            $this->add_link
+            (
+                array
+                (
+                    'rel' => 'stylesheet',
+                    'type' => 'text/css',
+                    'href' => MIDGARDMVC_STATIC_URL . '/midgardmvc_core/jQuery/jquery-ui-' . $version . '.css'
+                )
+            );
+
         }
-        
+
         $this->jquery_ui_enabled = true;
     }
-    
+
     /**
      * Register JavaScript snippets to jQuery states.
      *
@@ -156,13 +176,13 @@ class midgardmvc_core_helpers_head
             }
         }
     }
-    
+
     function add_script($script, $prepend = false, $type = 'text/javascript', $defer = '')
     {
         $js_call = "        <script type=\"{$type}\"{$defer}>\n";
         $js_call .= "        " . trim($script) . "\n";
         $js_call .= "        </script>\n";
-        
+
         if ($prepend)
         {
             $this->prepend_script_head[] = $js_call;
@@ -200,7 +220,7 @@ class midgardmvc_core_helpers_head
             $output .= " {$key}=\"{$val}\" ";
         }
         $output .= "/>\n";
-        
+
         $this->meta_head[] = $output;
     }
 
@@ -255,19 +275,19 @@ class midgardmvc_core_helpers_head
         {
             $output .= "        <![endif]-->\n";
         }
-        
+
         if ($prepend)
         {
             array_unshift($this->link_head, $output);
         }
         else
         {
-            $this->link_head[] = $output;            
+            $this->link_head[] = $output;
         }
-        
+
         return true;
     }
-    
+
     /**
      * Echo the head elements added.
      * This function echos the elements added by the add_(css|meta|link|js(file|script)|jquery)
@@ -296,7 +316,7 @@ class midgardmvc_core_helpers_head
         {
             echo $this->jquery_inits;
         }
-        
+
         if (!empty($this->prepend_script_head))
         {
             foreach ($this->prepend_script_head as $js_call)
@@ -318,20 +338,20 @@ class midgardmvc_core_helpers_head
         {
             echo $js_call;
         }
-        
+
         $this->print_jquery_statuses();
-        
+
         foreach ($this->link_head as $link)
         {
             echo $link;
         }
-        
+
         foreach ($this->meta_head as $meta)
         {
             echo $meta;
         }
     }
-    
+
     /**
      * Echo the jquery statuses
      *
@@ -364,7 +384,7 @@ class midgardmvc_core_helpers_head
 
         echo "</script>\n";
     }
-    
+
     public function relocate($url = null)
     {
         if (is_null($url))
