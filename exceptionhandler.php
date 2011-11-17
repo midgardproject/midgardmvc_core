@@ -17,7 +17,7 @@ class midgardmvc_core_exceptionhandler
     {
         $data = self::prepare_exception_data($exception);
 
-        if ($exception->midgardmvc)
+        if (isset($exception->midgardmvc))
         {
             $midgardmvc = $exception->midgardmvc;
         }
