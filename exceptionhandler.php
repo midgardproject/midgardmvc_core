@@ -17,10 +17,17 @@ class midgardmvc_core_exceptionhandler
     {
         $data = self::prepare_exception_data($exception);
 
-        $midgardmvc = null;
+        if ($exception->midgardmvc)
+        {
+            $midgardmvc = $exception->midgardmvc;
+        }
+
         try
         {
-            $midgardmvc = midgardmvc_core::get_instance();
+            if (! $midgardmvc)
+            {
+                $midgardmvc = midgardmvc_core::get_instance();
+            }
             $midgardmvc->log($data['message_type'], $data['message'], 'warning');
         }
         catch (Exception $e)
@@ -34,16 +41,16 @@ class midgardmvc_core_exceptionhandler
             $midgardmvc->dispatcher->header("X-MidgardMVC-Error: {$data['message']}");
             $midgardmvc->dispatcher->header($data['header']);
         }
-        
+
         if ($data['http_code'] == 304)
         {
             return;
         }
 
-        self::show_error_templated($data, $midgardmvc);
+        self::show_error_templated($data, $midgardmvc, $exception->request);
     }
 
-    public static function handle_assert($file, $line, $expression) 
+    public static function handle_assert($file, $line, $expression)
     {
         $message = "Assertion '{$expression}' failed, {$file} line {$line}";
         midgardmvc_core::get_instance()->log('midgardmvc_core', "Assertion {$expression} failed, {$file} {$line}", 'warning');
@@ -75,12 +82,12 @@ class midgardmvc_core_exceptionhandler
             }
             die($message);
         }
-        
+
         echo $message;
         $dispatcher->end_request();
     }
 
-    private static function show_error_templated(array $data, midgardmvc_core $midgardmvc)
+    private static function show_error_templated(array $data, midgardmvc_core $midgardmvc, midgardmvc_core_request $request)
     {
         $midgardmvc->dispatcher->header('Content-Type: text/html; charset=utf-8');
 
@@ -91,19 +98,21 @@ class midgardmvc_core_exceptionhandler
 
         try
         {
-            $request = $midgardmvc->context->get_request();
-            if (!$request)
+            if (! $request)
             {
                 // Exception happened before request was set to context
                 $request = self::bootstrap_request();
             }
+
             $route = $request->get_route();
-            if ($route) {
+
+            if ($route)
+            {
                 $errorRoute = clone $route;
                 $errorRoute->template_aliases['root'] = 'midgardmvc-show-error';
                 $request->set_route($errorRoute);
             }
-                
+
             $request->set_data_item('midgardmvc_core_exceptionhandler', $data);
             $request->set_data_item('cache_enabled', false);
 
@@ -115,12 +124,12 @@ class midgardmvc_core_exceptionhandler
             // Templating isn't working
             self::show_error_untemplated($data);
         }
-            
+
         // Clean up and finish
         $midgardmvc->context->delete();
     }
-    
-    private static function show_error_untemplated(array $data) 
+
+    private static function show_error_untemplated(array $data)
     {
         echo "<!DOCTYPE html>\n";
         echo "<html>\n";
@@ -145,7 +154,7 @@ class midgardmvc_core_exceptionhandler
         midgardmvc_core::get_instance()->context->create($request);
         return $request;
     }
-    
+
     public static function code_by_exception(Exception $exception)
     {
         // Different HTTP error codes for different Exceptions
@@ -187,13 +196,22 @@ class midgardmvc_core_exceptionhandler
  *
  * @package midgardmvc_core
  */
-class midgardmvc_exception extends Exception 
+class midgardmvc_exception extends Exception
 {
-    public function __construct($message, $code = 500) 
+    var $midgardvc = null;
+    var $request = null;
+
+    public function __construct($message, $code = 500)
     {
         parent::__construct($message, $code);
+        $this->midgardmvc = midgardmvc_core::get_instance();
+
+        if ($this->midgardmvc->context)
+        {
+            $this->request = $this->midgardmvc->context->get_request();
+        }
     }
-    
+
     public function getHttpCode()
     {
         return 500;
@@ -208,7 +226,7 @@ class midgardmvc_exception extends Exception
 class midgardmvc_exception_notfound extends midgardmvc_exception
 {
     // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 404) 
+    public function __construct($message, $code = 404)
     {
         parent::__construct($message, $code);
     }
@@ -227,11 +245,11 @@ class midgardmvc_exception_notfound extends midgardmvc_exception
 class midgardmvc_exception_unauthorized extends midgardmvc_exception
 {
     // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 401) 
+    public function __construct($message, $code = 401)
     {
         parent::__construct($message, $code);
     }
-    
+
     public function getHttpCode()
     {
         return 401;
@@ -247,7 +265,7 @@ class midgardmvc_exception_httperror extends midgardmvc_exception
 {
     protected $httpcode = 500;
     // Redefine the exception so message isn't optional
-    public function __construct($message, $code = 500) 
+    public function __construct($message, $code = 500)
     {
         $this->httpcode = $code;
         parent::__construct($message, $code);
