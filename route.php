@@ -24,6 +24,9 @@ class midgardmvc_core_route
     );
     public $mimetype = 'text/html';
 
+    // associative array with variables and their values submitted via the URL
+    private $matched = null;
+
     /**
      * Constructor
      *
@@ -37,7 +40,7 @@ class midgardmvc_core_route
      *
      * @param string $id route identifier
      * @param string $path route path (see details about the path definition)
-     * @param string $controller controller class name 
+     * @param string $controller controller class name
      * @param string $action action method name
      * @param array $template_aliases keys are template names to override, values template names to use in their place
      * @param string $mimetype mimetype header to set
@@ -159,7 +162,7 @@ class midgardmvc_core_route
                     return $this->check_match_get($route_get, $query, $argv_str);
                 }
             }
-    
+
 
             if ($route_args) // Route @ set
             {
@@ -190,7 +193,7 @@ class midgardmvc_core_route
         {
             $route_path_regex = '^' . str_replace('@', '.*?', mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $route_path)) . '$';
         }
-        else 
+        else
         {
             $route_path_regex = '^' . mb_ereg_replace('\{(.+?)\}', '([^/]+?)', $route_path) . '$';
         }
@@ -239,7 +242,7 @@ class midgardmvc_core_route
         // We have a complete match, setup route_id arguments and return
         try
         {
-            $matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches, $argv_str);
+            $this->matched = $this->normalize_variables($route_path_matches[1], $route_path_regex_matches, $argv_str);
         }
         catch (InvalidArgumentException $e)
         {
@@ -249,21 +252,21 @@ class midgardmvc_core_route
 
         if ($route_get)
         {
-            $matched = array_merge($matched, $get_matched);
+            $this->matched = array_merge($this->matched, $get_matched);
             unset($get_matched);
         }
         if (   $route_args
             && isset($variable_matched))
         {
-            $matched['variable_arguments'] = $variable_matched;
+            $this->matched['variable_arguments'] = $variable_matched;
             unset($variable_matched);
         }
         /*
         echo "DEBUG: matched\n";
-        var_dump($matched);
+        var_dump($this->matched);
         */
 
-        return $matched;
+        return $this->matched;
     }
 
     /**
@@ -326,7 +329,7 @@ class midgardmvc_core_route
             // If there are two parts, the second is type
             $tokens['type'] = $argument_parts[1];
         }
-        
+
         if (count($argument_parts) >= 3)
         {
             // If there are three parts, then second is variant and third is type
@@ -340,7 +343,7 @@ class midgardmvc_core_route
             $tokens['language'] = $argument_parts[2];
             $tokens['type'] = $argument_parts[3];
         }
-        
+
         return $tokens;
     }
 
@@ -359,10 +362,10 @@ class midgardmvc_core_route
             {
                 $type_hint = $variable_parts[0];
             }
-                            
+
             // Strip type hints from variable names
             $varname = mb_ereg_replace('^.+:', '', $varname);
-            
+
             if ($type_hint == 'token')
             {
                 // Tokenize the argument to handle resource typing
@@ -414,7 +417,7 @@ class midgardmvc_core_route
         return $matched;
     }
 
-    /** 
+    /**
      * Normalizes the given path
      *
      */
@@ -443,7 +446,7 @@ class midgardmvc_core_route
         $path = false;
         $path_get = false;
         $path_args = false;
-        
+
         /* This will split route from "@" - mark
          * /some/route/@somedata
          * $matches[1] = /some/route/
@@ -454,7 +457,7 @@ class midgardmvc_core_route
         {
             $path_args = true;
         }
-        
+
         $path = $this->normalize_path($this->path);
         // Get route parts
         $path_parts = explode('?', $path, 2);
@@ -465,6 +468,17 @@ class midgardmvc_core_route
         }
         unset($path_parts);
         return array($path, $path_get, $path_args);
+    }
+
+    /**
+     * Returns an associative array with GET arguments and their
+     * corresponding value
+     *
+     * @return array
+     */
+    public function get_matched()
+    {
+        return $this->matched;
     }
 }
 ?>
