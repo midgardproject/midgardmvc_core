@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Install TAL
-pyrus install http://phptal.org/latest.tar.gz 
+# Install with Composer
+wget http://getcomposer.org/composer.phar 
+php composer.phar install
 
 # Install Pake
 pyrus channel-discover pear.indeyets.ru

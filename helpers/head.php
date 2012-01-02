@@ -312,6 +312,11 @@ class midgardmvc_core_helpers_head
      */
     public function print_elements()
     {
+        if (isset($this->title))
+        {
+            echo ("        <title>{$this->title}</title>\n");
+        }
+
         if ($this->jquery_enabled)
         {
             echo $this->jquery_inits;
@@ -323,10 +328,6 @@ class midgardmvc_core_helpers_head
             {
                 echo $js_call;
             }
-        }
-        if (isset($this->title))
-        {
-            echo ("        <title>{$this->title}</title>\n");
         }
 
         foreach ($this->script_head as $js_call)
