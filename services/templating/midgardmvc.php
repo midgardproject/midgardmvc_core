@@ -113,7 +113,9 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $routes = $this->midgardmvc->component->get_routes($request);
         if (!isset($routes[$route_id]))
         {
-            throw new OutOfRangeException("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
+            $exception = new OutOfRangeException("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
+            $exception->request = $request;
+            throw $exception;
         }
         $request->set_arguments($routes[$route_id]->set_variables($arguments));
         $request->set_route($routes[$route_id]);
