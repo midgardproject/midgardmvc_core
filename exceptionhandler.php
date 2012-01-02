@@ -24,7 +24,7 @@ class midgardmvc_core_exceptionhandler
 
         try
         {
-            if (! $midgardmvc)
+            if (!isset($midgardmvc))
             {
                 $midgardmvc = midgardmvc_core::get_instance();
             }
