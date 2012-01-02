@@ -15,7 +15,7 @@ class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests
 {
     public function setUp()
     {
-        $path = MIDGARDMVC_ROOT. '/midgardmvc_core/configuration/defaults.yml';
+        $path = midgardmvc_core::get_component_path('midgardmvc_core') . '/configuration/defaults.yml';
         $yaml = file_get_contents($path);
         $this->testConfiguration = midgardmvc_core::read_yaml($yaml);
         parent::setUp();

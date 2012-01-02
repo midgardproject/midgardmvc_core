@@ -5,7 +5,7 @@
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-include MIDGARDMVC_ROOT . "/midgardmvc_core/services/uimessages.php";
+include midgardmvc_core::get_component_path('midgardmvc_core') . '/services/uimessages.php';
 
 /**
  * Basic UI Message class

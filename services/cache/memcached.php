@@ -6,7 +6,7 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-include MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache.php";
+include midgardmvc_core::get_component_path('midgardmvc_core') . '/services/cache.php';
 
 /**
  * memcached cache backend.

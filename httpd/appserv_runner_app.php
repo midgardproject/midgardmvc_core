@@ -23,13 +23,12 @@ class midgardmvc_appserv_runner_app
         );
 
         // add paths of components
-        $_midgardmvc_root = realpath(__DIR__ . '/../..').'/';
         foreach (midgardmvc_core::get_instance()->component->get_components() as $component) {
-            if (!file_exists("{$_midgardmvc_root}{$component->name}/static")) {
+            if (!file_exists($component->get_path() . '/static')) {
                 continue;
             }
 
-            $urlmap["/midgardmvc-static/{$component->name}"] = new file_server("{$_midgardmvc_root}{$component->name}/static", 4000000);
+            $urlmap["/midgardmvc-static/{$component->name}"] = new file_server($component->get_path() . '/static', 4000000);
         }
 
         $map = new aip_urlmap($urlmap);

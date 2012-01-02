@@ -5,8 +5,7 @@
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-
-require_once(MIDGARDMVC_ROOT . '/midgardmvc_core/phptal_include.php');
+require_once(midgardmvc_core::get_component_path('midgardmvc_core') . '/phptal_include.php');
 
 /**
  * Gettext localization service for Midgard MVC
@@ -104,7 +103,7 @@ class midgardmvc_core_services_i18n_gettext implements midgardmvc_core_services_
             echo ($e);
         }
         // register gettext domain to use
-        $path = MIDGARDMVC_ROOT . "/{$component_name}/locale/";
+        $path = midgardmvc_core::get_component_path($component_name) . '/locale/';
         $this->tr[$component_name]->addDomain($component_name, $path);
 
         // specify current domain
