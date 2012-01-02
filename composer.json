@@ -1,0 +1,22 @@
+{
+    "name": "midgard/midgardmvc-core",
+    "type": "library",
+    "description": "Content-oriented Model-View-Controller library for PHP",
+    "keywords": ["mvc", "midgard"],
+    "homepage": "http://new.midgard-project.org/midgardmvc/",
+    "version": "10.05.1beta1",
+    "license": "LGPL",
+    "authors": [
+        {
+            "name": "Henri Bergius",
+            "email": "henri.bergius@iki.fi",
+            "homepage": "http://bergie.iki.fi/"
+        }
+    ],
+    "require": {
+        "php": ">=5.2.0"
+    },
+    "suggest": {
+        "ext-midgard2": ">=10.05.5"
+    }
+}
