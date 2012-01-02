@@ -58,7 +58,7 @@ class midgardmvc_core
      */
     private function load_service($service)
     {
-        $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/services/{$service}.php";
+        $interface_file = self::get_component_path('midgardmvc_core') . "/services/{$service}.php";
         if (!file_exists($interface_file))
         {
             throw new InvalidArgumentException("Service {$service} not installed");
@@ -86,7 +86,7 @@ class midgardmvc_core
      */
     private function load_provider($provider)
     {
-        $interface_file = MIDGARDMVC_ROOT . "/midgardmvc_core/providers/{$provider}.php";
+        $interface_file = self::get_component_path('midgardmvc_core') . "/providers/{$provider}.php";
         if (!file_exists($interface_file))
         {
             throw new InvalidArgumentException("Provider {$provider} not installed");
@@ -186,6 +186,7 @@ class midgardmvc_core
         foreach ($components as $component)
         {
             $component_length = strlen($component);
+            $component = str_replace('-', '_', $component);
             if (substr($class_name, 0, $component_length) != $component)
             {
                 continue;
@@ -193,16 +194,25 @@ class midgardmvc_core
             return self::autoload_from_component($component, substr($class_name, $component_length));
         }
     }
+
+    public static function get_component_path($component)
+    {
+        if (strpos(__DIR__, 'vendor/midgard') !== false) {
+            // Composer installation
+            return MIDGARDMVC_ROOT . '/' . str_replace('_', '-', $component);
+        }
+        return MIDGARDMVC_ROOT . "/{$component}";
+    }
     
     private static function autoload_from_component($component, $class_name)
     {
         if (empty($class_name))
         {
-            $path = MIDGARDMVC_ROOT . "/{$component}/interface.php";
+            $path = self::get_component_path($component) . '/interface.php';
         }
         else
         {
-            $path = MIDGARDMVC_ROOT . "/{$component}/" . str_replace('_', '/', $class_name) . '.php';
+            $path = self::get_component_path($component) . str_replace('_', '/', $class_name) . '.php';
         }
         
         if (!file_exists($path))
@@ -415,7 +425,7 @@ class midgardmvc_core
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
                 if (!class_exists('sfYaml'))
                 {
-                    require MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
+                    require self::get_component_path('midgardmvc_core') . '/helpers/sfYaml/sfYaml.php';
                 }
             }
         }
@@ -455,7 +465,7 @@ class midgardmvc_core
                 // YAML PHP extension is not loaded, include the pure-PHP implementation
                 if (!class_exists('sfYaml'))
                 {
-                    require MIDGARDMVC_ROOT . '/midgardmvc_core/helpers/sfYaml/sfYaml.php';
+                    require midgardmvc_core::get_component_path('midgardmvc_core') . '/helpers/sfYaml/sfYaml.php';
                 }
             }
         }

@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 
 if (!defined('MIDGARDMVC_ROOT'))
 {
-    define('MIDGARDMVC_ROOT', realpath(dirname(__FILE__) . '/../'));
+    define('MIDGARDMVC_ROOT', realpath(__DIR__ . '/../'));
 }
 
 if (!defined('MIDGARDMVC_STATIC_URL'))
@@ -47,10 +47,10 @@ if (   isset($_SERVER['REQUEST_URI'])
 }
 
 // Load the exception handler
-require(MIDGARDMVC_ROOT . '/midgardmvc_core/exceptionhandler.php');
+require(__DIR__ . '/exceptionhandler.php');
 
 // Start up Midgard MVC
-require(MIDGARDMVC_ROOT . '/midgardmvc_core/interface.php');
+require(__DIR__ . '/interface.php');
 
 // Register autoloader so we get all Midgard MVC classes loaded automatically
 spl_autoload_register(array('midgardmvc_core', 'autoload'));

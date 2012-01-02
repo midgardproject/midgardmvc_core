@@ -22,7 +22,7 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
 
     public function __construct($name, array $manifest)
     {
-        $this->path = MIDGARDMVC_ROOT . "/{$name}";
+        $this->path = midgardmvc_core::get_component_path($name);
         $this->name = $name;
         $this->manifest = $manifest;
         if ($manifest['extends'])
