@@ -1,1 +1,4 @@
 *.mo
+composer.lock
+composer.phar
+vendor

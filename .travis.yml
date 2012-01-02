@@ -10,7 +10,7 @@ env:
 before_script:
   - ./tests/travis_${MIDGARD}.sh
 
-script: phpunit --bootstrap framework.php tests/all
+script: phpunit -c tests/phpunit.xml.dist
 
 notifications:
     irc: "irc.freenode.org#midgard"

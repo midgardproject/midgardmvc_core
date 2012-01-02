@@ -16,7 +16,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     private $dispatcher = null;
 
     private $gettext_translator = array();
-    
+
     private $midgardmvc = null;
 
     public function __construct()
@@ -27,14 +27,18 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
     public function get_element_callback(array $element)
     {
         $request = $this->midgardmvc->context->get_request();
-        return $this->get_element($request, $element[1]);
+
+        if (is_a($request, 'midgardmvc_core_request'))
+        {
+            return $this->get_element($request, $element[1]);
+        }
     }
 
     public function get_element(midgardmvc_core_request $request, $element, $handle_includes = true)
     {
         // Check for possible element aliases
         $route = $request->get_route();
-        
+
         if (    $route
             && isset($route->template_aliases[$element]))
         {
@@ -70,7 +74,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
      * by specifying component name as the first argument.
      *
      * Here is an example of using dynamic calls inside a TAL template, in this case loading three latest news:
-     * 
+     *
      * <code>
      * <tal:block tal:define="latest_news php:midgardmvc.templating.dynamic_call('net_nemein_news', 'latest', array('number' => 3))">
      *     <ul tal:condition="latest_news/news">
@@ -109,7 +113,9 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $routes = $this->midgardmvc->component->get_routes($request);
         if (!isset($routes[$route_id]))
         {
-            throw new OutOfRangeException("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
+            $exception = new OutOfRangeException("Route {$route_id} not defined, we have: " . implode(', ', array_keys($routes)));
+            $exception->request = $request;
+            throw $exception;
         }
         $request->set_arguments($routes[$route_id]->set_variables($arguments));
         $request->set_route($routes[$route_id]);
@@ -118,13 +124,13 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         $data = $request->get_data_item('current_component');
         if ($switch_context)
-        {        
+        {
             $this->midgardmvc->context->delete();
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Call a route of a component with given arguments and display its content entry point
      *
@@ -144,7 +150,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
      * @return $array data
      */
     public function dynamic_load($intent, $route_id, array $arguments, $return_html = false)
-    { 
+    {
         $request = midgardmvc_core_request::get_for_intent($intent);
         $this->midgardmvc->context->create($request);
         $data = $this->dynamic_call($request, $route_id, $arguments, false);
@@ -159,7 +165,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
             $this->display($request);
         }
 
-        /* 
+        /*
          * Gettext is not context safe. Here we return the "original" textdomain
          * because in dynamic call the new component may change it
          */
@@ -179,7 +185,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
     /**
      * Include the template based on either global or controller-specific template entry point.
-     */    
+     */
     public function template(midgardmvc_core_request $request, $element_identifier = 'root')
     {
         // Let injectors do their work
@@ -198,7 +204,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // Template cache didn't have this template, collect it
         $this->midgardmvc->cache->template->put($request->get_template_identifier(), $element);
     }
-    
+
     /**
      * Show the loaded contents using the template engine
      *
@@ -230,7 +236,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         {
             ob_start();
         }
-        
+
         /*$filters = $this->midgardmvc->configuration->get('output_filters');
         if ($filters)
         {
@@ -256,7 +262,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         {
             echo $content;
         }
-        
+
         if (isset($data['cache_enabled']) && $data['cache_enabled'])
         {
             // Store the contents to content cache and display them
@@ -276,12 +282,12 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // We use the PHPTAL class
         if (!class_exists('PHPTAL'))
         {
-            require('PHPTAL.php');
+            require_once(MIDGARDMVC_ROOT . '/midgardmvc_core/phptal_include.php');
         }
 
         $tal = new PHPTAL($request->get_template_identifier());
         $tal->setPhpCodeDestination($this->midgardmvc->cache->template->get_cache_directory());
-        
+
         $tal->uimessages = false;
         if ($this->midgardmvc->configuration->enable_uimessages)
         {
@@ -294,10 +300,10 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
         $tal->midgardmvc = $this->midgardmvc;
         $tal->request = $request;
-        
+
         // FIXME: Remove this once Qaiku has upgraded
         $tal->MIDCOM = $this->midgardmvc;
-        
+
         foreach ($data as $key => $value)
         {
             $tal->$key = $value;
@@ -306,8 +312,8 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         $tal->setSource($content);
 
         $translator =& $this->midgardmvc->i18n->set_translation_domain($request->get_component()->name);
-        $tal->setTranslator($translator);  
-    
+        $tal->setTranslator($translator);
+
         try
         {
             $content = $tal->execute();
@@ -316,7 +322,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         {
             throw new midgardmvc_exception("PHPTAL: {$e->srcFile} line {$e->srcLine}: " . $e->getMessage());
         }
-        
+
         return $content;
     }
 }
