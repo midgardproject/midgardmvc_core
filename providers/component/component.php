@@ -17,6 +17,8 @@ interface midgardmvc_core_providers_component_component
 
     public function get_configuration_contents();
 
+    public function get_path();
+
     public function get_description();
 
     public function get_routes(midgardmvc_core_request $request);

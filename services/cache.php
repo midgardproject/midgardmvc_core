@@ -156,7 +156,7 @@ abstract class midgardmvc_core_services_cache_base
             return;
         }
         
-        $module_file = MIDGARDMVC_ROOT . "/midgardmvc_core/services/cache/module/{$module}.php";
+        $module_file = midgardmvc_core::get_component_path('midgardmvc_core') . "/services/cache/module/{$module}.php";
         if (!file_exists($module_file))
         {
             throw new Exception("Cache module {$module} not installed");

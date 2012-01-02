@@ -129,7 +129,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
 
     private function get_manifest_path($component)
     {
-        return MIDGARDMVC_ROOT . "/{$component}/manifest.yml";
+        return midgardmvc_core::get_component_path($component) . '/manifest.yml';
     }
 
     /**
@@ -214,7 +214,7 @@ class midgardmvc_core_providers_component_midgardmvc implements midgardmvc_core_
         $components = midgardmvc_core::get_instance()->configuration->components;
         foreach ($components as $component => $setup_info)
         {
-            $component_path = MIDGARDMVC_ROOT . "/{$component}";
+            $component_path = midgardmvc_core::get_component_path($component);
             if (!file_exists("{$component_path}/manifest.yml"))
             {
                 throw new Exception("Component {$component} specified in application configuration is not installed");

@@ -77,7 +77,7 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
     public function test_get_class_contents()
     {
         $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
-        $original = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/request.php");
+        $original = file_get_contents(midgardmvc_core::get_component_path('midgardmvc_core') . '/request.php');
         $this->assertEquals($original, $component->get_class_contents('midgardmvc_core_request'));
 
         $this->assertEquals(null, $component->get_class_contents('midgardmvc_core_request_not_defined'));
@@ -86,7 +86,7 @@ class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_te
     public function test_get_description()
     {
         $component = midgardmvc_core::get_instance()->component->get('midgardmvc_core');
-        $original = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/README.markdown");
+        $original = file_get_contents(midgardmvc_core::get_component_path('midgardmvc_core') . '/README.markdown');
         $this->assertEquals($original, $component->get_description());
     }
 }
