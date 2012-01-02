@@ -21,7 +21,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
 
     public function test_get_element_simple()
     {
-        $original_element = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/templates/ROOT.xhtml");
+        $original_element = file_get_contents(midgardmvc_core::get_component_path('midgardmvc_core') . '/templates/ROOT.xhtml');
         $element = midgardmvc_core::get_instance()->templating->get_element($this->_core->context->get_request(), 'ROOT', false);
         $this->assertEquals($original_element, $element, 'Template returned by templating service should be the same as the template file');
     }
@@ -33,7 +33,7 @@ class midgardmvc_core_tests_services_templating extends midgardmvc_core_tests_te
         $request->set_route($routes['index']);
         midgardmvc_core::get_instance()->context->create($request);
         
-        $original_element = file_get_contents(MIDGARDMVC_ROOT . "/midgardmvc_core/templates/ROOT.xhtml");
+        $original_element = file_get_contents(midgardmvc_core::get_component_path('midgardmvc_core') . '/templates/ROOT.xhtml');
         $element = midgardmvc_core::get_instance()->templating->get_element($this->_core->context->get_request(), 'ROOT');
         $this->assertNotEquals($original_element, $element, 'Template returned by templating service should not be the same as the template file because of includes');
 

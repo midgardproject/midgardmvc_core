@@ -182,11 +182,10 @@ class midgardmvc_core
      */
     public static function autoload($class_name)
     {
-        $components = scandir(MIDGARDMVC_ROOT, -1);
-        foreach ($components as $component)
+        $components = self::find_components();
+        foreach ($components as $component => $component_path)
         {
             $component_length = strlen($component);
-            $component = str_replace('-', '_', $component);
             if (substr($class_name, 0, $component_length) != $component)
             {
                 continue;
@@ -195,13 +194,56 @@ class midgardmvc_core
         }
     }
 
+    private static function find_components()
+    {
+        static $components = null;
+        if ($components)
+        {
+            return $components;
+        }
+
+        if (strpos(__DIR__, 'vendor/midgard') !== false)
+        {
+            // Composer-based installation has different structure
+            $components = self::find_components_composer();
+            return $components;
+        }
+
+        $component_dirs = scandir(MIDGARDMVC_ROOT, -1);
+        $components = array();
+        foreach ($component_dirs as $component)
+        {
+            $components[$component] = MIDGARDMVC_ROOT . "/{$component}";
+        }
+        return $components;
+    }
+
+    private static function find_components_composer()
+    {
+        $components = array();
+        if (file_exists(__DIR__ . '/../../../manifest.yml')) {
+            // Main Composer package is also a component
+            $component_dir = realpath(dirname(__DIR__ . '/../../../manifest.yml'));
+            $components[basename($component_dir)] = $component_dir;
+        }
+        $component_dirs = scandir(MIDGARDMVC_ROOT, -1);
+        foreach ($component_dirs as $component)
+        {
+            if (!file_exists(MIDGARDMVC_ROOT . "/{$component}/manifest.yml")) {
+                continue;
+            }
+            $component_name = str_replace('-', '_', $component);
+            $components[$component_name] = MIDGARDMVC_ROOT . "/{$component}";
+        }
+        return $components;
+    }
+
     public static function get_component_path($component)
     {
-        if (strpos(__DIR__, 'vendor/midgard') !== false) {
-            // Composer installation
-            return MIDGARDMVC_ROOT . '/' . str_replace('_', '-', $component);
+        $components = self::find_components();
+        if (isset($components[$component])) {
+            return $components[$component];
         }
-        return MIDGARDMVC_ROOT . "/{$component}";
     }
     
     private static function autoload_from_component($component, $class_name)
