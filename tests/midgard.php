@@ -44,9 +44,10 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
         $midgard = midgard_connection::get_instance();
 
         $this->config = new midgard_config();
+        $this->config->dbdir = '/tmp';
         $this->config->dbtype = $this->dbtype;
         $this->config->database = 'midgardmvc_test';
-        $this->config->blobdir = "/tmp/midgardmvc_test";
+        $this->config->blobdir = "/tmp/midgardmvc_test_blobs";
         $this->config->tablecreate = true;
         $this->config->tableupdate = true;
         $this->config->loglevel = 'critical';
@@ -70,17 +71,14 @@ abstract class midgardmvc_core_tests_midgard extends PHPUnit_Framework_TestCase
         $classes = $re->getClasses();
         foreach ($classes as $refclass)
         {
-            $parent_class = $refclass->getParentClass();
-            if (!$parent_class)
-            {
+            if ($refclass->isAbstract() || $refclass->isInterface()) {
                 continue;
             }
-            if ($parent_class->getName() != 'MidgardObject')
-            {
-                continue;
-            }
-            $type = $refclass->getName();
 
+            $type = $refclass->getName();
+            if (!is_subclass_of($type, 'MidgardDBObject')) {
+                continue;
+            }
             if (midgard_storage::class_storage_exists($type))
             {
                 // FIXME: Skip updates until http://trac.midgard-project.org/ticket/1426 is fixed
