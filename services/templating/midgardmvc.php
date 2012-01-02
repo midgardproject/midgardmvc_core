@@ -282,7 +282,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
         // We use the PHPTAL class
         if (!class_exists('PHPTAL'))
         {
-            require('PHPTAL.php');
+            require_once(MIDGARDMVC_ROOT . '/midgardmvc_core/phptal_include.php');
         }
 
         $tal = new PHPTAL($request->get_template_identifier());

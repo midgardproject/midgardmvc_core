@@ -6,8 +6,7 @@
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
 
-require_once('PHPTAL.php'); // FIXME: Better place required
-require_once 'PHPTAL/GetTextTranslator.php'; // FIXME: Better place required
+require_once(MIDGARDMVC_ROOT . '/midgardmvc_core/phptal_include.php');
 
 /**
  * Gettext localization service for Midgard MVC

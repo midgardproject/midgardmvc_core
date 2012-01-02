@@ -13,8 +13,21 @@
             "homepage": "http://bergie.iki.fi/"
         }
     ],
+    "repositories": {
+        "phptal": {
+            "package": {
+                "name": "phptal/phptal",
+                "version": "1.2.2",
+                "dist": {
+                    "url": "http://phptal.org/files/PHPTAL-1.2.2.zip",
+                    "type": "zip"
+                }
+            }
+        }
+    },
     "require": {
-        "php": ">=5.2.0"
+        "php": ">=5.2.0",
+        "phptal/phptal": ">=1.2.2"
     },
     "suggest": {
         "ext-midgard2": ">=10.05.5"
