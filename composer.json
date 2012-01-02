@@ -2,7 +2,7 @@
     "name": "midgard/midgardmvc-core",
     "type": "library",
     "description": "Content-oriented Model-View-Controller library for PHP",
-    "keywords": ["mvc", "midgard"],
+    "keywords": ["mvc", "midgard", "framework"],
     "homepage": "http://new.midgard-project.org/midgardmvc/",
     "version": "10.05.1beta1",
     "license": "LGPL",
