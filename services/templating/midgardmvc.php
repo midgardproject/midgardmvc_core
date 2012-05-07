@@ -212,7 +212,7 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
      */
     public function display(midgardmvc_core_request $request, $return_output = false)
     {
-        $data =& $request->get_data();
+        $data = $request->get_data();
 
         $template_file = $this->midgardmvc->cache->template->get($request->get_template_identifier());
 
