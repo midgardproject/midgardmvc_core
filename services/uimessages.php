@@ -62,7 +62,7 @@ class midgardmvc_core_services_uimessages_baseclass
         }
     }
     
-    public function add($data)
+    public function add(array $data)
     {
         if (!$this->implementation)
         {
