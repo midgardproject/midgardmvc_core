@@ -15,6 +15,20 @@ Basic building blocks:
 Installation
 ------------
 
+## Installing with Composer
+
+To install Midgard MVC with [Composer](http://packagist.org/), simply add this to your package dependencies:
+
+    "require": {
+        "midgard/midgardmvc-core": ">=10.05.0"
+    }
+
+Note that Midgard MVC uses non-namespaced code and therefore doesn't work yet with the Composer-generated autoloader. To get the Midgard MVC autoloader registered, include the framework bootstrap file:
+
+    require 'vendor/midgard/midgardmvc-core/framework.php';
+
+## Installing with `midgardmvc_installer`
+
 The easiest way to install Midgard MVC is by using the `midgardmvc_installer` tool. You can install the tool with PEAR by running the following:
 
     $ sudo pear channel-discover pear.indeyets.pp.ru
