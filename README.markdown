@@ -1,1 +1,0 @@
-Midgard MVC is an elegant Model-View-Controller for web applications written in the PHP language. It provides support for loadable components, a dynamic folder structure and clean URLs. TAL is used for template handling.
