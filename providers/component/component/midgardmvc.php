@@ -213,8 +213,13 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         $readme_file = $this->path . "/README.markdown";
         if (!file_exists($readme_file))
         {
-            return '';
+            $readme_file = $this->path . "/README.md";
+            if (!file_exists($readme_file))
+            {
+                return '';
+            }
         }
+
         return file_get_contents($readme_file);
     }
 
