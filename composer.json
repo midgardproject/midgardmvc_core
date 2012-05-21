@@ -3,8 +3,7 @@
     "type": "library",
     "description": "Content-oriented Model-View-Controller library for PHP",
     "keywords": ["mvc", "midgard", "framework"],
-    "homepage": "http://new.midgard-project.org/midgardmvc/",
-    "version": "10.05.2",
+    "homepage": "http://midgard-project.org/midgardmvc/",
     "license": "LGPL",
     "authors": [
         {
