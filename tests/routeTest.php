@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_route extends PHPUnit_Framework_TestCase
+class midgardmvc_core_tests_routeTest extends PHPUnit_Framework_TestCase
 {
     public function test_default_templates()
     {

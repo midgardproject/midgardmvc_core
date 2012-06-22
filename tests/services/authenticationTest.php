@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_services_authentication extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_services_authenticationTest extends midgardmvc_core_tests_testcase
 {
     public function test_user_anonymous()
     {

@@ -5,7 +5,6 @@
  * @copyright The Midgard Project, http://www.midgard-project.org
  * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  */
-require_once(midgardmvc_core::get_component_path('midgardmvc_core') . '/phptal_include.php');
 
 /**
  * Gettext localization service for Midgard MVC

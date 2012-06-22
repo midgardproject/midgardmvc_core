@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_request extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_requestTest extends midgardmvc_core_tests_testcase
 {
     public function test_resolve_node_root()
     {

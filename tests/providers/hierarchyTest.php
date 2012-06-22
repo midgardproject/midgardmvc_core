@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_providers_hierarchy extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_providers_hierarchyTest extends midgardmvc_core_tests_testcase
 {
     public function test_get_node_by_path()
     {

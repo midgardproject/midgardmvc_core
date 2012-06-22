@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_providers_component extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_providers_componentTest extends midgardmvc_core_tests_testcase
 {
     /**
      * @expectedException InvalidArgumentException

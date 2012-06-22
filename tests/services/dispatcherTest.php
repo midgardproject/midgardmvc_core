@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_services_dispatcher extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_services_dispatcherTest extends midgardmvc_core_tests_testcase
 {
     public function test_generate_url()
     {

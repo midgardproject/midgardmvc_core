@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_services_uimessages extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_services_uimessagesTest extends midgardmvc_core_tests_testcase
 {
     public function test_has_remove()
     {
