@@ -18,5 +18,8 @@
     },
     "suggest": {
         "ext-midgard2": ">=10.05.5"
+    },
+    "autoload": {
+        "classmap": ["."]
     }
 }
