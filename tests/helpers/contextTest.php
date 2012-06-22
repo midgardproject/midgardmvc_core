@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_helpers_context extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_helpers_contextTest extends midgardmvc_core_tests_testcase
 {
     public function test_create()
     { 

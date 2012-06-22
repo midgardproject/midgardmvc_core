@@ -11,7 +11,7 @@
  *
  * @package midgardmvc_core
  */
-class midgardmvc_core_tests_services_configuration extends midgardmvc_core_tests_testcase
+class midgardmvc_core_tests_services_configurationTest extends midgardmvc_core_tests_testcase
 {
     public function setUp()
     {

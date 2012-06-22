@@ -279,12 +279,6 @@ class midgardmvc_core_services_templating_midgardmvc implements midgardmvc_core_
 
     private function display_tal(midgardmvc_core_request $request, $content, array $data)
     {
-        // We use the PHPTAL class
-        if (!class_exists('PHPTAL'))
-        {
-            require_once(midgardmvc_core::get_component_path('midgardmvc_core') . '/phptal_include.php');
-        }
-
         $tal = new PHPTAL($request->get_template_identifier());
         $tal->setPhpCodeDestination($this->midgardmvc->cache->template->get_cache_directory());
 

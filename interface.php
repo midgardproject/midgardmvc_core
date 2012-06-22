@@ -175,25 +175,6 @@ class midgardmvc_core
         return $this->$key;
     }
     
-    /**
-     * Automatically load missing class files
-     *
-     * @param string $class_name Name of a missing PHP class
-     */
-    public static function autoload($class_name)
-    {
-        $components = self::find_components();
-        foreach ($components as $component => $component_path)
-        {
-            $component_length = strlen($component);
-            if (substr($class_name, 0, $component_length) != $component)
-            {
-                continue;
-            }
-            return self::autoload_from_component($component, substr($class_name, $component_length));
-        }
-    }
-
     private static function find_components()
     {
         static $components = null;
@@ -244,25 +225,6 @@ class midgardmvc_core
         if (isset($components[$component])) {
             return $components[$component];
         }
-    }
-    
-    private static function autoload_from_component($component, $class_name)
-    {
-        if (empty($class_name))
-        {
-            $path = self::get_component_path($component) . '/interface.php';
-        }
-        else
-        {
-            $path = self::get_component_path($component) . str_replace('_', '/', $class_name) . '.php';
-        }
-        
-        if (!file_exists($path))
-        {
-            return;
-        }
-        
-        require($path);
     }
     
     /**

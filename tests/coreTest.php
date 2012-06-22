@@ -9,7 +9,7 @@
 /**
  * Test to see if midgardmvc_core is working
  */
-class midgardmvc_core_tests_core extends PHPUnit_Framework_TestCase
+class midgardmvc_core_tests_coreTest extends PHPUnit_Framework_TestCase
 {
     private $configuration = array
     (

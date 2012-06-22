@@ -11,7 +11,7 @@ env:
 before_script:
   - ./tests/travis_${MIDGARD}.sh
 
-script: phpunit -c tests/phpunit.xml.dist
+script: phpunit
 
 notifications:
     irc: "irc.freenode.org#midgard"
