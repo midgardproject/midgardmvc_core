@@ -1,4 +1,4 @@
-Midgard Web Framework [![Build Status](https://secure.travis-ci.org/bergie/midgardmvc_core.png?branch=master)](http://travis-ci.org/bergie/midgardmvc_core)
+Midgard Web Framework [![Build Status](https://secure.travis-ci.org/midgardproject/midgardmvc_core.png?branch=master)](http://travis-ci.org/midgardproject/midgardmvc_core)
 =====================
 
 Midgard MVC is a web framework for PHP. Being a framework, it provides a standard way to build and deploy web applications. Your applications provide a set of interfaces that Midgard MVC calls when a matching HTTP request is made.
