@@ -423,20 +423,11 @@ class midgardmvc_core
                 $yaml_function = 'syck_load';
                 $use_yaml = true;
             }
-
-            if (!$use_yaml)
-            {
-                // YAML PHP extension is not loaded, include the pure-PHP implementation
-                if (!class_exists('sfYaml'))
-                {
-                    require self::get_component_path('midgardmvc_core') . '/helpers/sfYaml/sfYaml.php';
-                }
-            }
         }
 
         if (!$use_yaml)
         {
-            return sfYaml::load($yaml_string);
+            return Symfony\Component\Yaml\Yaml::parse($yaml_string);
         }
         return $yaml_function($yaml_string);
     }

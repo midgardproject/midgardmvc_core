@@ -12,9 +12,11 @@
             "homepage": "http://bergie.iki.fi/"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.2.0",
-        "phptal/phptal": ">=1.2.2"
+        "phptal/phptal": ">=1.2.2",
+        "symfony/yaml": ">=2.1.0"
     },
     "suggest": {
         "ext-midgard2": ">=10.05.5"
