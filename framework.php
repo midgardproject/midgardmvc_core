@@ -53,4 +53,9 @@ require(__DIR__ . '/exceptionhandler.php');
 require(__DIR__ . '/interface.php');
 
 // Register autoloader so we get all Midgard MVC classes loaded automatically
-require(__DIR__ . '/vendor/autoload.php');
+if (strpos(__DIR__, 'vendor'))
+{
+    require(__DIR__ . '../autoload.php');
+} else {
+    require(__DIR__ . '/vendor/autoload.php');
+}
