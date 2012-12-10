@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+// vim: set filetype=php:
+require dirname(__DIR__) . '/framework.php';
+
+$filepath = get_cfg_var("midgard.configuration_file");
+if (!$filepath) {
+    die("PHP ini variable midgard.configuration_file not set.\n");
+}
+$config = new midgard_config();
+$config->read_file_at_path($filepath);
+
+$mgd = midgard_connection::get_instance();
+if (!$mgd->open_config($config)) {
+    die("Failed to open database connection with {$filepath}\n");
+}
+
+$config->create_blobdir();
+
+midgard_storage::create_base_storage();
+
+$re = new ReflectionExtension('midgard2');
+$classes = $re->getClasses();
+foreach ($classes as $refclass) {
+    if ($refclass->isAbstract() || $refclass->isInterface()) {
+        continue;
+    }
+
+    $type = $refclass->getName();
+    if (!is_subclass_of($type, 'MidgardDBObject')) {
+        continue;
+    }
+
+    if (midgard_storage::class_storage_exists($type)) {
+        continue;
+    }
+
+    midgard_storage::create_class_storage($type);
+}
