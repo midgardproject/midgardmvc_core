@@ -202,10 +202,20 @@ class midgardmvc_core
     private static function find_components_composer()
     {
         $components = array();
-        if (file_exists(__DIR__ . '/../../../manifest.yml')) {
+        $project_root = realpath(__DIR__ . '/../../..');
+        if (file_exists("{$project_root}/manifest.yml")) {
             // Main Composer package is also a component
-            $component_dir = realpath(dirname(__DIR__ . '/../../../manifest.yml'));
-            $components[basename($component_dir)] = $component_dir;
+            $component_yaml = file_get_contents("{$project_root}/manifest.yml");
+            $component_config = midgardmvc_core::read_yaml($component_yaml);
+            if ($component_config['name'])
+            {
+                $component_name = $component_config['name'];
+            }
+            else
+            {
+                $component_name = basename($project_root);
+            }
+            $components[$component_name] = $project_root;
         }
 
         // Find package namespaces
