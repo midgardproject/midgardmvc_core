@@ -32,6 +32,11 @@ class midgardmvc_core_providers_component_component_midgardmvc implements midgar
         
         array_walk($manifest['observations'], array($this, 'register_observation'));
     }
+
+    public function get_name()
+    {
+        return $this->name;
+    }
     
     public function register_observation(array $observation)
     {
