@@ -207,14 +207,31 @@ class midgardmvc_core
             $component_dir = realpath(dirname(__DIR__ . '/../../../manifest.yml'));
             $components[basename($component_dir)] = $component_dir;
         }
-        $component_dirs = scandir(MIDGARDMVC_ROOT, -1);
-        foreach ($component_dirs as $component)
-        {
-            if (!file_exists(MIDGARDMVC_ROOT . "/{$component}/manifest.yml")) {
+
+        // Find package namespaces
+        $composer_root = dirname(MIDGARDMVC_ROOT);
+        $package_namespaces = scandir($composer_root);
+        foreach ($package_namespaces as $namespace) {
+            if (substr($namespace, 0, 1) === '.') {
                 continue;
             }
-            $component_name = str_replace('-', '_', $component);
-            $components[$component_name] = MIDGARDMVC_ROOT . "/{$component}";
+            // Find components inside namespace
+            $namespace_root = "{$composer_root}/{$namespace}";
+            if (!is_dir($namespace_root)) {
+                continue;
+            }
+            $component_dirs = scandir($namespace_root, -1);
+            foreach ($component_dirs as $component)
+            {
+                if (substr($namespace, 0, 1) === '.') {
+                    continue;
+                }
+                if (!file_exists("{$namespace_root}/{$component}/manifest.yml")) {
+                    continue;
+                }
+                $component_name = str_replace('-', '_', $component);
+                $components[$component_name] = "{$namespace_root}/{$component}";
+            }
         }
         return $components;
     }
