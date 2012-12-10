@@ -207,7 +207,7 @@ class midgardmvc_core
             // Main Composer package is also a component
             $component_yaml = file_get_contents("{$project_root}/manifest.yml");
             $component_config = midgardmvc_core::read_yaml($component_yaml);
-            if ($component_config['name'])
+            if (isset($component_config['name']))
             {
                 $component_name = $component_config['name'];
             }
