@@ -34,7 +34,7 @@ foreach ($components as $component)
             continue;
         }
 
-        $file_target = "{$share_root}/schema/{$file}";
+        $file_target = "{$share_root}/schema/{$component->name}_{$file}";
         if (file_exists($file_target)) {
             continue;
         }
