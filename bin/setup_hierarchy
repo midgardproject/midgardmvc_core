@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+// vim: set filetype=php:
+require dirname(__DIR__) . '/framework.php';
+
+$filepath = get_cfg_var("midgard.configuration_file");
+if (!$filepath) {
+    die("PHP ini variable midgard.configuration_file not set.\n");
+}
+$config = new midgard_config();
+$config->read_file_at_path($filepath);
+
+$mgd = midgard_connection::get_instance();
+if (!$mgd->open_config($config)) {
+    die("Failed to open database connection with {$filepath}\n");
+}
+
+$application_config = get_cfg_var('midgardmvc.application_config');
+if (!$application_config)
+{
+    die("PHP ini variable midgardmvc.application_config not set.\n");
+}
+$mvc = midgardmvc_core::get_instance($application_config);
+$hierarchy_provider = $mvc->configuration->providers_hierarchy;
+if (strpos($hierarchy_provider, '_') === false)
+{
+    // Built-in service implementation called using the shorthand notation
+    $hierarchy_provider = "midgardmvc_core_services_hierarchy_{$hierarchy_provider}";
+}
+
+$hierarchy_provider::prepare_nodes();
