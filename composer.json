@@ -23,5 +23,10 @@
     },
     "autoload": {
         "classmap": ["."]
-    }
+    },
+    "bin": [
+      "bin/midgardmvc_create_database",
+      "bin/midgardmvc_install_mgdschemas",
+      "bin/midgardmvc_setup_hierarchy"
+    ]
 }
