@@ -40,4 +40,23 @@ foreach ($components as $component)
         }
         symlink($file_path, $file_target);
     }
+
+    $views_root = $component->get_path() .'/models/views';
+    if (!file_exists($views_root)) {
+        continue;
+    }
+    $view_files = scandir($views_root, -1);
+    foreach ($view_files as $file)
+    {
+        $file_path = "{$views_root}/{$file}";
+        if (pathinfo($file_path, PATHINFO_EXTENSION) !== 'xml') {
+            continue;
+        }
+
+        $file_target = "{$share_root}/views/{$component->name}_{$file}";
+        if (file_exists($file_target)) {
+            continue;
+        }
+        symlink($file_path, $file_target);
+    }
 } 
