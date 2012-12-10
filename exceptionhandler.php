@@ -47,6 +47,10 @@ class midgardmvc_core_exceptionhandler
             return;
         }
 
+        if (!isset($exception->request)) {
+            die($exception->__toString());
+        }
+
         self::show_error_templated($data, $midgardmvc, $exception->request);
     }
 

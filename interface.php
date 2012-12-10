@@ -252,6 +252,7 @@ class midgardmvc_core
         if (isset($components[$component])) {
             return $components[$component];
         }
+        throw new midgardmvc_exception_notfound("Component {$component} not found");
     }
     
     /**

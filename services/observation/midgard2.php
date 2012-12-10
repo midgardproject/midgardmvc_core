@@ -79,21 +79,27 @@ class midgardmvc_core_services_observation_midgard2 implements midgardmvc_core_s
                 // We already listen for this signal
                 return;
             }
-            midgard_object_class::connect_default
-            (
-                $type,
-                $event,
-                array
+            try {
+                midgard_object_class::connect_default
                 (
-                    $this,
-                    'trigger'
-                ),
-                array
-                (
-                    'type' => $type,
-                    'event' => $event
-                )
-            );
+                    $type,
+                    $event,
+                    array
+                    (
+                        $this,
+                        'trigger'
+                    ),
+                    array
+                    (
+                        'type' => $type,
+                        'event' => $event
+                    )
+                );
+            }
+            catch (midgard_error_exception $e)
+            {
+                // Midgard connection not available. Ignore
+            }
         }
     }
     
