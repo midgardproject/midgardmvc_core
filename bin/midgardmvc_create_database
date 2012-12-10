@@ -36,4 +36,5 @@ foreach ($classes as $refclass) {
     }
 
     midgard_storage::create_class_storage($type);
+    echo "Created storage for {$type}\n";
 }

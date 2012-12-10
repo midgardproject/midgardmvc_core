@@ -25,7 +25,7 @@ $hierarchy_provider = $mvc->configuration->providers_hierarchy;
 if (strpos($hierarchy_provider, '_') === false)
 {
     // Built-in service implementation called using the shorthand notation
-    $hierarchy_provider = "midgardmvc_core_services_hierarchy_{$hierarchy_provider}";
+    $hierarchy_provider = "midgardmvc_core_providers_hierarchy_{$hierarchy_provider}";
 }
 
-$hierarchy_provider::prepare_nodes();
+$hierarchy_provider::prepare_nodes($mvc->configuration->nodes);

@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+// vim: set filetype=php:
+require dirname(__DIR__) . '/framework.php';
+
+$config_path = get_cfg_var("midgard.configuration_file");
+if (!$config_path) {
+    die("PHP ini variable midgard.configuration_file not set.\n");
+}
+$config = new midgard_config();
+$config->read_file_at_path($config_path);
+$share_root = $config->sharedir;
+
+$application_config = get_cfg_var('midgardmvc.application_config');
+if (!$application_config)
+{
+    die("PHP ini variable midgardmvc.application_config not set.\n");
+}
+$mvc = midgardmvc_core::get_instance($application_config);
+
+$components = $mvc->component->get_components();
+foreach ($components as $component)
+{
+    $schema_root = $component->get_path() . '/models';
+    if (!file_exists($schema_root)) {
+        continue;
+    }
+
+    $schema_files = scandir($schema_root, -1);
+    foreach ($schema_files as $file)
+    {
+        $file_path = "{$schema_root}/{$file}";
+        if (pathinfo($file_path, PATHINFO_EXTENSION) !== 'xml') {
+            continue;
+        }
+
+        $file_target = "{$share_root}/schema/{$file}";
+        if (file_exists($file_target)) {
+            continue;
+        }
+        symlink($file_path, $file_target);
+    }
+} 
