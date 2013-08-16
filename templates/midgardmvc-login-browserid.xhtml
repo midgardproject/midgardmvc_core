@@ -1,5 +1,5 @@
 <tal:block tal:condition="php: !midgardmvc.authentication.is_user()">
-    <img id="browserid" src="https://browserid.org/i/sign_in_green.png" />
+    <img id="browserid" src="https://login.persona.org/i/sign_in_green.png" />
     <script>
         jQuery(document).ready(function() {
             if (!navigator.id) {
@@ -8,7 +8,7 @@
             }
 
             jQuery('#browserid').click(function() {
-                navigator.id.getVerifiedEmail(function(assertion) {
+                navigator.id.get(function(assertion) {
                     if (!assertion) {
                         return; 
                     }

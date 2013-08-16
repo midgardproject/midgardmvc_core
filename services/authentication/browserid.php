@@ -10,13 +10,13 @@
  * Provides a session based authentication method that validates logins with
  * BrowserID
  *
- * @link https://browserid.org/
+ * @link https://persona.org/
  * @package midgardmvc_core
  */
 class midgardmvc_core_services_authentication_browserid extends midgardmvc_core_services_authentication_sessionauth
 {
-    private $provider = 'https://browserid.org/verify';
-    private $include = 'https://browserid.org/include.js';
+    private $provider = 'https://verifier.login.persona.org/verify';
+    private $include = 'https://persona.org/include.js';
 
     public function __construct()
     {
